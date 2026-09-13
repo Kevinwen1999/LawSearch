@@ -7,7 +7,10 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://lawsearch:lawsearch@localhost:5432/lawsearch"
     embedding_model: str = "BAAI/bge-m3"
     embedding_dim: int = 1024
-    embedding_batch_size: int = 16
+    embedding_device: str = "cuda:0"
+    embedding_batch_size: int = 64
+    # Chunks are capped at 1500 chars (~400 tokens); this bounds GPU memory per batch.
+    embedding_max_seq_length: int = 512
 
 
 settings = Settings()

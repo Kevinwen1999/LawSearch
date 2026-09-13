@@ -8,7 +8,7 @@ from app.config import settings
 
 
 @contextmanager
-def connect() -> Iterator[psycopg.Connection]:
-    with psycopg.connect(settings.database_url) as conn:
+def connect(autocommit: bool = False) -> Iterator[psycopg.Connection]:
+    with psycopg.connect(settings.database_url, autocommit=autocommit) as conn:
         register_vector(conn)
         yield conn

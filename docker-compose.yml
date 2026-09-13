@@ -2,6 +2,21 @@ services:
   db:
     image: pgvector/pgvector:pg16
     container_name: lawsearch-db
+    # Parallel HNSW builds place the graph in shared memory; Docker's 64MB /dev/shm
+    # default fails them. Must be >= the maintenance_work_mem used for index builds.
+    shm_size: 16gb
+    command:
+      - postgres
+      - -c
+      - shared_buffers=4GB
+      - -c
+      - effective_cache_size=16GB
+      - -c
+      - max_wal_size=8GB
+      - -c
+      - max_parallel_maintenance_workers=6
+      - -c
+      - autovacuum_work_mem=512MB
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-lawsearch}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lawsearch}

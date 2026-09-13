@@ -1,8 +1,9 @@
-"""Phase 0 definition of done: embed a document, store it, retrieve it both ways.
+"""End-to-end check: embed a document, store it, retrieve it both ways.
 
-Inserts a synthetic case, embeds its paragraphs, then runs a vector query and a
-lexical query against it. Re-runnable: clears its own rows first.
+Runs inside a transaction that is rolled back, so it never leaves rows in the corpus.
 """
+
+from pgvector import HalfVector
 
 from app.db import connect
 from app.embeddings import embed, get_model
@@ -22,17 +23,16 @@ LEXICAL_QUERY = "occupier invitee"
 
 def main() -> None:
     model = get_model()
-    print(f"model: {model.model_card_data.base_model or 'loaded'} on {model.device}")
+    print(f"model on {model.device}, dtype={next(model.parameters()).dtype}")
 
     vectors = embed([text for _, text in PARAS])
-    query_vector = embed([VECTOR_QUERY])[0]
+    query_vector = HalfVector(embed([VECTOR_QUERY])[0])
     print(f"embedded {len(vectors)} paragraphs, dim={vectors.shape[1]}")
 
     with connect() as conn, conn.cursor() as cur:
-        cur.execute("DELETE FROM cases WHERE source = 'smoke-test'")
         cur.execute(
             """
-            INSERT INTO cases (neutral_citation, style_of_cause, court, jurisdiction,
+            INSERT INTO cases (citation, style_of_cause, court, jurisdiction,
                                decision_date, language, source, full_text)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
@@ -42,13 +42,12 @@ def main() -> None:
         )
         case_id = cur.fetchone()[0]
 
-        for (para_no, text), vector in zip(PARAS, vectors):
+        for chunk_no, ((para_no, text), vector) in enumerate(zip(PARAS, vectors)):
             cur.execute(
-                "INSERT INTO case_chunks (case_id, para_no, text, embedding) "
-                "VALUES (%s, %s, %s, %s)",
-                (case_id, para_no, text, vector),
+                "INSERT INTO case_chunks (case_id, chunk_no, para_no, para_end, text, embedding) "
+                "VALUES (%s, %s, %s, %s, %s, %s)",
+                (case_id, chunk_no, para_no, para_no, text, HalfVector(vector)),
             )
-        conn.commit()
 
         cur.execute(
             """
@@ -72,6 +71,7 @@ def main() -> None:
             (LEXICAL_QUERY, case_id, LEXICAL_QUERY),
         )
         lexical_hits = cur.fetchall()
+        conn.rollback()
 
     print(f"\nvector query: {VECTOR_QUERY!r}")
     for para_no, similarity, text in vector_hits:
@@ -81,9 +81,9 @@ def main() -> None:
     for para_no, rank, text in lexical_hits:
         print(f"  para {para_no}  rank={rank:.4f}  {text[:70]}...")
 
-    assert vector_hits, "vector query returned nothing"
+    assert vector_hits and vector_hits[0][0] == 1, "vector query did not rank the wet-floor paragraph first"
     assert lexical_hits, "lexical query returned nothing"
-    print("\nPhase 0 DoD met: schema + embeddings + vector and lexical retrieval all work.")
+    print("\nOK: schema + embeddings + vector and lexical retrieval all work (rolled back).")
 
 
 if __name__ == "__main__":

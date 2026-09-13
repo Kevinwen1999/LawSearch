@@ -2,9 +2,9 @@
 #
 # ⚠️ AI-DRAFTED, NOT YET VERIFIED. Every citation below needs a human check before this
 # set is frozen and used as ground truth. A wrong "gold" citation silently punishes a
-# retriever that was right. Once Phase 1 lands, resolve each citation against
-# cases.neutral_citation and fix or drop anything that doesn't resolve, then flip
-# `verified: true` per scenario.
+# retriever that was right. Case citations have now been resolved against
+# cases.citation (see citations_resolved below); a human still needs to confirm
+# relevance and flip `verified: true` per scenario.
 #
 # Scenarios are weighted toward immigration, tax, admin, labour and SCC-level tort and
 # contract law, because that is where the A2AJ corpus is actually deep (FC 35.9k, FCA
@@ -13,6 +13,14 @@
 #
 # relevance: primary   = a retriever that misses this has failed the scenario
 #            supporting = should surface, but its absence is not a failure
+#
+# citations_resolved (checked 2026-09-13 against the Phase 1 federal corpus): every
+# *case* authority in the scenario exists in `cases` under that citation, with the
+# expected style of cause. It proves existence, not relevance — `verified` still means
+# a human confirmed these are the right authorities. Statutes are unchecked until Phase 5.
+#
+# Coverage gap found: A2AJ FC and FCA decisions start 2001-02-01. Pre-2001 Federal
+# Court / FCA authorities (reported only in the FC reports) are not in the corpus.
 
 scenarios:
   - id: imm-001
@@ -29,10 +37,18 @@ scenarios:
         name: Rasaratnam v Canada (Minister of Employment and Immigration)
         kind: case
         relevance: primary
+        in_corpus: false
       - citation: "[1994] 1 FC 589"
         name: Thirunavukkarasu v Canada (Minister of Employment and Immigration)
         kind: case
         relevance: primary
+        in_corpus: false
+    notes: >
+      Both leading authorities predate the corpus (FC/FCA coverage starts 2001), so this
+      scenario cannot be scored as written. 905 FC/FCA decisions in the corpus cite
+      Rasaratnam — replace these with post-2001 decisions applying the two-prong internal
+      flight alternative test, chosen from the corpus rather than from recall.
+    citations_resolved: false
     verified: false
 
   - id: imm-002
@@ -53,6 +69,7 @@ scenarios:
         name: Baker v Canada (Minister of Citizenship and Immigration)
         kind: case
         relevance: primary
+    citations_resolved: true
     verified: false
 
   - id: admin-001
@@ -73,6 +90,7 @@ scenarios:
         kind: case
         relevance: supporting
         note: largely superseded by Vavilov — a good test of whether ranking prefers current law
+    citations_resolved: true
     verified: false
 
   - id: admin-002
@@ -92,6 +110,7 @@ scenarios:
         name: Knight v Indian Head School Division No 19
         kind: case
         relevance: supporting
+    citations_resolved: true
     verified: false
 
   - id: tax-001
@@ -111,6 +130,7 @@ scenarios:
         name: Income Tax Act, s 18(1)(a)
         kind: statute
         relevance: supporting
+    citations_resolved: true
     verified: false
 
   - id: tax-002
@@ -134,6 +154,7 @@ scenarios:
         name: Income Tax Act, s 245
         kind: statute
         relevance: supporting
+    citations_resolved: true
     verified: false
 
   - id: neg-001
@@ -153,6 +174,7 @@ scenarios:
         name: Saadati v Moorhead
         kind: case
         relevance: primary
+    citations_resolved: true
     verified: false
 
   - id: neg-002
@@ -172,6 +194,7 @@ scenarios:
         name: Childs v Desormeaux
         kind: case
         relevance: supporting
+    citations_resolved: true
     verified: false
 
   - id: contract-001
@@ -191,6 +214,7 @@ scenarios:
         name: CM Callow Inc v Zollinger
         kind: case
         relevance: primary
+    citations_resolved: true
     verified: false
 
   - id: contract-002
@@ -210,6 +234,7 @@ scenarios:
         name: Ledcor Construction Ltd v Northbridge Indemnity Insurance Co
         kind: case
         relevance: supporting
+    citations_resolved: true
     verified: false
 
   - id: employ-001
@@ -225,6 +250,7 @@ scenarios:
         name: Matthews v Ocean Nutrition Canada Ltd
         kind: case
         relevance: primary
+    citations_resolved: true
     verified: false
 
   - id: employ-002
@@ -244,6 +270,7 @@ scenarios:
         name: Canada Labour Code, s 240
         kind: statute
         relevance: primary
+    citations_resolved: true
     verified: false
 
   - id: crim-001
@@ -262,6 +289,7 @@ scenarios:
         name: Canadian Charter of Rights and Freedoms, ss 8, 9, 24(2)
         kind: statute
         relevance: supporting
+    citations_resolved: true
     verified: false
 
   - id: crim-002
@@ -281,6 +309,7 @@ scenarios:
         name: Canadian Charter of Rights and Freedoms, s 11(b)
         kind: statute
         relevance: supporting
+    citations_resolved: true
     verified: false
 
   - id: hr-001
@@ -300,6 +329,7 @@ scenarios:
         name: Canadian Human Rights Act
         kind: statute
         relevance: primary
+    citations_resolved: true
     verified: false
 
   - id: on-001
@@ -319,6 +349,7 @@ scenarios:
         kind: case
         relevance: primary
         note: deliberately left blank — fill from the corpus rather than from recall
+    citations_resolved: false
     verified: false
 
   - id: on-002
@@ -342,4 +373,5 @@ scenarios:
         name: Employment Standards Act, 2000
         kind: statute
         relevance: supporting
+    citations_resolved: false
     verified: false

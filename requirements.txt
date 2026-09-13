@@ -6,5 +6,6 @@ pgvector
 pydantic-settings
 python-dotenv
 pyarrow
+pytest
 sentence-transformers
 pyyaml
