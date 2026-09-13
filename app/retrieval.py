@@ -51,6 +51,7 @@ class CaseHit:
 
 @dataclass
 class CaseResult:
+    case_id: UUID
     citation: str | None
     citation2: str | None
     style_of_cause: str | None
@@ -221,7 +222,7 @@ def _attach_metadata(conn, hits: list[CaseHit]) -> list[CaseResult]:
     ).fetchall()
     meta = {r[0]: r[1:] for r in rows}
     return [
-        CaseResult(*meta[h.case_id], h.score, h.lexical_rank, h.vector_rank, h.passages)
+        CaseResult(h.case_id, *meta[h.case_id], h.score, h.lexical_rank, h.vector_rank, h.passages)
         for h in hits
     ]
 

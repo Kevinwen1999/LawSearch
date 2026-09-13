@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,6 +14,14 @@ class Settings(BaseSettings):
     embedding_batch_size: int = 64
     # Chunks are capped at 1500 chars (~400 tokens); this bounds GPU memory per batch.
     embedding_max_seq_length: int = 512
+
+    # "claude-cli" runs `claude -p` on the CLI's own login (fine for local testing);
+    # "api" uses the Anthropic SDK with ANTHROPIC_API_KEY. Same prompt, schema and cache.
+    filac_backend: Literal["claude-cli", "api"] = "claude-cli"
+    filac_model: str = "claude-opus-5"
+    filac_effort: Literal["low", "medium", "high", "xhigh", "max"] = "high"
+    claude_cli_path: str = "claude"
+    llm_timeout_seconds: int = 900
 
 
 settings = Settings()

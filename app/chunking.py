@@ -28,7 +28,7 @@ def clean(text: str) -> str:
 
 
 def chunk_judgment(text: str) -> list[Chunk]:
-    markers = _sequential_markers(text)
+    markers = sequential_markers(text)
     if len(markers) < MIN_NUMBERED_PARAS:
         return [Chunk(w) for w in _windows(text)]
 
@@ -67,7 +67,7 @@ def chunk_judgment(text: str) -> list[Chunk]:
     return chunks
 
 
-def _sequential_markers(text: str) -> list[tuple[int, int]]:
+def sequential_markers(text: str) -> list[tuple[int, int]]:
     """(paragraph number, offset) for markers that continue the 1, 2, 3... sequence.
 
     Out-of-sequence markers are quoted paragraphs from other decisions or footnotes,

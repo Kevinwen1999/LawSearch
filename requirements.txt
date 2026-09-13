@@ -1,5 +1,7 @@
 # torch is installed separately with a CUDA wheel — see README.
+anthropic
 fastapi
+httpx
 uvicorn[standard]
 psycopg[binary,pool]
 pgvector
@@ -8,4 +10,5 @@ python-dotenv
 pyarrow
 pytest
 sentence-transformers
+streamlit
 pyyaml

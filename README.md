@@ -89,6 +89,37 @@ Known weakness: foundational SCC authorities (Vavilov, Baker, Kanthasamy, Moore)
 to the many FC decisions that apply them — the target of Phase 4's citation-graph
 expansion.
 
+## FILAC briefs and UI (Phase 3)
+
+Each case can get a FILAC brief (Facts, Issues, Law, Analysis, Conclusion) where every item
+cites the paragraph it comes from, or a passage number for decisions without paragraph
+numbers. Briefs are checked against the decision text (anchors exist, cited authorities
+actually appear; case citations are resolved against the corpus) and cached per case,
+prompt version and model, so each case is generated once.
+
+```powershell
+# terminal 1: API (loads the embedding model once)
+.venv\Scripts\python -m uvicorn app.main:app
+# terminal 2: UI at http://localhost:8501
+.venv\Scripts\python -m streamlit run ui/streamlit_app.py
+
+# or one brief from the CLI
+.venv\Scripts\python -m scripts.filac_cli "2008 SCC 27"
+```
+
+Backends (`FILAC_BACKEND` in `.env`), same prompt, schema, verification and cache:
+
+| Backend | Uses | For |
+|---|---|---|
+| `claude-cli` (default) | `claude -p` on the Claude Code CLI's own login | Local testing on a subscription; ~7k tokens of CLI overhead per call and subject to plan usage limits |
+| `api` | Anthropic SDK with `ANTHROPIC_API_KEY`; server-side refusal fallback enabled | Anyone else using the app. Re-check brief quality after switching |
+
+Measured on `claude-cli` with Claude Opus 5: 19k-char decision 36 s, 86k-char unnumbered
+decision 67 s; 0 verification problems on the three briefs generated so far.
+
+API: `GET /cases/{case_id}/filac` returns a cached brief (404 if none),
+`POST /cases/{case_id}/filac?force=false` generates one; `GET /courts` lists courts.
+
 ## Tests
 
 ```powershell
@@ -114,10 +145,12 @@ retriever; interactive docs at `http://localhost:8000/docs`.
 ## Layout
 
 ```
-app/          FastAPI app, settings, DB pool, embeddings, chunking, hybrid retrieval
+app/          FastAPI app, settings, DB pool, embeddings, chunking, hybrid retrieval,
+              FILAC extraction + verification, LLM backends
 docker/       custom Postgres image (pgvector + pg_textsearch)
 migrations/   numbered SQL migrations, applied by scripts/migrate.py
-scripts/      migrate, smoke_test, ingest_a2aj, search_cli, eval_retrieval
+scripts/      migrate, smoke_test, ingest_a2aj, search_cli, eval_retrieval, filac_cli
+ui/           Streamlit MVP (talks to the API over HTTP)
 tests/        pytest unit tests
 eval/         eval scenarios (citations resolved, relevance needs human review) and runs/
 ```
