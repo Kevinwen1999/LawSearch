@@ -1,0 +1,345 @@
+# Retrieval eval seed set (implementation-plan.md §6).
+#
+# ⚠️ AI-DRAFTED, NOT YET VERIFIED. Every citation below needs a human check before this
+# set is frozen and used as ground truth. A wrong "gold" citation silently punishes a
+# retriever that was right. Once Phase 1 lands, resolve each citation against
+# cases.neutral_citation and fix or drop anything that doesn't resolve, then flip
+# `verified: true` per scenario.
+#
+# Scenarios are weighted toward immigration, tax, admin, labour and SCC-level tort and
+# contract law, because that is where the A2AJ corpus is actually deep (FC 35.9k, FCA
+# 7.8k, TCC 8.1k, SCC 10.9k, RAD/RPD 21k, SST 17.9k). Ontario-only scenarios are tagged
+# phase: 7 — they are not answerable until the ONCA/e-Laws work lands.
+#
+# relevance: primary   = a retriever that misses this has failed the scenario
+#            supporting = should surface, but its absence is not a failure
+
+scenarios:
+  - id: imm-001
+    phase: 1
+    jurisdiction: federal
+    area: immigration / refugee
+    scenario: >
+      My client fled persecution in her home country. The Refugee Protection Division
+      accepted that her fear was genuine but refused the claim because it said she
+      could have moved to another city in the same country instead of leaving. How is
+      that assessed on judicial review?
+    expected_authorities:
+      - citation: "[1992] 1 FC 706"
+        name: Rasaratnam v Canada (Minister of Employment and Immigration)
+        kind: case
+        relevance: primary
+      - citation: "[1994] 1 FC 589"
+        name: Thirunavukkarasu v Canada (Minister of Employment and Immigration)
+        kind: case
+        relevance: primary
+    verified: false
+
+  - id: imm-002
+    phase: 1
+    jurisdiction: federal
+    area: immigration / humanitarian and compassionate
+    scenario: >
+      A family facing removal applied to stay in Canada on humanitarian and
+      compassionate grounds. The officer refused and barely mentioned the two children
+      who were born here. What authority governs how the children's interests must be
+      treated?
+    expected_authorities:
+      - citation: "2015 SCC 61"
+        name: Kanthasamy v Canada (Citizenship and Immigration)
+        kind: case
+        relevance: primary
+      - citation: "[1999] 2 SCR 817"
+        name: Baker v Canada (Minister of Citizenship and Immigration)
+        kind: case
+        relevance: primary
+    verified: false
+
+  - id: admin-001
+    phase: 1
+    jurisdiction: federal
+    area: administrative law
+    scenario: >
+      A federal tribunal interpreted its own governing statute in a way my client says
+      is wrong. We are applying for judicial review. What standard will the court apply
+      to the tribunal's interpretation?
+    expected_authorities:
+      - citation: "2019 SCC 65"
+        name: Canada (Minister of Citizenship and Immigration) v Vavilov
+        kind: case
+        relevance: primary
+      - citation: "2008 SCC 9"
+        name: Dunsmuir v New Brunswick
+        kind: case
+        relevance: supporting
+        note: largely superseded by Vavilov — a good test of whether ranking prefers current law
+    verified: false
+
+  - id: admin-002
+    phase: 1
+    jurisdiction: federal
+    area: administrative law / procedural fairness
+    scenario: >
+      A federal decision-maker cancelled my client's licence without letting him respond
+      to the allegations and without giving reasons. What does the duty of fairness
+      require here?
+    expected_authorities:
+      - citation: "[1999] 2 SCR 817"
+        name: Baker v Canada (Minister of Citizenship and Immigration)
+        kind: case
+        relevance: primary
+      - citation: "[1990] 1 SCR 653"
+        name: Knight v Indian Head School Division No 19
+        kind: case
+        relevance: supporting
+    verified: false
+
+  - id: tax-001
+    phase: 1
+    jurisdiction: federal
+    area: tax
+    scenario: >
+      My client ran a small side business at a loss for several years and deducted the
+      losses. CRA reassessed, saying it was really a hobby and not a source of income.
+      What is the test?
+    expected_authorities:
+      - citation: "2002 SCC 46"
+        name: Stewart v Canada
+        kind: case
+        relevance: primary
+      - citation: "RSC 1985, c 1 (5th Supp)"
+        name: Income Tax Act, s 18(1)(a)
+        kind: statute
+        relevance: supporting
+    verified: false
+
+  - id: tax-002
+    phase: 1
+    jurisdiction: federal
+    area: tax / anti-avoidance
+    scenario: >
+      A corporate group ran a series of transactions that technically complied with the
+      Income Tax Act but whose only real effect was to eliminate tax. CRA invoked the
+      general anti-avoidance rule. How is abuse assessed?
+    expected_authorities:
+      - citation: "2005 SCC 54"
+        name: Canada Trustco Mortgage Co v Canada
+        kind: case
+        relevance: primary
+      - citation: "2011 SCC 63"
+        name: Copthorne Holdings Ltd v Canada
+        kind: case
+        relevance: primary
+      - citation: "RSC 1985, c 1 (5th Supp)"
+        name: Income Tax Act, s 245
+        kind: statute
+        relevance: supporting
+    verified: false
+
+  - id: neg-001
+    phase: 1
+    jurisdiction: federal
+    area: torts / negligence
+    scenario: >
+      My client saw something disgusting in a sealed water bottle and developed serious
+      depression and anxiety afterwards, but was never physically hurt. Can he recover
+      for psychiatric injury alone?
+    expected_authorities:
+      - citation: "2008 SCC 27"
+        name: Mustapha v Culligan of Canada Ltd
+        kind: case
+        relevance: primary
+      - citation: "2017 SCC 28"
+        name: Saadati v Moorhead
+        kind: case
+        relevance: primary
+    verified: false
+
+  - id: neg-002
+    phase: 1
+    jurisdiction: federal
+    area: torts / duty of care
+    scenario: >
+      A teenager stole an unlocked car with the keys in it from a commercial garage lot
+      and crashed it, badly injuring his passenger. Does the business owe a duty to the
+      injured passenger?
+    expected_authorities:
+      - citation: "2018 SCC 19"
+        name: Rankin (Rankin's Garage & Sales) v JJ
+        kind: case
+        relevance: primary
+      - citation: "2006 SCC 18"
+        name: Childs v Desormeaux
+        kind: case
+        relevance: supporting
+    verified: false
+
+  - id: contract-001
+    phase: 1
+    jurisdiction: federal
+    area: contract / good faith
+    scenario: >
+      My client's distribution agreement was not renewed. During the final year the
+      other side actively misled him about their intentions so he would not look for
+      alternatives. Is there a remedy even though the contract allowed non-renewal?
+    expected_authorities:
+      - citation: "2014 SCC 71"
+        name: Bhasin v Hrynew
+        kind: case
+        relevance: primary
+      - citation: "2020 SCC 45"
+        name: CM Callow Inc v Zollinger
+        kind: case
+        relevance: primary
+    verified: false
+
+  - id: contract-002
+    phase: 1
+    jurisdiction: federal
+    area: contract / interpretation
+    scenario: >
+      The parties disagree about what a clause in their commercial agreement means. One
+      side wants to appeal the arbitrator's interpretation. Is interpreting the contract
+      a question of law that can be appealed?
+    expected_authorities:
+      - citation: "2014 SCC 53"
+        name: Sattva Capital Corp v Creston Moly Corp
+        kind: case
+        relevance: primary
+      - citation: "2016 SCC 37"
+        name: Ledcor Construction Ltd v Northbridge Indemnity Insurance Co
+        kind: case
+        relevance: supporting
+    verified: false
+
+  - id: employ-001
+    phase: 1
+    jurisdiction: federal
+    area: employment
+    scenario: >
+      My client was fired without cause. His long-term incentive plan would have paid
+      out during what should have been his notice period, and the plan says you must be
+      "actively employed" to qualify. Can he claim it?
+    expected_authorities:
+      - citation: "2020 SCC 26"
+        name: Matthews v Ocean Nutrition Canada Ltd
+        kind: case
+        relevance: primary
+    verified: false
+
+  - id: employ-002
+    phase: 1
+    jurisdiction: federal
+    area: employment / federally regulated
+    scenario: >
+      An employee of a federally regulated telecom was dismissed without cause and given
+      a severance package. He filed an unjust dismissal complaint. Can a federal employer
+      simply pay severance instead of showing cause?
+    expected_authorities:
+      - citation: "2016 SCC 29"
+        name: Wilson v Atomic Energy of Canada Ltd
+        kind: case
+        relevance: primary
+      - citation: "RSC 1985, c L-2"
+        name: Canada Labour Code, s 240
+        kind: statute
+        relevance: primary
+    verified: false
+
+  - id: crim-001
+    phase: 1
+    jurisdiction: federal
+    area: criminal / Charter
+    scenario: >
+      Police stopped my client on the street with no real grounds, questioned him, and
+      found drugs. Should the evidence be excluded at trial?
+    expected_authorities:
+      - citation: "2009 SCC 32"
+        name: R v Grant
+        kind: case
+        relevance: primary
+      - citation: "Schedule B to the Canada Act 1982 (UK), 1982, c 11"
+        name: Canadian Charter of Rights and Freedoms, ss 8, 9, 24(2)
+        kind: statute
+        relevance: supporting
+    verified: false
+
+  - id: crim-002
+    phase: 1
+    jurisdiction: federal
+    area: criminal / trial delay
+    scenario: >
+      My client was charged almost three years ago and the trial still has not finished
+      in provincial court. Much of the delay was the Crown's scheduling. Is there a
+      remedy for the delay?
+    expected_authorities:
+      - citation: "2016 SCC 27"
+        name: R v Jordan
+        kind: case
+        relevance: primary
+      - citation: "Schedule B to the Canada Act 1982 (UK), 1982, c 11"
+        name: Canadian Charter of Rights and Freedoms, s 11(b)
+        kind: statute
+        relevance: supporting
+    verified: false
+
+  - id: hr-001
+    phase: 1
+    jurisdiction: federal
+    area: human rights / discrimination
+    scenario: >
+      An employee at a federally regulated bank has a disability and asked for a modified
+      schedule. The employer refused without looking into it. How does she make out
+      discrimination, and how far must the employer go to accommodate?
+    expected_authorities:
+      - citation: "2012 SCC 61"
+        name: Moore v British Columbia (Education)
+        kind: case
+        relevance: primary
+      - citation: "RSC 1985, c H-6"
+        name: Canadian Human Rights Act
+        kind: statute
+        relevance: primary
+    verified: false
+
+  - id: on-001
+    phase: 7
+    jurisdiction: ontario
+    area: torts / occupiers' liability
+    scenario: >
+      My client slipped on a wet floor in a grocery store in Toronto. There was no
+      warning sign and staff had mopped minutes earlier. What does the store owe her?
+    expected_authorities:
+      - citation: "RSO 1990, c O.2"
+        name: Occupiers' Liability Act, s 3
+        kind: statute
+        relevance: primary
+      - citation: TODO
+        name: leading ONCA authority on the standard for commercial occupiers
+        kind: case
+        relevance: primary
+        note: deliberately left blank — fill from the corpus rather than from recall
+    verified: false
+
+  - id: on-002
+    phase: 7
+    jurisdiction: ontario
+    area: employment / termination clause
+    scenario: >
+      My client's Ontario employment contract limits termination pay to the statutory
+      minimum, and a separate clause lets the employer fire him for cause with nothing.
+      Is the limit enforceable?
+    expected_authorities:
+      - citation: "2020 ONCA 391"
+        name: Waksdale v Swegon North America Inc
+        kind: case
+        relevance: primary
+      - citation: "[1992] 1 SCR 986"
+        name: Machtinger v HOJ Industries Ltd
+        kind: case
+        relevance: supporting
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000
+        kind: statute
+        relevance: supporting
+    verified: false

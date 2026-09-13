@@ -1,0 +1,10 @@
+# torch is installed separately with a CUDA wheel — see README.
+fastapi
+uvicorn[standard]
+psycopg[binary]
+pgvector
+pydantic-settings
+python-dotenv
+pyarrow
+sentence-transformers
+pyyaml
