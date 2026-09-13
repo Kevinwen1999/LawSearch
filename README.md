@@ -31,14 +31,15 @@ The first smoke test run downloads `BAAI/bge-m3` (~4.3 GB) into `HF_HOME` from `
 
 ## Load the case corpus (Phase 1)
 
-Federal courts and tribunals from A2AJ: ~117k decisions → 3.43M chunks, ~16 GB in
-Postgres. Needs ~3 GB for parquet downloads plus the database.
+Federal courts and tribunals from A2AJ: ~117k decisions → 3.43M chunks, ~25 GB in
+Postgres (including the 8.9 GB HNSW and 0.8 GB BM25 indexes). Needs ~3 GB more for
+parquet downloads.
 
 ```powershell
 # Preview chunk counts and storage without touching the GPU or DB
 .venv\Scripts\python -m scripts.ingest_a2aj --federal --dry-run
 
-# Load everything on one GPU (~5 h on an RTX 3090), then build the HNSW index
+# Load everything on one GPU (~5 h on an RTX 3090), then build the HNSW + BM25 indexes
 .venv\Scripts\python -m scripts.ingest_a2aj --federal
 ```
 
@@ -51,14 +52,42 @@ $env:EMBEDDING_DEVICE="cuda:1"; .venv\Scripts\python -m scripts.ingest_a2aj RAD 
 .venv\Scripts\python -m scripts.ingest_a2aj --build-index
 ```
 
-Query from the CLI (keyword search wants terms, not sentences; vector search takes prose):
+Coverage notes: FC and FCA decisions start in 2001; ONSC is not in A2AJ at all.
+
+## Search (Phase 2)
+
+Hybrid retrieval: BM25 (pg_textsearch) and vector (HNSW) search over chunks, each
+collapsed to case ranks and fused with Reciprocal Rank Fusion. Each case returns its
+best passages with paragraph anchors. `--mode lexical|vector` runs one retriever alone.
 
 ```powershell
-.venv\Scripts\python -m scripts.search_cli "right to counsel breath sample" --mode lexical
-.venv\Scripts\python -m scripts.search_cli "police did not let him call a lawyer" --court SCC -k 5
+.venv\Scripts\python -m scripts.search_cli "side business losses treated as a hobby" -k 5
+.venv\Scripts\python -m scripts.search_cli "right to counsel breath sample" --mode lexical --court SCC
 ```
 
-Coverage notes: FC and FCA decisions start in 2001; ONSC is not in A2AJ at all.
+API (`uvicorn app.main:app`, see below):
+
+```http
+POST /search
+{"query": "reasonable expectation of profit hobby farm losses", "k": 10,
+ "mode": "hybrid", "courts": ["TCC", "FCA"], "date_from": "2005-01-01"}
+```
+
+Score retrieval against the eval set (Recall@10/50, MRR, nDCG@10 per mode):
+
+```powershell
+.venv\Scripts\python -m scripts.eval_retrieval -v --out eval/runs/<label>.json
+```
+
+| Run | Mode | Recall@10 | Recall@50 | MRR | nDCG@10 |
+|---|---|---|---|---|---|
+| phase2-baseline | lexical | 0.464 | 0.679 | 0.323 | 0.318 |
+| phase2-baseline | vector | 0.429 | 0.714 | 0.269 | 0.283 |
+| phase2-baseline | hybrid | 0.607 | 0.714 | 0.357 | 0.387 |
+
+Known weakness: foundational SCC authorities (Vavilov, Baker, Kanthasamy, Moore) lose
+to the many FC decisions that apply them — the target of Phase 4's citation-graph
+expansion.
 
 ## Tests
 
@@ -72,21 +101,23 @@ Coverage notes: FC and FCA decisions start in 2001; ONSC is not in A2AJ at all.
 .venv\Scripts\python -m uvicorn app.main:app --reload
 ```
 
-`GET http://localhost:8000/health` reports pgvector version and corpus counts.
+`GET /health` reports extension versions and corpus counts; `POST /search` runs the
+retriever; interactive docs at `http://localhost:8000/docs`.
 
 ## Services
 
 | Service | Port | Notes |
 |---|---|---|
-| Postgres 16 + pgvector | 5432 | `docker exec -it lawsearch-db psql -U lawsearch` |
+| Postgres 17 + pgvector + pg_textsearch | 5432 | custom image in `docker/postgres`; `docker exec -it lawsearch-db psql -U lawsearch` |
 | MinIO API / console | 9000 / 9001 | default creds `minioadmin` / `minioadmin` |
 
 ## Layout
 
 ```
-app/          FastAPI app, settings, DB, embedding and chunking helpers
+app/          FastAPI app, settings, DB pool, embeddings, chunking, hybrid retrieval
+docker/       custom Postgres image (pgvector + pg_textsearch)
 migrations/   numbered SQL migrations, applied by scripts/migrate.py
-scripts/      migrate, smoke_test, ingest_a2aj (corpus loader), search_cli
+scripts/      migrate, smoke_test, ingest_a2aj, search_cli, eval_retrieval
 tests/        pytest unit tests
-eval/         retrieval eval seed set — citations resolved, relevance needs human review
+eval/         eval scenarios (citations resolved, relevance needs human review) and runs/
 ```

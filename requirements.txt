@@ -1,7 +1,7 @@
 # torch is installed separately with a CUDA wheel — see README.
 fastapi
 uvicorn[standard]
-psycopg[binary]
+psycopg[binary,pool]
 pgvector
 pydantic-settings
 python-dotenv

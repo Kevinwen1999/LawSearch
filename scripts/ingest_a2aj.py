@@ -6,9 +6,9 @@
     python -m scripts.ingest_a2aj --federal --dry-run  # chunk/storage stats, no GPU or DB writes
 
 Re-runnable: decisions already loaded (matched by citation) are skipped, so an
-interrupted run resumes where it stopped. The HNSW index is dropped for the load and
-rebuilt at the end, which is much faster than maintaining it row by row — but it
-also means even a small top-up rebuilds the whole index.
+interrupted run resumes where it stopped. The search indexes (HNSW vectors, BM25
+keywords) are dropped for the load and rebuilt at the end, which is much faster than
+maintaining them row by row — but it also means even a small top-up rebuilds both.
 
 Using several GPUs: run one process per GPU on disjoint courts with --no-index, then
 build the index once afterwards:
@@ -52,8 +52,18 @@ HEADER_SEARCH_CHARS = 6000
 FLUSH_CHUNKS = 4096
 READ_BATCH_ROWS = 256
 
-INDEX_NAME = "case_chunks_embedding_idx"
 INDEX_BUILD_MEMORY = "12GB"
+SEARCH_INDEXES = {
+    "case_chunks_embedding_idx": (
+        "CREATE INDEX IF NOT EXISTS case_chunks_embedding_idx ON case_chunks "
+        "USING hnsw (embedding halfvec_cosine_ops)"
+    ),
+    # Name is referenced by app/retrieval.py (to_bm25query).
+    "case_chunks_bm25_idx": (
+        "CREATE INDEX IF NOT EXISTS case_chunks_bm25_idx ON case_chunks "
+        "USING bm25 (text) WITH (text_config = 'english')"
+    ),
+}
 
 
 @dataclass
@@ -163,7 +173,8 @@ def ingest(courts: list[str], limit: int | None, build: bool) -> None:
         ).fetchone()[0]
 
         try:
-            conn.execute(f"DROP INDEX IF EXISTS {INDEX_NAME}")
+            for name in SEARCH_INDEXES:
+                conn.execute(f"DROP INDEX IF EXISTS {name}")
             progress = {}
             for court in courts:
                 progress[court] = load_court(conn, court, limit, embed)
@@ -259,16 +270,14 @@ def write_batch(conn, decisions: list[Decision], embed) -> None:
 
 
 def build_index(conn) -> None:
-    started = time.monotonic()
-    print("building HNSW index...", flush=True)
     conn.execute(f"SET maintenance_work_mem = '{INDEX_BUILD_MEMORY}'")
-    conn.execute(
-        f"CREATE INDEX IF NOT EXISTS {INDEX_NAME} ON case_chunks "
-        "USING hnsw (embedding halfvec_cosine_ops)"
-    )
+    for name, ddl in SEARCH_INDEXES.items():
+        started = time.monotonic()
+        print(f"building {name}...", flush=True)
+        conn.execute(ddl)
+        print(f"{name} built in {(time.monotonic() - started) / 60:.1f} min", flush=True)
     conn.execute("ANALYZE cases")
     conn.execute("ANALYZE case_chunks")
-    print(f"index built in {(time.monotonic() - started) / 60:.1f} min", flush=True)
 
 
 def main() -> None:
@@ -277,8 +286,8 @@ def main() -> None:
     parser.add_argument("--federal", action="store_true", help="all federal courts and tribunals")
     parser.add_argument("--limit", type=int, help="max decisions per court")
     parser.add_argument("--dry-run", action="store_true", help="chunking stats only")
-    parser.add_argument("--no-index", action="store_true", help="skip the HNSW rebuild (parallel loads)")
-    parser.add_argument("--build-index", action="store_true", help="only build the HNSW index")
+    parser.add_argument("--no-index", action="store_true", help="skip the search index rebuild (parallel loads)")
+    parser.add_argument("--build-index", action="store_true", help="only build missing search indexes (HNSW, BM25)")
     args = parser.parse_args()
 
     if args.build_index:

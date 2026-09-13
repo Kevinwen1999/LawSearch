@@ -108,3 +108,15 @@ and the local machine. Dated 2026-09-12.
 
 Everything else in the original implementation plan checks out against real, currently-available
 sources and packages.
+
+---
+
+## 5. Decisions revised during the build
+
+| Date | Was | Now | Why |
+|---|---|---|---|
+| 2026-09-13 | `vector(1024)` | `halfvec(1024)` | Halves vector + HNSW storage for the 3.43M-chunk federal corpus; no measurable ranking change in the smoke test |
+| 2026-09-13 | MinIO from Docker Hub | `quay.io/minio/minio` | Docker Hub `minio/minio` is no longer published |
+| 2026-09-13 | Postgres 16, `tsvector` + `ts_rank` for lexical search | **Postgres 17 + pg_textsearch 1.4 (BM25)** | Measured on the loaded corpus: a prose query matched 1.7M chunks and took 51 s to count, and `ts_rank` has no IDF. pg_textsearch gives true BM25 top-k (block-max WAND) in 8–50 ms. Chosen over ParadeDB `pg_search` (AGPL-3.0) for its PostgreSQL license; it requires PG 17+, hence the upgrade (dump/restore, verified row-for-row). Still one Postgres, as the plan intended |
+| 2026-09-13 | Unique `neutral_citation` | Unique `(court, citation)` | Tribunal file numbers are shared across RPD and RAD decisions |
+| 2026-09-13 | A2AJ ONCA/e-Laws as the only Ontario statute path | A2AJ `canadian-laws` also carries Ontario statutes + regulations | May replace the bespoke e-Laws scraper in Phase 7 |

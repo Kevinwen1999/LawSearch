@@ -1,12 +1,15 @@
 services:
   db:
-    image: pgvector/pgvector:pg16
+    build: docker/postgres
+    image: lawsearch-postgres:17
     container_name: lawsearch-db
     # Parallel HNSW builds place the graph in shared memory; Docker's 64MB /dev/shm
     # default fails them. Must be >= the maintenance_work_mem used for index builds.
     shm_size: 16gb
     command:
       - postgres
+      - -c
+      - shared_preload_libraries=pg_textsearch
       - -c
       - shared_buffers=4GB
       - -c
@@ -24,7 +27,7 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata17:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lawsearch} -d ${POSTGRES_DB:-lawsearch}"]
       interval: 5s
@@ -51,5 +54,6 @@ services:
       retries: 10
 
 volumes:
-  pgdata:
+  # pg17 data. The old pg16 volume (lawsearch_pgdata) is left in place for rollback.
+  pgdata17:
   miniodata:

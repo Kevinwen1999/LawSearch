@@ -1,3 +1,4 @@
+import threading
 from functools import lru_cache
 
 import numpy as np
@@ -21,11 +22,18 @@ def get_model() -> SentenceTransformer:
     return model
 
 
+# The API serves requests from a thread pool; serialize access to the shared GPU model.
+_encode_lock = threading.Lock()
+
+
 def embed(texts: list[str]) -> np.ndarray:
-    return get_model().encode(
-        texts,
-        normalize_embeddings=True,
-        batch_size=settings.embedding_batch_size,
-        convert_to_numpy=True,
-        show_progress_bar=False,
-    ).astype(np.float16)
+    model = get_model()
+    with _encode_lock:
+        vectors = model.encode(
+            texts,
+            normalize_embeddings=True,
+            batch_size=settings.embedding_batch_size,
+            convert_to_numpy=True,
+            show_progress_bar=False,
+        )
+    return vectors.astype(np.float16)

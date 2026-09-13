@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     database_url: str = "postgresql://lawsearch:lawsearch@localhost:5432/lawsearch"
+    db_pool_size: int = 8
     embedding_model: str = "BAAI/bge-m3"
     embedding_dim: int = 1024
     embedding_device: str = "cuda:0"

@@ -63,26 +63,26 @@ def main() -> None:
 
         cur.execute(
             """
-            SELECT para_no, ts_rank(tsv, websearch_to_tsquery('english', %s)) AS rank, text
+            SELECT para_no, text <@> to_bm25query(%s, 'case_chunks_bm25_idx') AS score, text
             FROM case_chunks
-            WHERE case_id = %s AND tsv @@ websearch_to_tsquery('english', %s)
-            ORDER BY rank DESC
+            WHERE case_id = %s
+            ORDER BY score
             """,
-            (LEXICAL_QUERY, case_id, LEXICAL_QUERY),
+            (LEXICAL_QUERY, case_id),
         )
-        lexical_hits = cur.fetchall()
+        lexical_hits = [row for row in cur.fetchall() if row[1] < 0]
         conn.rollback()
 
     print(f"\nvector query: {VECTOR_QUERY!r}")
     for para_no, similarity, text in vector_hits:
         print(f"  para {para_no}  sim={similarity:.3f}  {text[:70]}...")
 
-    print(f"\nlexical query: {LEXICAL_QUERY!r}")
-    for para_no, rank, text in lexical_hits:
-        print(f"  para {para_no}  rank={rank:.4f}  {text[:70]}...")
+    print(f"\nBM25 query: {LEXICAL_QUERY!r}")
+    for para_no, score, text in lexical_hits:
+        print(f"  para {para_no}  bm25={-score:.3f}  {text[:70]}...")
 
     assert vector_hits and vector_hits[0][0] == 1, "vector query did not rank the wet-floor paragraph first"
-    assert lexical_hits, "lexical query returned nothing"
+    assert lexical_hits and lexical_hits[0][0] == 2, "BM25 query did not rank the occupier paragraph first"
     print("\nOK: schema + embeddings + vector and lexical retrieval all work (rolled back).")
 
 
