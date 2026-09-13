@@ -1,6 +1,7 @@
 from uuid import uuid4
 
-from app.filac import FILAC_SCHEMA, SECTIONS, build_document, case_citations, verify
+from app.citations import canonical, case_citations
+from app.filac import FILAC_SCHEMA, SECTIONS, build_document, verify
 
 META = {
     "case_id": uuid4(), "citation": "2020 TEST 1", "style_of_cause": "A v B",
@@ -40,6 +41,13 @@ def test_case_citations_normalize_to_corpus_format():
     assert case_citations("Rankin v. J.J., 2018 SCC 19") == ["2018 SCC 19"]
     assert case_citations("Waldick v. Malcolm, [1991] 2 S.C.R. 456") == ["[1991] 2 SCR 456"]
     assert case_citations("Occupiers' Liability Act, RSO 1990, c O.2, s 3") == []
+
+
+def test_french_neutral_citations_map_to_english_court_codes():
+    assert canonical("2019 CSC 65") == "2019 SCC 65"
+    assert canonical("2020 CAF 12") == "2020 FCA 12"
+    assert canonical("2019 SCC 65") == "2019 SCC 65"
+    assert canonical("MB8-15979") == "MB8-15979"
 
 
 def test_verify_flags_missing_anchor_and_invented_authority():

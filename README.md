@@ -73,21 +73,59 @@ POST /search
  "mode": "hybrid", "courts": ["TCC", "FCA"], "date_from": "2005-01-01"}
 ```
 
-Score retrieval against the eval set (Recall@10/50, MRR, nDCG@10 per mode):
+The Phase 2 baseline on the original 14 SCC-gold scenarios is in
+`eval/runs/phase2-baseline.json` (hybrid recall@10 0.607). Phase 4 below supersedes it.
+
+## Retrieval quality (Phase 4)
+
+The default search now adds three stages on top of hybrid fusion:
+
+1. **Citation-graph expansion** — cases cited by several of the top 20 fused results join
+   the candidate pool as a third RRF list, so a foundational authority (Vavilov, Baker)
+   surfaces even when the lower-court decisions applying it outrank it textually.
+2. **Authority priors** — small additive boosts by court level and in-corpus citation count.
+3. **Cross-encoder rerank** — `BAAI/bge-reranker-v2-m3` scores the best passages of the top
+   40 cases; its rank is blended with the pre-rerank rank.
 
 ```powershell
+# rebuild the citation graph after any corpus load (~30 s)
+.venv\Scripts\python -m scripts.load_citations
+
+# compare pipelines on the tune/test splits, or re-tune weights on tune only
 .venv\Scripts\python -m scripts.eval_retrieval -v --out eval/runs/<label>.json
+.venv\Scripts\python -m scripts.eval_retrieval --tune
 ```
 
-| Run | Mode | Recall@10 | Recall@50 | MRR | nDCG@10 |
-|---|---|---|---|---|---|
-| phase2-baseline | lexical | 0.464 | 0.679 | 0.323 | 0.318 |
-| phase2-baseline | vector | 0.429 | 0.714 | 0.269 | 0.283 |
-| phase2-baseline | hybrid | 0.607 | 0.714 | 0.357 | 0.387 |
+The graph holds 535,778 case→case edges: A2AJ `cases_cited` lists (French court codes
+mapped to English) plus Supreme Court Reports citations extracted from decision text, which
+A2AJ's neutral-citation lists omit (Baker: 3,207 citing decisions, previously invisible).
 
-Known weakness: foundational SCC authorities (Vavilov, Baker, Kanthasamy, Moore) lose
-to the many FC decisions that apply them — the target of Phase 4's citation-graph
-expansion.
+**Eval set.** 33 scored scenarios, split `tune` (17) / `test` (16): the 15 hand-written
+scenarios whose gold answers are SCC cases, plus 18 drafted from real FC, FCA, TCC, RAD,
+SST, FPSLREB, CHRT, CIRB and CITT decisions (`scripts/draft_eval_scenarios.py`). Weights
+were chosen on `tune` only, requiring neither group to fall below phase 2 and preferring
+the smallest weights among near-ties. None of the gold answers are human-verified yet.
+
+Held-out **test** split (`eval/runs/phase4.json`):
+
+| Pipeline | Recall@10 | Recall@50 | MRR | nDCG@10 |
+|---|---|---|---|---|
+| Hybrid (phase 2) | 0.552 | 0.615 | 0.587 | 0.498 |
+| + graph only | 0.661 | 0.802 | 0.555 | 0.533 |
+| + priors only | 0.552 | 0.677 | 0.643 | 0.535 |
+| + rerank only | 0.552 | 0.615 | 0.565 | 0.490 |
+| **Phase 4 default** | **0.630** | **0.823** | 0.565 | **0.532** |
+
+All 33 scenarios by group, phase 2 → phase 4: SCC-gold nDCG@10 0.361 → 0.537;
+lower-court nDCG@10 0.424 → 0.462 (recall@10 0.417 → 0.532), so boosting authorities did
+not bury lower-court answers. Warm latency: p50 1.1 s, p90 1.4 s (rerank ~0.6 s, BM25 on
+long scenarios ~0.35 s).
+
+Limits: 16 test scenarios is small (one authority moves recall by several points); MRR is
+flat, so the gain is mostly recall and ranking depth rather than the top result; drafted
+scenarios are known-item style, so an equally relevant sibling decision counts as a miss;
+and there is no subsequent-treatment signal (A2AJ has no followed/overruled data), so a
+superseded authority like Dunsmuir can still outrank Vavilov.
 
 ## FILAC briefs and UI (Phase 3)
 
@@ -145,11 +183,12 @@ retriever; interactive docs at `http://localhost:8000/docs`.
 ## Layout
 
 ```
-app/          FastAPI app, settings, DB pool, embeddings, chunking, hybrid retrieval,
-              FILAC extraction + verification, LLM backends
+app/          FastAPI app, settings, DB pool, embeddings, reranker, chunking, citations,
+              retrieval (gather + rank), FILAC extraction + verification, LLM backends
 docker/       custom Postgres image (pgvector + pg_textsearch)
 migrations/   numbered SQL migrations, applied by scripts/migrate.py
-scripts/      migrate, smoke_test, ingest_a2aj, search_cli, eval_retrieval, filac_cli
+scripts/      migrate, smoke_test, ingest_a2aj, load_citations, search_cli, eval_retrieval,
+              draft_eval_scenarios, filac_cli
 ui/           Streamlit MVP (talks to the API over HTTP)
 tests/        pytest unit tests
 eval/         eval scenarios (citations resolved, relevance needs human review) and runs/

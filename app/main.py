@@ -11,19 +11,21 @@ from app.config import settings
 from app.db import get_pool
 from app.embeddings import embed
 from app.llm import LLMError
+from app.reranker import score_pairs
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # Load the model and run one encode so the first request skips CUDA warm-up (~250 ms).
+    # Load both models and run them once so the first request skips CUDA warm-up.
     embed(["warm-up"])
+    score_pairs("warm-up", ["warm-up"])
     pool = get_pool()
     pool.open(wait=True)
     yield
     pool.close()
 
 
-app = FastAPI(title="LawSearch", version="0.3.0", lifespan=lifespan)
+app = FastAPI(title="LawSearch", version="0.4.0", lifespan=lifespan)
 
 CourtCode = Annotated[str, StringConstraints(pattern=r"^[A-Za-z]{2,10}$", to_upper=True)]
 
@@ -66,9 +68,13 @@ class CaseOut(BaseModel):
     decision_date: date | None
     url: str | None
     language: str | None
+    cited_by_count: int
     score: float
     lexical_rank: int | None
     vector_rank: int | None
+    graph_rank: int | None
+    citing_seeds: int
+    rerank_score: float | None
     passages: list[PassageOut]
 
 

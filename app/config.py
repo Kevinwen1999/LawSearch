@@ -12,8 +12,12 @@ class Settings(BaseSettings):
     embedding_dim: int = 1024
     embedding_device: str = "cuda:0"
     embedding_batch_size: int = 64
-    # Chunks are capped at 1500 chars (~400 tokens); this bounds GPU memory per batch.
-    embedding_max_seq_length: int = 512
+    # Chunks are capped at 1500 chars (~400 tokens), so this only affects long scenario
+    # queries, which a 512-token cap was truncating (losing the question at the end).
+    embedding_max_seq_length: int = 1024
+    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    # Query + passage share this budget; at 512 a long scenario squeezed out the passage.
+    reranker_max_length: int = 1024
 
     # "claude-cli" runs `claude -p` on the CLI's own login (fine for local testing);
     # "api" uses the Anthropic SDK with ANTHROPIC_API_KEY. Same prompt, schema and cache.

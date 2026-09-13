@@ -94,7 +94,10 @@ def render_case(rank: int, case: dict) -> None:
         date = case["decision_date"] or "date unknown"
         st.markdown(f"#### {rank}. {case['style_of_cause']}")
         links = f"[Official text]({case['url']})" if case["url"] else "No official link"
-        st.caption(f"{case['citation']} · {case['court']} · {date} · {links}")
+        signals = [f"cited by {case['cited_by_count']:,} decisions in the corpus"]
+        if case["citing_seeds"]:
+            signals.append(f"cited by {case['citing_seeds']} of the top matches")
+        st.caption(f"{case['citation']} · {case['court']} · {date} · {links} · {' · '.join(signals)}")
 
         with st.expander("Matching passages"):
             for passage in case["passages"]:
@@ -104,7 +107,8 @@ def render_case(rank: int, case: dict) -> None:
                     where = f"¶{passage['para_no']}"
                 else:
                     where = f"¶{passage['para_no']}–{passage['para_end']}"
-                st.markdown(f"**{where}** · matched by {' + '.join(passage['matched_by'])}")
+                how = " + ".join("found via citations" if m == "graph" else m for m in passage["matched_by"])
+                st.markdown(f"**{where}** · {how}")
                 st.text(passage["text"])
 
         brief = briefs[case_id]

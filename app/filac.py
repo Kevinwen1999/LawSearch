@@ -16,6 +16,7 @@ import psycopg
 from psycopg.types.json import Jsonb
 
 from app.chunking import MIN_NUMBERED_PARAS, sequential_markers
+from app.citations import case_citations
 from app.config import settings
 from app.llm import get_backend
 
@@ -150,16 +151,7 @@ def load_document(conn: psycopg.Connection, case_id: UUID) -> CaseDocument | Non
     return build_document(meta, row[6] or "", chunks)
 
 
-_NEUTRAL_CITATION = re.compile(r"\b(\d{4})\s+([A-Z][A-Za-z]{1,9})\s+(\d{1,5})\b")
-_SCR_CITATION = re.compile(r"\[(\d{4})\]\s*(\d)\s*S\.?\s*C\.?\s*R\.?\s*(\d{1,4})")
 _QUOTES = str.maketrans({"\u2019": "'", "\u2018": "'", "`": "'", "\u2011": "-", "\u2013": "-", "\u2014": "-"})
-
-
-def case_citations(authority: str) -> list[str]:
-    """Citations in the corpus's own format: '2019 SCC 65', '[1999] 2 SCR 817'."""
-    found = [f"{y} {court} {n}" for y, court, n in _NEUTRAL_CITATION.findall(authority)]
-    found += [f"[{y}] {vol} SCR {page}" for y, vol, page in _SCR_CITATION.findall(authority)]
-    return found
 
 
 def _normalize(text: str) -> str:

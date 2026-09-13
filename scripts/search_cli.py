@@ -27,7 +27,8 @@ def main() -> None:
     timings = ", ".join(f"{name} {ms:.0f} ms" for name, ms in result.timings_ms.items())
     print(f"=== {args.mode}: {len(result.cases)} cases ({timings}) ===")
     for rank, case in enumerate(result.cases, 1):
-        ranks = f"lex {case.lexical_rank or '-'} / vec {case.vector_rank or '-'}"
+        ranks = (f"lex {case.lexical_rank or '-'} / vec {case.vector_rank or '-'} / "
+                 f"graph {case.graph_rank or '-'} / cited by {case.cited_by_count}")
         print(f"{rank:2}. {case.citation} [{case.court}] {case.style_of_cause}  ({ranks})")
         for passage in case.passages[: args.passages]:
             paras = "" if passage.para_no is None else (

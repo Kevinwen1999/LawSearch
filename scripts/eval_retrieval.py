@@ -1,27 +1,53 @@
 """Score case retrieval against eval/scenarios.yaml (implementation-plan.md §6).
 
-    python -m scripts.eval_retrieval                  # lexical, vector, hybrid side by side
-    python -m scripts.eval_retrieval --mode hybrid -v # per-scenario ranks
-    python -m scripts.eval_retrieval --out eval/runs/phase2.json
+    python -m scripts.eval_retrieval                 # compare pipelines on tune and test splits
+    python -m scripts.eval_retrieval --tune          # grid-search RankingConfig on the tune split
+    python -m scripts.eval_retrieval -v --out eval/runs/phase4.json
 
-Only scenarios whose case citations resolved against the corpus are scored, and only
-authorities not flagged in_corpus: false. Gains for nDCG: primary 2, supporting 1.
+Candidates are gathered once per scenario (database + GPU); every ranking config is then
+scored on the same candidates, so comparisons are exact and tuning is cheap.
+
+Scenarios are split into `tune` and `test`. Choose settings on tune; report test. Results
+are also broken out by `group`: scenarios whose gold answers are Supreme Court cases vs
+those drafted from lower-court and tribunal decisions, so a change that helps one by
+burying the other is visible. Gains for nDCG: primary 2, supporting 1.
 """
 
 import argparse
+import itertools
 import json
 import math
+import time
+from dataclasses import asdict, replace
 from datetime import datetime
 from pathlib import Path
 
 import yaml
 
 from app.db import connect
-from app.retrieval import prepare_session, search
+from app.retrieval import DEFAULT_CONFIG, PHASE2_CONFIG, RankingConfig, gather, prepare_session, rank
 
 SCENARIOS = Path(__file__).resolve().parent.parent / "eval" / "scenarios.yaml"
 GAIN = {"primary": 2, "supporting": 1}
 DEPTH = 50
+METRICS = ("recall@10", "recall@50", "mrr", "ndcg@10")
+
+PIPELINES = {
+    "hybrid (phase 2)": PHASE2_CONFIG,
+    "+ graph": replace(PHASE2_CONFIG, graph_weight=1.0),
+    "+ priors": replace(PHASE2_CONFIG, court_weight=0.004, citation_weight=0.004),
+    "+ rerank": replace(PHASE2_CONFIG, rerank_weight=1.0),
+    "default (phase 4)": DEFAULT_CONFIG,
+}
+
+GRID = {
+    "graph_weight": [0.0, 0.5, 1.0, 2.0],
+    "seed_cases": [10, 20, 30],
+    "court_weight": [0.0, 0.002, 0.004, 0.008],
+    "citation_weight": [0.0, 0.002, 0.004, 0.008],
+    "rerank_weight": [0.0, 0.5, 1.0, 2.0, 4.0],
+    "rerank_depth": [20, 40],
+}
 
 
 def load_scenarios(max_phase: int) -> list[dict]:
@@ -30,22 +56,23 @@ def load_scenarios(max_phase: int) -> list[dict]:
     for s in data["scenarios"]:
         if s["phase"] > max_phase or not s.get("citations_resolved"):
             continue
-        gold = [
-            a for a in s["expected_authorities"]
-            if a["kind"] == "case" and a.get("in_corpus", True)
-        ]
+        gold = [a for a in s["expected_authorities"] if a["kind"] == "case" and a.get("in_corpus", True)]
         if gold:
-            scored.append({**s, "gold": gold})
+            group = "lower-court" if s.get("source") == "drafted-from-decision" else "scc-gold"
+            scored.append({**s, "gold": gold, "group": group, "split": s.get("split", "tune")})
     return scored
 
 
+def _matches(authority: dict, result) -> bool:
+    if authority.get("court") and authority["court"] != result.court:
+        return False
+    return authority["citation"] in (result.citation, result.citation2)
+
+
 def score_scenario(gold: list[dict], results: list) -> dict:
-    ranks = {}
-    for authority in gold:
-        cit = authority["citation"]
-        ranks[cit] = next(
-            (i for i, c in enumerate(results, 1) if cit in (c.citation, c.citation2)), None
-        )
+    ranks = {
+        a["citation"]: next((i for i, r in enumerate(results, 1) if _matches(a, r)), None) for a in gold
+    }
 
     def recall(k: int) -> float:
         return sum(1 for r in ranks.values() if r and r <= k) / len(gold)
@@ -53,12 +80,10 @@ def score_scenario(gold: list[dict], results: list) -> dict:
     first = min((r for r in ranks.values() if r), default=None)
     dcg = sum(
         GAIN[a["relevance"]] / math.log2(ranks[a["citation"]] + 1)
-        for a in gold
-        if ranks[a["citation"]] and ranks[a["citation"]] <= 10
+        for a in gold if ranks[a["citation"]] and ranks[a["citation"]] <= 10
     )
     ideal = sorted((GAIN[a["relevance"]] for a in gold), reverse=True)[:10]
     idcg = sum(g / math.log2(i + 2) for i, g in enumerate(ideal))
-
     return {
         "ranks": ranks,
         "recall@10": recall(10),
@@ -68,46 +93,121 @@ def score_scenario(gold: list[dict], results: list) -> dict:
     }
 
 
+def evaluate(scenarios: list[dict], gathered: dict, config: RankingConfig) -> list[dict]:
+    rows = []
+    for s in scenarios:
+        candidates = gathered[s["id"]]
+        results = [candidates.meta[h.case_id] for h in rank(candidates, config)[:DEPTH]]
+        rows.append({"id": s["id"], "split": s["split"], "group": s["group"], **score_scenario(s["gold"], results)})
+    return rows
+
+
+def summarize(rows: list[dict], **where) -> dict:
+    subset = [r for r in rows if all(r[k] == v for k, v in where.items())]
+    if not subset:
+        return {}
+    return {"n": len(subset), **{m: sum(r[m] for r in subset) / len(subset) for m in METRICS}}
+
+
+def print_table(title: str, named_rows: dict[str, list[dict]], **where) -> None:
+    print(f"\n{title}")
+    print(f"  {'pipeline':22} {'n':>3} " + " ".join(f"{m:>10}" for m in METRICS))
+    for name, rows in named_rows.items():
+        s = summarize(rows, **where)
+        if s:
+            print(f"  {name:22} {s['n']:3d} " + " ".join(f"{s[m]:10.3f}" for m in METRICS))
+
+
+NEAR_TIE = 0.01
+
+
+def _weight_size(config: RankingConfig) -> float:
+    # Priors live on the RRF score scale (~1/60), so rescale them before comparing.
+    return config.graph_weight + config.rerank_weight + 100 * (config.court_weight + config.citation_weight)
+
+
+def tune(scenarios: list[dict], gathered: dict) -> RankingConfig:
+    """Pick weights on the tune split only, conservatively.
+
+    With ~17 tune scenarios the single best config overfits, so the rule is:
+    1. never lower either group's tune nDCG@10 below the phase 2 pipeline;
+    2. among configs within NEAR_TIE of the best eligible nDCG@10, take the smallest weights.
+    """
+    groups = sorted({s["group"] for s in scenarios})
+    baseline = evaluate(scenarios, gathered, PHASE2_CONFIG)
+    floor = {g: summarize(baseline, split="tune", group=g)["ndcg@10"] for g in groups}
+
+    keys = list(GRID)
+    configs = [RankingConfig(**dict(zip(keys, values))) for values in itertools.product(*GRID.values())]
+    started = time.monotonic()
+    eligible = []
+    for config in configs:
+        rows = evaluate(scenarios, gathered, config)
+        if all(summarize(rows, split="tune", group=g)["ndcg@10"] >= floor[g] for g in groups):
+            eligible.append((summarize(rows, split="tune")["ndcg@10"], config))
+    print(f"\ngrid: {len(configs)} configs, {len(eligible)} keep both groups at or above phase 2 on tune "
+          f"({time.monotonic() - started:.0f}s)")
+
+    best = max(ndcg for ndcg, _ in eligible)
+    near = sorted((c for ndcg, c in eligible if ndcg >= best - NEAR_TIE), key=_weight_size)
+    chosen = near[0]
+    print(f"best eligible tune nDCG@10 {best:.3f}; {len(near)} configs within {NEAR_TIE}; "
+          f"choosing the smallest weights: {asdict(chosen)}")
+    return chosen
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--mode", nargs="+", choices=["lexical", "vector", "hybrid"],
-                        default=["lexical", "vector", "hybrid"])
     parser.add_argument("--max-phase", type=int, default=1, help="include scenarios up to this phase")
-    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("--tune", action="store_true", help="grid-search ranking weights on the tune split")
+    parser.add_argument("-v", "--verbose", action="store_true", help="per-scenario gold ranks")
     parser.add_argument("--out", type=Path, help="write per-scenario results as JSON")
     args = parser.parse_args()
 
     scenarios = load_scenarios(args.max_phase)
-    print(f"scoring {len(scenarios)} scenarios, depth {DEPTH}\n")
+    splits = {sp: sum(s["split"] == sp for s in scenarios) for sp in ("tune", "test")}
+    print(f"scoring {len(scenarios)} scenarios ({splits}), depth {DEPTH}")
 
-    report = {"run_at": datetime.now().isoformat(timespec="seconds"), "modes": {}}
+    started = time.monotonic()
+    gathered, lexical_only, vector_only = {}, {}, {}
     with connect() as conn:
         prepare_session(conn)
-        for mode in args.mode:
-            rows = []
-            for s in scenarios:
-                result = search(conn, s["scenario"], k=DEPTH, mode=mode)
-                rows.append({"id": s["id"], **score_scenario(s["gold"], result.cases)})
-            summary = {
-                metric: sum(r[metric] for r in rows) / len(rows)
-                for metric in ("recall@10", "recall@50", "mrr", "ndcg@10")
-            }
-            report["modes"][mode] = {"summary": summary, "scenarios": rows}
+        for s in scenarios:
+            gathered[s["id"]] = gather(conn, s["scenario"], mode="hybrid")
+            lexical_only[s["id"]] = gather(conn, s["scenario"], mode="lexical")
+            vector_only[s["id"]] = gather(conn, s["scenario"], mode="vector")
+    print(f"gathered candidates in {time.monotonic() - started:.0f}s")
 
-    metrics = ("recall@10", "recall@50", "mrr", "ndcg@10")
-    print(f"{'mode':8} " + " ".join(f"{m:>10}" for m in metrics))
-    for mode, data in report["modes"].items():
-        print(f"{mode:8} " + " ".join(f"{data['summary'][m]:10.3f}" for m in metrics))
+    named = {
+        "lexical only": evaluate(scenarios, lexical_only, PHASE2_CONFIG),
+        "vector only": evaluate(scenarios, vector_only, PHASE2_CONFIG),
+        **{name: evaluate(scenarios, gathered, config) for name, config in PIPELINES.items()},
+    }
+
+    if args.tune:
+        best = tune(scenarios, gathered)
+        named["tuned (best on tune)"] = evaluate(scenarios, gathered, best)
+        print(f"\nbest config: {best}")
+
+    for split in ("tune", "test"):
+        print_table(f"== {split} split ==", named, split=split)
+    for group in ("scc-gold", "lower-court"):
+        print_table(f"== all scenarios, group {group} ==", named, group=group)
 
     if args.verbose:
-        for mode, data in report["modes"].items():
-            print(f"\n--- {mode}: rank of each gold authority (- = not in top {DEPTH}) ---")
-            for row in data["scenarios"]:
+        for name in ("hybrid (phase 2)", "default (phase 4)"):
+            print(f"\n--- {name}: rank of each gold authority (- = not in top {DEPTH}) ---")
+            for row in named[name]:
                 ranks = ", ".join(f"{c} @{r or '-'}" for c, r in row["ranks"].items())
-                print(f"  {row['id']:13} {ranks}")
+                print(f"  {row['id']:14} [{row['split']}] {ranks}")
 
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
+        report = {
+            "run_at": datetime.now().isoformat(timespec="seconds"),
+            "pipelines": {name: {"tune": summarize(rows, split="tune"), "test": summarize(rows, split="test"),
+                                 "scenarios": rows} for name, rows in named.items()},
+        }
         args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")
         print(f"\nwrote {args.out}")
 

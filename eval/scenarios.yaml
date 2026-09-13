@@ -43,13 +43,26 @@ scenarios:
         kind: case
         relevance: primary
         in_corpus: false
+      - citation: "2020 FC 428"
+        name: Leon v Canada (Citizenship and Immigration)
+        kind: case
+        relevance: primary
+      - citation: "2010 FC 263"
+        name: Calderon v Canada (Citizenship and Immigration)
+        kind: case
+        relevance: supporting
+      - citation: "2016 FC 1142"
+        name: Okechukwu v Canada (Citizenship and Immigration)
+        kind: case
+        relevance: supporting
     notes: >
-      Both leading authorities predate the corpus (FC/FCA coverage starts 2001), so this
-      scenario cannot be scored as written. 905 FC/FCA decisions in the corpus cite
-      Rasaratnam — replace these with post-2001 decisions applying the two-prong internal
-      flight alternative test, chosen from the corpus rather than from recall.
-    citations_resolved: false
+      Rasaratnam and Thirunavukkarasu predate the corpus (FC/FCA coverage starts 2001).
+      Replacements chosen from the corpus: the post-2001 FC decisions stating the two-prong
+      IFA test that are most cited by other IFA decisions (Leon 118, Calderon 95,
+      Okechukwu 101 citing IFA decisions); each was checked to set out the test.
+    citations_resolved: true
     verified: false
+    split: tune
 
   - id: imm-002
     phase: 1
@@ -71,6 +84,7 @@ scenarios:
         relevance: primary
     citations_resolved: true
     verified: false
+    split: test
 
   - id: admin-001
     phase: 1
@@ -92,6 +106,7 @@ scenarios:
         note: largely superseded by Vavilov — a good test of whether ranking prefers current law
     citations_resolved: true
     verified: false
+    split: tune
 
   - id: admin-002
     phase: 1
@@ -112,6 +127,7 @@ scenarios:
         relevance: supporting
     citations_resolved: true
     verified: false
+    split: test
 
   - id: tax-001
     phase: 1
@@ -132,6 +148,7 @@ scenarios:
         relevance: supporting
     citations_resolved: true
     verified: false
+    split: tune
 
   - id: tax-002
     phase: 1
@@ -156,6 +173,7 @@ scenarios:
         relevance: supporting
     citations_resolved: true
     verified: false
+    split: test
 
   - id: neg-001
     phase: 1
@@ -176,6 +194,7 @@ scenarios:
         relevance: primary
     citations_resolved: true
     verified: false
+    split: tune
 
   - id: neg-002
     phase: 1
@@ -196,6 +215,7 @@ scenarios:
         relevance: supporting
     citations_resolved: true
     verified: false
+    split: test
 
   - id: contract-001
     phase: 1
@@ -216,6 +236,7 @@ scenarios:
         relevance: primary
     citations_resolved: true
     verified: false
+    split: tune
 
   - id: contract-002
     phase: 1
@@ -236,6 +257,7 @@ scenarios:
         relevance: supporting
     citations_resolved: true
     verified: false
+    split: test
 
   - id: employ-001
     phase: 1
@@ -252,6 +274,7 @@ scenarios:
         relevance: primary
     citations_resolved: true
     verified: false
+    split: tune
 
   - id: employ-002
     phase: 1
@@ -272,6 +295,7 @@ scenarios:
         relevance: primary
     citations_resolved: true
     verified: false
+    split: test
 
   - id: crim-001
     phase: 1
@@ -291,6 +315,7 @@ scenarios:
         relevance: supporting
     citations_resolved: true
     verified: false
+    split: tune
 
   - id: crim-002
     phase: 1
@@ -311,6 +336,7 @@ scenarios:
         relevance: supporting
     citations_resolved: true
     verified: false
+    split: test
 
   - id: hr-001
     phase: 1
@@ -331,6 +357,7 @@ scenarios:
         relevance: primary
     citations_resolved: true
     verified: false
+    split: tune
 
   - id: on-001
     phase: 7
@@ -351,6 +378,7 @@ scenarios:
         note: deliberately left blank — fill from the corpus rather than from recall
     citations_resolved: false
     verified: false
+    split: test
 
   - id: on-002
     phase: 7
@@ -375,3 +403,806 @@ scenarios:
         relevance: supporting
     citations_resolved: false
     verified: false
+    split: tune
+
+  # ---- Drafted from real lower-court and tribunal decisions (scripts/draft_eval_scenarios.py).
+  # Gold = the source decision (primary) + authorities it applies that resolve in the corpus.
+  # Known-item scenarios: an equally relevant sibling decision scores as a miss.
+  - id: lc-fc-01
+    phase: 1
+    jurisdiction: federal
+    area: administrative law / judicial review — procedural fairness and disclosure in federal passport
+      revocation and refusal of passport services
+    source: drafted-from-decision
+    drafted_from: 2016 FC 526
+    scenario: 'My client held a Canadian passport issued in the name he has used for years, and he renewed
+      it without difficulty. The federal passport authority then opened an investigation after a provincial
+      ID office flagged him, and it wrote to him saying it believed he had obtained the passport by giving
+      false or misleading information under an assumed identity, and that he also stood charged with an
+      indictable offence for breaching a release condition. The letters set out a summary of what the investigators
+      said they had found and invited him to respond; he replied through a representative with a superior
+      court order permitting a delayed birth registration, the resulting birth registration, and a sworn
+      declaration, all in the name he uses. A second letter told him his material did not neutralize the
+      findings, and the director then revoked the passport and cut him off from passport services for about
+      five years. When the full record was produced for the court challenge, it turned out to contain things
+      he had never seen: facial recognition comparison results that matched his photo to the passports in
+      his current name but not to the earlier passports in the other name, police and provincial investigator
+      emails, an incomplete internal investigation report, and references to several other criminal charges
+      that were never put to him in either letter. Was the passport program required to disclose all of
+      that material to him before deciding, and if it was not disclosed, can the revocation and the multi-year
+      refusal of services stand?'
+    legal_question: In a passport revocation and refusal-of-services decision, does the duty of procedural
+      fairness require the passport authority to disclose to the affected person all material facts gathered
+      in its investigation — including potentially exculpatory evidence and allegations not put in the notice
+      letters — before a decision-maker rules, and what is the consequence of failing to do so?
+    expected_authorities:
+    - citation: 2016 FC 526
+      name: Lipskaia v. Canada (Attorney General)
+      kind: case
+      relevance: primary
+      court: FC
+    - citation: 2008 FC 338
+      kind: case
+      relevance: supporting
+      court: FC
+    - citation: 2012 FC 642
+      kind: case
+      relevance: supporting
+      court: FC
+    - citation: 2013 FC 1044
+      kind: case
+      relevance: supporting
+      court: FC
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-fc-02
+    phase: 1
+    jurisdiction: federal
+    area: immigration and refugee law / judicial review of RAD decision / internal flight alternative
+    source: drafted-from-decision
+    drafted_from: 2020 FC 799
+    scenario: My client is a woman from a large West African city who came to Canada with her two young
+      daughters after her husband's extended family insisted the girls undergo female genital mutilation
+      and, following a death in the family, accused her of witchcraft on the word of a traditional oracle.
+      The family reported her to the police, who questioned her husband for about two hours about where
+      she was; there has been no further contact from the police in the roughly ten months since. She says
+      one of her husband's uncles helps politicians during campaigns and could use those connections to
+      find her anywhere, and that the national police computer network would let officers locate her in
+      any city. The refugee appeal tribunal found she could safely live in another major city far from her
+      home region, saying her evidence about the uncle's reach was thin and inconsistent, that her husband's
+      very short supporting affidavit said nothing about the uncle or the interrogation, and that discrimination
+      against people who are not indigenous to that city, plus the high cost of living, did not make relocation
+      unreasonable given her education and the family's successful business. It gave little weight to a
+      psychologist's report diagnosing depression and PTSD because it rested on a single one-hour assessment
+      by a non-treating clinician. She wants to know whether a court will set aside that relocation finding
+      on the basis that she was held to too high a standard of proof, that her sworn word should have been
+      presumed true without corroboration, and that her mental health and the country condition evidence
+      were brushed aside.
+    legal_question: On reasonableness review, what must a refugee claimant establish to defeat a proposed
+      internal flight alternative — particularly the threshold on the second prong, the role of the presumption
+      of truthfulness and the absence of corroboration, and the treatment of a psychological report and
+      country condition evidence of discrimination against non-indigenes?
+    expected_authorities:
+    - citation: 2020 FC 799
+      name: Olusola v. Canada (Citizenship and Immigration)
+      kind: case
+      relevance: primary
+      court: FC
+    - citation: 2017 FC 643
+      kind: case
+      relevance: supporting
+      court: FC
+    citations_resolved: true
+    verified: false
+    split: test
+  - id: lc-fc-03
+    phase: 1
+    jurisdiction: federal
+    area: immigration and refugee law / judicial review of RAD credibility and implausibility findings
+    source: drafted-from-decision
+    drafted_from: 2020 FC 901
+    scenario: 'My client is a young man who holds citizenship in two Middle Eastern countries and claimed
+      refugee protection here after fleeing the one where he had been living. He says an armed political-militia
+      group spent about two years pressuring him by phone to join their fighters in a neighbouring country''s
+      war, escalating from appeals to duty and offers of money to threats, and that he repeatedly changed
+      his phone number, his job and his address in the capital to avoid them. The final incident he describes
+      is masked men with machine guns forcing their way into his mother''s home and trying to drag him out,
+      who left empty-handed and injured his mother after she and his sister fought them off. The Board''s
+      appeal division rejected the claim as implausible: it relied on country-condition material in the
+      national documentation package in which numerous academics, embassy staff and NGO observers said the
+      group does not forcibly recruit, and it discounted a single expert''s reference to "anecdotal evidence"
+      of forced recruitment occurring mainly in rural areas, noting my client lived in urban districts.
+      It also found his account internally improbable — that a group with that intelligence and military
+      capacity could not find him for two years, then abandoned an armed abduction because two women intervened
+      — and said his supporting medical report, leases and family letters did not corroborate the recruitment
+      allegation. Two recent Federal Court decisions on the very same country evidence and a similar recruitment
+      allegation found the Board''s reasoning unreasonable; my client wants to know whether a court will
+      set this decision aside on the same basis, and what "implausibility findings only in the clearest
+      of cases" actually requires of the Board.'
+    legal_question: On reasonableness review, when is a refugee tribunal's implausibility-based credibility
+      finding sustainable — specifically, does the "clearest of cases" standard displace the claimant's
+      balance-of-probabilities burden or impose an impossibility threshold, and does discounting an expert's
+      "anecdotal" evidence of forced recruitment, standing alone, make the decision unreasonable where the
+      tribunal also weighed the broader country evidence and the claimant's own narrative cumulatively?
+    expected_authorities:
+    - citation: 2020 FC 901
+      name: Al Dya v. Canada (Citizenship and Immigration)
+      kind: case
+      relevance: primary
+      court: FC
+    - citation: 2001 FCT 776
+      kind: case
+      relevance: supporting
+      court: FC
+    - citation: 2019 SCC 65
+      kind: case
+      relevance: supporting
+      court: SCC
+    - citation: 2019 FC 908
+      kind: case
+      relevance: supporting
+      court: FC
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-fc-04
+    phase: 1
+    jurisdiction: federal
+    area: immigration law / spousal sponsorship — genuineness of marriage under s. 4(1) of the Regulations
+    source: drafted-from-decision
+    drafted_from: 2018 FC 657
+    scenario: 'My client is a woman in her thirties from South Asia who came to Canada on a temporary work
+      permit and later married a Canadian citizen roughly twenty years her senior. He was born abroad, came
+      to Canada through a spousal sponsorship himself decades ago, and has since married and filed sponsorship
+      or spousal applications for four other women from the same country — one of those earlier applications
+      was refused on marriage-of-convenience grounds. My client began living with him while he was still
+      legally married to his previous wife; he divorced her and married my client a few weeks later, and
+      they now have a baby daughter together. At an in-person interview the officer questioned them separately
+      and then together and flagged a series of inconsistencies: neither could say what region of the country
+      the other came from, they gave different accounts of when they met, when they began cohabiting, where
+      they went on their honeymoon and their last vacation, and my client did not know her husband''s work
+      schedule. The officer refused the application, relying heavily on the husband''s marital and sponsorship
+      history and on the couple''s demeanour and body language, and my clients say the officer had made
+      up her mind before they walked in and treated them like criminals from the moment she warned them
+      to answer truthfully. Can the refusal be set aside on judicial review — was the officer entitled to
+      weigh the sponsor''s past marriages and divorces, and doesn''t the birth of their child establish
+      that the marriage is genuine?'
+    legal_question: On reasonableness review of a refusal under s. 4(1) of the IRP Regulations, may an officer
+      rely on a sponsor's history of prior marriages, divorces and spousal sponsorship applications, together
+      with interview discrepancies and demeanour, to find a marriage not genuine — and what evidence is
+      needed to rebut the presumption that the officer acted in good faith?
+    expected_authorities:
+    - citation: 2018 FC 657
+      name: Kaur v. Canada (Citizenship and Immigration)
+      kind: case
+      relevance: primary
+      court: FC
+    - citation: 2018 FC 32
+      kind: case
+      relevance: supporting
+      court: FC
+    - citation: 2017 FC 999
+      kind: case
+      relevance: supporting
+      court: FC
+    - citation: 2013 FC 1065
+      kind: case
+      relevance: supporting
+      court: FC
+    citations_resolved: true
+    verified: false
+    split: test
+  - id: lc-fca-01
+    phase: 1
+    jurisdiction: federal
+    area: patent law / pharmaceutical regulatory — utility, promise of the patent, sound prediction, scope
+      of notice of allegation
+    source: drafted-from-decision
+    drafted_from: 2012 FCA 103
+    scenario: 'Our client is a generic drug manufacturer that filed an abbreviated submission with the federal
+      health regulator to market a copy of a brand-name oral medication used to treat symptoms of Alzheimer''s-type
+      dementia. It served a notice challenging the validity of the listed compound patent, and the brand
+      company and the foreign patent owner responded by applying to court to block approval until the patent
+      expires. The patent was filed in the late 1980s based only on animal testing — the active compound
+      had never been tried in humans — and it claims both the compound itself and a composition for treating
+      senile dementia. After the innovator disclosed its underlying lab records, our client discovered that
+      some data reported in the patent did not match the actual experiments: a test described as run on
+      one rodent species'' brain tissue was in fact run on another''s, a dosing and timing description in
+      a learning-impairment study was wrong, and a toxicity figure stated in the patent was an extrapolation
+      rather than a dose actually administered. Our client also says the patent''s text talks up the compound
+      as having low toxicity and lasting longer and being safer than two older drugs in the field, so the
+      patent should be read as promising those things and should fall because nothing in it could support
+      such a prediction. Two problems: the accuracy-of-the-data argument was never spelled out in the original
+      notice we served, because we didn''t have the lab records yet, and the judge raised the adequacy of
+      our notice on his own at the hearing. Can we get the patent knocked out on these grounds?'
+    legal_question: In a summary drug-approval prohibition proceeding, (i) can a generic raise a disclosure/accuracy
+      attack not pleaded in its notice of allegation, and are minor data-reporting errors material to whether
+      the patent discloses a factual basis for a sound prediction; and (ii) when do statements in a patent's
+      disclosure about low toxicity and advantages over prior art compounds form part of the patent's "promise"
+      for utility purposes?
+    expected_authorities:
+    - citation: 2012 FCA 103
+      name: Mylan Pharmaceuticals ULC v. Pfizer Canada Inc.
+      kind: case
+      relevance: primary
+      court: FCA
+    - citation: 2002 SCC 77
+      kind: case
+      relevance: supporting
+      court: SCC
+    - citation: 2010 FCA 197
+      kind: case
+      relevance: supporting
+      court: FCA
+    - citation: 2011 FCA 236
+      kind: case
+      relevance: supporting
+      court: FCA
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-fca-02
+    phase: 1
+    jurisdiction: federal
+    area: public service staffing / abuse of authority in an internal appointment process; judicial review
+      of a labour and employment board
+    source: drafted-from-decision
+    drafted_from: 2018 FCA 97
+    scenario: My client spent about twelve years as a front-line officer in the federal department that
+      administers immigration, and he applied in a large internal competition to be appointed as an adjudicator
+      at the federal tribunal that hears protection claims. The posting required "recent" experience either
+      in decision-making in a judicial or quasi-judicial setting or in conducting research or inquiries
+      in a judicial or quasi-judicial setting or in immigration, but it never said how much experience or
+      how "recent" was measured; only after he was screened out did he learn the department had internally
+      fixed it at twelve months within the past five years, and had given screening committees a reference
+      guide and a chart listing which job classifications counted. The chart said that officers doing pre-removal
+      risk assessments make quasi-judicial decisions while front-line immigration officers make purely administrative
+      ones, so only the four months he had recently spent in the risk-assessment role was credited and his
+      dozen years of interviewing, admissibility determinations, criminal-equivalency analysis and database
+      inquiries counted for nothing. He believes the two jobs do essentially the same work — both officers
+      act as ministerial delegates under the same statute — and he points to court decisions saying risk-assessment
+      officers are not a quasi-judicial body, plus union-management minutes suggesting the criteria were
+      shaped to protect risk-assessment officers whose positions were about to be eliminated by pending
+      legislative reform. He also asked for an informal discussion after being screened out and offered
+      further detail about his duties, but the employer would not reconsider, even though some other candidates
+      were allowed to continue. He wants to know whether a staffing complaint of abuse of authority can
+      succeed where the employer used unpublished screening definitions and a chart pre-classifying job
+      titles as qualifying or not, and whether a reviewing court will second-guess the board's acceptance
+      of the employer's explanation.
+    legal_question: Does an employer abuse its authority under the merit provisions of the public service
+      staffing legislation when it defines "recent experience" only in unpublished screening tools and uses
+      a chart designating some job classifications as quasi-judicial and others as merely administrative,
+      and how much deference does a reviewing court owe the board's findings that the screening committee's
+      discretion was not fettered and that the candidate's written application did not establish the required
+      experience?
+    expected_authorities:
+    - citation: 2018 FCA 97
+      name: Jean Pierre v. Canada (Immigration and Refugee Board)
+      kind: case
+      relevance: primary
+      court: FCA
+    - citation: 2009 FC 684
+      kind: case
+      relevance: supporting
+      court: FC
+    - citation: 2008 SCC 9
+      kind: case
+      relevance: supporting
+      court: SCC
+    - citation: 2011 SCC 62
+      kind: case
+      relevance: supporting
+      court: SCC
+    citations_resolved: true
+    verified: false
+    split: test
+  - id: lc-fca-03
+    phase: 1
+    jurisdiction: federal
+    area: administrative law / judicial review — mootness, declaratory relief, and the appellate standard
+      of review of a discretionary refusal to hear a moot case
+    source: drafted-from-decision
+    drafted_from: 2023 FCA 219
+    scenario: During a public-health emergency, my clients — a group of unvaccinated travellers, including
+      a former elected official — were barred from boarding domestic flights and passenger trains by a series
+      of temporary federal orders that were repeatedly re-issued over about eight months. They brought judicial
+      review applications arguing the orders exceeded the Minister's statutory authority and breached their
+      Charter rights, and they built a substantial record (expert reports, many affidavits, weeks of cross-examinations)
+      before the hearing date. The government then lifted the travel measures and moved to strike the applications
+      as moot; the applications judge agreed the cases were moot and declined to hear them in any event.
+      My clients say a live controversy remains because they seek declarations that would support separate
+      damages claims, because the measures were only suspended and could be reimposed at any time, and because
+      short-lived measures that keep getting re-issued will always evade review. They also say the public
+      importance of the issues and the resources already invested should have tipped the discretion the
+      other way. On appeal, how much room is there to set aside a first-instance ruling that a repealed
+      emergency measure case is moot and not worth hearing?
+    legal_question: Where the impugned government measure has been repealed, does a request for declaratory
+      relief (including declarations said to be useful in a future damages action) preserve a live controversy,
+      and on what standard may an appellate court review the first-instance court's refusal to exercise
+      its discretion to hear the moot application despite arguments of judicial economy, public importance,
+      and evasiveness of review?
+    expected_authorities:
+    - citation: 2023 FCA 219
+      name: Peckford v. Canada (Attorney General)
+      kind: case
+      relevance: primary
+      court: FCA
+    - citation: 2002 SCC 33
+      kind: case
+      relevance: supporting
+      court: SCC
+    - citation: 2020 FC 1181
+      kind: case
+      relevance: supporting
+      court: FC
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-tcc-01
+    phase: 1
+    jurisdiction: federal
+    area: tax / individual residence for child benefit eligibility
+    source: drafted-from-decision
+    drafted_from: 2010 TCC 658
+    scenario: My client was born, raised and schooled in Canada and left in his early twenties to marry
+      a foreign citizen and enrol in a specialized full-time religious training program that is only offered
+      overseas; he has now been abroad continuously in that program for about sixteen years, living with
+      his wife and children in an apartment his in-laws bought for them, with the children in local schools
+      and local doctors. He kept a furnished apartment available to him rent-free in his parents' Canadian
+      home, left his books and possessions there, kept Canadian bank and investment accounts, a registered
+      education plan, provincial health coverage, his synagogue and mentor relationships, party membership
+      and voting, holds only a Canadian passport, has never filed a foreign tax return, and has a standing
+      offer of a teaching post in Canada once he finishes. The tax authority clawed back two years of child
+      benefits, first saying his wife (who never lived in Canada) could not validly declare him the primary
+      caregiver, then abandoning that at the hearing and arguing instead that he himself was not resident
+      in Canada in the relevant base years — an argument never raised at the objection stage, and the Crown's
+      own pleaded assumption was that he was resident. He says nothing about his circumstances changed at
+      any identifiable moment after he left, and the revenue agency had earlier written to him confirming
+      he remained a factual resident while studying, though his application for that letter understated
+      how long he had been away. Can an unbroken absence of this length purely to complete full-time studies,
+      with all Canadian ties maintained and a firm intention to return, cost him Canadian residence — and
+      who has to prove it when the residence issue surfaces only at trial?
+    legal_question: Does a Canadian who remains outside Canada for well over a decade solely to complete
+      continuous full-time studies, while retaining a dwelling available to him, financial, social and civic
+      ties, and a demonstrated intention (and job offer) to return, cease to be "resident" or "ordinarily
+      resident" in Canada for purposes of the eligible-individual definition governing child benefits —
+      and where the Crown raises non-residence for the first time in the appeal contrary to its own pleaded
+      assumption, does the burden of proof fall on the Crown?
+    expected_authorities:
+    - citation: 2010 TCC 658
+      name: Perlman v. The Queen
+      kind: case
+      relevance: primary
+      court: TCC
+    citations_resolved: true
+    verified: false
+    split: test
+  - id: lc-tcc-02
+    phase: 1
+    jurisdiction: federal
+    area: tax litigation / pleadings — motion to strike Crown's reply, assumptions of fact, deductibility
+      of settlement payments
+    source: drafted-from-decision
+    drafted_from: 2011 TCC 568
+    scenario: Our client is a large Canadian financial institution. Through foreign affiliates it took part
+      in structured financing deals with a major energy company that later collapsed amid an accounting
+      scandal, and it was named in a securities class action and in claims brought by the collapsed company's
+      bankruptcy estate. It settled both suits for several billion dollars, with no court ever ruling on
+      whether it had actually done anything wrong, and deducted the settlement payments, interest and legal
+      fees as business expenses. The Minister denied the deductions, and when we appealed, the Crown filed
+      a reply running more than eighty pages, roughly seventy of which are assumptions of fact — repeatedly
+      characterizing the financings as "disguised loans," asserting that the client knowingly aided fraud
+      and falsified financial statements, reciting at length the conduct and internal affairs of the energy
+      company and other third parties, quoting from the U.S. pleadings, and naming employees who were dismissed.
+      The Crown's theory is that conduct so "egregious or repulsive" bars deduction regardless of income-earning
+      purpose, and by pleading all of this as assumptions it would put the burden on our client to disprove
+      fraud it was never found to have committed. Can we get the whole reply struck, or at least force the
+      Crown to remove the fraud characterizations, the third-party material and the pages of evidence, and
+      is the "egregious or repulsive" theory itself doomed enough to be struck out now?
+    legal_question: On a motion to strike under Rule 53 of the Tax Court of Canada Rules (General Procedure),
+      when will a Crown reply be struck in whole or in part for pleading conclusions of law or mixed fact
+      and law, evidence rather than material facts, scandalous or prejudicial allegations of fraud, and
+      assumptions about third parties outside the taxpayer's knowledge — and can a novel legal theory such
+      as the "egregious or repulsive" limit on deductibility be struck as having no reasonable prospect
+      of success?
+    expected_authorities:
+    - citation: 2011 TCC 568
+      name: Canadian Imperial Bank of Commerce v. The Queen
+      kind: case
+      relevance: primary
+      court: TCC
+    - citation: 2007 TCC 742
+      kind: case
+      relevance: supporting
+      court: TCC
+    - citation: 2011 SCC 42
+      kind: case
+      relevance: supporting
+      court: SCC
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-tcc-03
+    phase: 1
+    jurisdiction: federal
+    area: Aboriginal law / income tax — Indian Act s. 87 tax exemption, Charter and s. 35 constitutional
+      challenges, motion to strike pleadings
+    source: drafted-from-decision
+    drafted_from: 2013 TCC 303
+    scenario: Two clients are registered status Indians, each a member of a different First Nation, who
+      lived and worked in a large city during the years in issue. They were employed through a placement
+      agency that hired out Indigenous workers to urban social service organizations; one worked part-time
+      as an Indigenous support worker and the other at an Indigenous legal clinic. They did not report that
+      employment income, and the tax authority reassessed them on the basis that the income was not situated
+      on a reserve and so fell outside the Indian Act exemption. Acting for themselves, they filed appeals
+      arguing that Indigenous people have never agreed to be taxed and were never consulted, that no constitutional
+      conference was ever convened on Indigenous taxation, that the Crown breached its fiduciary duty and
+      duty to consult, that taxing off-reserve earnings discriminates against Indigenous people who work
+      off-reserve and interferes with their right to earn a living anywhere in the country, and that the
+      tax court has no jurisdiction over inherent Indigenous rights. The Crown has moved to strike the appeals
+      and the constitutional notice outright, saying they raise nothing that could ever succeed. Can these
+      constitutional and inherent-rights arguments survive a motion to strike so that they get a hearing
+      on the merits?
+    legal_question: Is it plain and obvious that claims by status Indians to a general inherent or treaty-based
+      immunity from income tax — and related arguments that limiting the Indian Act exemption to property
+      situated on a reserve breaches ss. 6, 15 and 25 of the Charter, ss. 35 and 35.1 of the Constitution
+      Act, 1982, the Crown's fiduciary duty and duty to consult, and UNDRIP — disclose no reasonable cause
+      of action and should be struck?
+    expected_authorities:
+    - citation: 2013 TCC 303
+      name: Sackaney v. The Queen
+      kind: case
+      relevance: primary
+      court: TCC
+    citations_resolved: true
+    verified: false
+    split: test
+  - id: lc-rad-01
+    phase: 1
+    jurisdiction: federal
+    area: immigration and refugee law / refugee appeal — admissibility of new evidence on appeal (s. 110(4)
+      IRPA) and standard of review of first-level credibility findings
+    source: drafted-from-decision
+    drafted_from: TB4-03249
+    scenario: My client is a national of a former Soviet republic who says he had been an active member
+      of an opposition political party since his teens, including in a supervisory role organizing outreach
+      about the party platform. After his party lost the national election, he says security officials beat
+      and threatened him, told him to stop his political activity, and pressured him to give evidence against
+      a former party official; he eventually paid a smuggler to get him to Canada and claimed protection.
+      The first-level refugee tribunal refused the claim, finding he had not credibly established the political
+      profile he alleged — it relied on shifting testimony about when he was last active, an inconsistency
+      between his port-of-entry statement and his testimony about whether a health condition predated the
+      assault, and his ignorance of well-publicized party controversies. At the hearing he explained he
+      could not obtain proof of membership because his former supervisor and fellow members had left the
+      country; the tribunal rejected that explanation. Now, after the refusal, he has obtained a freshly
+      issued party membership card and a letter from a party official confirming he has been an active member
+      for nearly a decade, and he wants to file them on appeal and get an oral hearing. He had counsel throughout,
+      and roughly ten months passed between filing the claim and the refusal. Can he put these documents
+      before the appeal division as new evidence, and how closely will the appeal body second-guess the
+      credibility findings below?
+    legal_question: When documents are created after a refugee claim is rejected but attest to facts (party
+      membership and activity) that existed all along, do they qualify as "new evidence" under s. 110(4)
+      of IRPA — in particular, could the appellant reasonably have been expected to have obtained and presented
+      them before the rejection — and what standard does the Refugee Appeal Division apply in reviewing
+      the Refugee Protection Division's credibility findings?
+    expected_authorities:
+    - citation: TB4-03249
+      name: ''
+      kind: case
+      relevance: primary
+      court: RAD
+    - citation: 2007 FCA 385
+      kind: case
+      relevance: supporting
+      court: FCA
+    - citation: 2014 FC 799
+      kind: case
+      relevance: supporting
+      court: FC
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-rad-02
+    phase: 1
+    jurisdiction: federal
+    area: refugee law / RAD appeal — standard of review, religious conversion credibility, sur place claim,
+      minor's claim
+    source: drafted-from-decision
+    drafted_from: TB3-07088
+    scenario: My client is a woman from Iran who went abroad to do a graduate degree, taking her young daughter
+      with her while her husband stayed behind. While overseas she became interested in Christianity through
+      a friend and began attending church. On returning home she was held and questioned for several days
+      at the airport about travelling without her husband, was sexually assaulted in custody, and later
+      began attending a house church that met in a private home. She travelled to Canada on a visitor visa
+      to help a sick relative, was told by her husband that security officials had searched their house,
+      seized her Bible and laptop and said house-church members had named her, and she claimed protection
+      here; she was later publicly baptized at a church in Canada and her daughter was present. The first-level
+      tribunal rejected both claims on credibility, finding she was not a genuine convert, giving little
+      weight to the baptismal certificate and pastor's letter, relying partly on a religious-knowledge question
+      about whether Jesus baptized people, and disposing of the child's claim as entirely derivative. On
+      appeal we filed no new evidence and asked for an oral hearing or a rehearing, arguing the appeal body
+      owes no deference, that risk from a public baptism must be assessed regardless of sincerity, and that
+      the child's risk from having witnessed the conversion needed separate analysis. How much deference
+      does the appeal division give to the first-level tribunal's credibility findings in these circumstances,
+      and must it still assess sur place risk and the child's claim independently?
+    legal_question: What standard of review does the Refugee Appeal Division apply to the RPD's credibility
+      and fact findings where no new evidence is filed and no oral hearing is held, and does a negative
+      credibility finding on the genuineness of a religious conversion relieve the decision-maker of assessing
+      a sur place claim based on a public baptism in Canada and the separate risk to an accompanying minor?
+    expected_authorities:
+    - citation: TB3-07088
+      name: ''
+      kind: case
+      relevance: primary
+      court: RAD
+    - citation: 2008 SCC 9
+      kind: case
+      relevance: supporting
+      court: SCC
+    - citation: 2009 SCC 12
+      kind: case
+      relevance: supporting
+      court: SCC
+    citations_resolved: true
+    verified: false
+    split: test
+  - id: lc-sst-01
+    phase: 1
+    jurisdiction: federal
+    area: social security / Canada Pension Plan disability pension — severe and prolonged disability at
+      the minimum qualifying period
+    source: drafted-from-decision
+    drafted_from: 2024 SST 1180
+    scenario: My client is a man in his late fifties who came to Canada alone as a refugee in his twenties,
+      has a high school education from abroad plus one year of ESL, and worked a string of low-paying entry-level
+      jobs (factory work, dishwashing, cashier, stock work) with long gaps on EI and welfare. He had recurring
+      major depression from the early 2000s, was laid off from his last job in the mid-2000s, and then,
+      while off work and in psychiatric treatment, he was robbed and violently beaten on the street, which
+      left him with PTSD; he also has long-standing back pain from an earlier workplace injury. He went
+      onto provincial disability benefits shortly afterward and has never worked since. He only applied
+      for CPP disability roughly sixteen years later, when the rising cost of living made him realize the
+      federal benefit might pay more, and his coverage period based on his contributions ended at the end
+      of the year of the assault. The evidentiary problem is that his old family doctor retired and those
+      records are gone — the only records are from a new family doctor starting eight years after the coverage
+      period ended, which the government says show no significant limitations, plus a psychiatrist's report
+      written for a lawyer about a year after the assault and a recent report from the same psychiatrist.
+      He also wants to know whether his very low but steady past earnings even counted as real employment
+      income for this purpose, and how far back any payments could go given how late he applied. Can he
+      establish a severe and prolonged disability as of a coverage period that closed sixteen years before
+      he applied, on this record?
+    legal_question: Can a claimant prove a severe and prolonged disability as of a minimum qualifying period
+      that ended many years before the application, where contemporaneous family-practice records are unavailable
+      and the main support is a treating psychiatrist's report prepared shortly after the MQP plus a much
+      later report — and how are the "real world" factors and the pre-2014 meaning of "substantially gainful"
+      applied to a history of consistent but very low earnings?
+    expected_authorities:
+    - citation: 2024 SST 1180
+      name: EI v Minister of Employment and Social Development
+      kind: case
+      relevance: primary
+      court: SST
+    - citation: 2001 FCA 248
+      kind: case
+      relevance: supporting
+      court: FCA
+    - citation: 2008 FCA 33
+      kind: case
+      relevance: supporting
+      court: FCA
+    - citation: 2008 FCA 377
+      kind: case
+      relevance: supporting
+      court: FCA
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-sst-02
+    phase: 1
+    jurisdiction: federal
+    area: employment insurance / voluntarily leaving employment without just cause — whether a "reasonable
+      alternative" must be certain; workplace harassment and duty to seek a resolution with the employer
+    source: drafted-from-decision
+    drafted_from: 2026 SST 411
+    scenario: My client worked at a care facility where co-workers mocked her weight and a persistent body
+      odour, and would put on gloves or use tissue whenever they handed her anything or took something from
+      her. The odour turned out to be caused by an abscess she did not know about, but before that was discovered
+      management had also spoken to her twice about the smell because of complaints from clients. She raised
+      the harassment with HR and with the owner and nothing was done, and she eventually went off on a medical
+      leave, during which she also had ankle surgery. When the employer proposed bringing her back at a
+      second site away from the co-workers who had been harassing her, she objected that the commute was
+      much longer and costlier and that she could not manage full shifts while recovering; the employer
+      said it would look at her requests for part-time hours and extra pay, but she resigned before anything
+      was settled, believing the employer could not be trusted and that the harassment would follow her
+      anywhere. Her EI claim was refused on the basis that she quit without just cause because the transfer
+      was a reasonable alternative, and the first-level appeal agreed. She wants to know whether an option
+      that was never confirmed — a transfer on terms the employer had not yet agreed to, at a location she
+      says would have been just as toxic — can count as a "reasonable alternative" she was required to pursue
+      before quitting.
+    legal_question: For the purposes of just cause under the Employment Insurance Act, must a "reasonable
+      alternative" to quitting be certain or already in existence, or is a claimant obliged to explore a
+      merely possible option — such as continued negotiation with the employer over a transfer, hours and
+      pay — even where the employer has previously failed to act on harassment complaints?
+    expected_authorities:
+    - citation: 2026 SST 411
+      name: BS v Canada Employment Insurance Commission and X
+      kind: case
+      relevance: primary
+      court: SST
+    - citation: 2011 FCA 190
+      kind: case
+      relevance: supporting
+      court: FCA
+    - citation: 2007 FCA 320
+      kind: case
+      relevance: supporting
+      court: FCA
+    - citation: 2006 FCA 376
+      kind: case
+      relevance: supporting
+      court: FCA
+    citations_resolved: true
+    verified: false
+    split: test
+  - id: lc-cirb-01
+    phase: 1
+    jurisdiction: federal
+    area: federal labour relations / unfair labour practice — dismissal for union activity and reverse onus
+    source: drafted-from-decision
+    drafted_from: 2008 CIRB 406
+    scenario: My client is an owner-operator who hauled marine containers for a small federally regulated
+      trucking company, and he was well known among the drivers as the person they elected to speak for
+      them during an industry-wide port dispute; he stayed on as the drivers' representative and was active
+      in the union that later applied to certify his employer's drivers. The certification application was
+      filed about a year before the events in question, the employer hired counsel to oppose it, and the
+      objections were only dropped shortly before my client was cut off. He had been off work with a sprained
+      ankle from a non-work accident, gave the office a medical note, and says he called the dispatcher
+      several times a week once he could wear his safety boot, always being told work was slow; he was then
+      told he would no longer be dispatched because someone had seen him working elsewhere. At the hearing
+      the employer's owner was the only witness, said he had no idea there was a union or that my client
+      was involved, and relied on unnamed informants, old warning letters and a list of missed Mondays to
+      justify the decision, without calling the dispatcher or anyone with first-hand knowledge. Who has
+      to prove what here, and what does the employer have to establish to show the decision to stop dispatching
+      him had nothing to do with his union role, given that everything it complains about happened while
+      the certification application was pending?
+    legal_question: In a complaint under s. 94(3)(a)(i) of the Canada Labour Code, what burden does s. 98(4)
+      impose on the employer, and how is that burden affected where the dismissal occurs between the filing
+      of a certification application and certification — must the complainant show there is "no other reasonable
+      explanation" for the termination?
+    expected_authorities:
+    - citation: 2008 CIRB 406
+      name: A.G. Transport Ltd.
+      kind: case
+      relevance: primary
+      court: CIRB
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-fpslreb-01
+    phase: 1
+    jurisdiction: federal
+    area: federal public sector labour relations / recovery of salary overpayment — limitation periods under
+      s. 32 of the Crown Liability and Proceedings Act
+    source: drafted-from-decision
+    drafted_from: 2023 FPSLREB 57
+    scenario: My client is an employee of a federal separate employer. She went on sick leave after a serious
+      illness, and her paid sick leave credits ran out partway through, at which point she should have moved
+      to leave without pay. Because of errors in the pay system, the employer kept depositing her regular
+      biweekly pay for about two more months, resulting in an overpayment of roughly $7,700. Almost three
+      years later, the employer emailed her out of the blue saying it would start recovering that money,
+      and it began deducting a small amount from each pay cheque. She lived and worked in the same province
+      where the employer is headquartered, where its compensation and pay administration are run, and where
+      the person who wrote the recovery demand was based — though the employer says it is a national organization,
+      the money came out of the federal consolidated revenue fund, and the debt is owed to a federal entity,
+      so a six-year federal limitation period should govern. Is the employer's recovery action out of time
+      because the shorter provincial limitation period applies, or does the federal six-year period apply
+      simply because the debt is owed to the federal Crown?
+    legal_question: Under s. 32 of the Crown Liability and Proceedings Act, does a federal employer's action
+      to recover a salary overpayment from an employee constitute a cause of action "arising otherwise than
+      in a province" (six-year limitation period) merely because the employer is national and the debt is
+      owed to a federal entity, or must the adjudicator conduct a fact-based inquiry into where the elements
+      of the cause of action arose and apply the provincial limitation period where they all arose in one
+      province?
+    expected_authorities:
+    - citation: 2023 FPSLREB 57
+      name: St-Onge v. National Research Council of Canada
+      kind: case
+      relevance: primary
+      court: FPSLREB
+    - citation: 2003 SCC 9
+      kind: case
+      relevance: supporting
+      court: SCC
+    - citation: 2017 FCA 9
+      kind: case
+      relevance: supporting
+      court: FCA
+    - citation: 2020 FPSLREB 100
+      kind: case
+      relevance: supporting
+      court: FPSLREB
+    citations_resolved: true
+    verified: false
+    split: test
+  - id: lc-chrt-01
+    phase: 1
+    jurisdiction: federal
+    area: human rights — pre-hearing documentary disclosure in a federal employment discrimination complaint
+      (duty to accommodate, systemic discrimination, employment equity evidence)
+    source: drafted-from-decision
+    drafted_from: 2015 CHRT 13
+    scenario: 'My client is a federal government engineer with a medical condition he says is a disability.
+      He applied for a senior engineering position without disclosing his condition, was assessed and placed
+      in the pool of qualified candidates, but was then told his interview had been merely "OK" and that
+      he would not be selected once the position was actually created. He then self-identified as a person
+      with a disability and filed an accommodation request, arguing the only meaningful accommodation was
+      to appoint him directly from the qualified pool, because the department''s "right fit" selection standard
+      is itself discriminatory against people with his condition; the department instead offered to re-run
+      the assessment after a psychology centre assessed what accommodations he needed, and he refused to
+      attend. His complaint alleges both an individual failure to accommodate and a discriminatory policy
+      or practice. At the pre-hearing stage he is now asking the employer to hand over a great deal more
+      material: every email, briefing note and memo touching nine named managers over set periods; records
+      of accommodation he received in three unrelated staffing competitions, plus all of the psychology
+      centre''s analysis of accommodation options for him; the applications and resumes of two other unsuccessful
+      candidates; documents about a harassment issue involving one manager; and the executive performance
+      agreements of two senior managers, to show they were rewarded for meeting employment equity targets
+      favouring a different designated group. The employer says all of this is irrelevant, a fishing expedition,
+      and that employment equity legislation operates independently of human rights law, while my client
+      argues the seriousness of the case entitles him to a higher standard of disclosure than the tribunal''s
+      own rules provide. How much of this is he actually entitled to receive before the hearing?'
+    legal_question: What standard governs pre-hearing documentary disclosure in a human rights complaint
+      — does "arguable relevance" under the tribunal's rules apply, or can procedural fairness factors require
+      a heightened level of disclosure — and how far does it extend to accommodation records from unrelated
+      competitions, other candidates' application materials, and managers' employment-equity-linked performance
+      agreements?
+    expected_authorities:
+    - citation: 2015 CHRT 13
+      name: Carter v. Attorney General of Canada
+      kind: case
+      relevance: primary
+      court: CHRT
+    - citation: 2013 CHRT 18
+      kind: case
+      relevance: supporting
+      court: CHRT
+    - citation: 2004 CHRT 34
+      kind: case
+      relevance: supporting
+      court: CHRT
+    - citation: 2004 FCA 204
+      kind: case
+      relevance: supporting
+      court: FCA
+    citations_resolved: true
+    verified: false
+    split: tune
+  - id: lc-citt-01
+    phase: 1
+    jurisdiction: federal
+    area: customs law / tariff classification — prohibited weapons (knives) under tariff item 9898.00.00
+    source: drafted-from-decision
+    drafted_from: CITT AP-2021-035
+    scenario: 'My client ordered a batch of about ten inexpensive folding knives from an overseas seller,
+      which arrived by mail and were immediately held by border officers and refused entry as prohibited
+      weapons. Each knife has a small tab or "flipper" sticking out near the pivot: with the blade closed,
+      pressing the flipper with one finger makes the blade swing out fast and lock fully open, and once
+      it starts he can''t slow or stop it. He asked the agency to reconsider and they confirmed the original
+      decision, so he wants to appeal to the trade tribunal. His points are that identical or nearly identical
+      knives are openly sold in Canadian outdoor and sporting goods chains, that these particular ones were
+      bought as a holiday gift and never for resale, and that police have never charged anyone here for
+      selling or carrying them — so the border agency seems to be the only body treating them as prohibited.
+      Can he get the refusal overturned on that basis?'
+    legal_question: Is a folding knife whose blade is released and locks open by finger pressure on an integral
+      flipper or protrusion a "prohibited weapon" under paragraph 84(1)(a) of the Criminal Code — i.e.,
+      does it open "automatically" by hand pressure applied to a device in or attached to the handle — and
+      are the domestic availability of similar knives, the importer's innocent intended use, and the absence
+      of police enforcement relevant to classification under tariff item 9898.00.00?
+    expected_authorities:
+    - citation: CITT AP-2021-035
+      name: J. Scherrer
+      kind: case
+      relevance: primary
+      court: CITT
+    citations_resolved: true
+    verified: false
+    split: test
