@@ -18,6 +18,7 @@ from pgvector import HalfVector
 
 from app.embeddings import embed
 from app.reranker import score_pairs
+from app.section_search import SectionConfig, SectionResult, gather_sections, rank_sections
 
 Mode = Literal["hybrid", "lexical", "vector"]
 
@@ -31,6 +32,7 @@ MAX_SEEDS = 30          # top fused cases whose outbound citations are followed
 RERANK_BASE_POOL = 40   # top fused cases scored by the cross-encoder
 RERANK_GRAPH_POOL = 20  # best-supported graph cases also scored
 RERANK_PASSAGES = 2     # passages per case sent to the cross-encoder
+SECTION_SEED_CASES = 20 # top final-ranked cases whose cited statute sections inform section search
 
 COURT_PRIOR = {"SCC": 1.0, "FCA": 0.6, "CMAC": 0.5, "FC": 0.4, "TCC": 0.4}
 TRIBUNAL_PRIOR = 0.2
@@ -112,6 +114,7 @@ class Candidates:
     graph_passages: dict[UUID, Passage]   # best passage for cases reached only through the graph
     rerank_scores: dict[UUID, float]      # best cross-encoder score per case in the rerank pool
     timings_ms: dict[str, float]
+    query_vector: HalfVector | None = None
 
 
 @dataclass
@@ -137,6 +140,7 @@ class CaseResult:
 @dataclass
 class SearchResult:
     cases: list[CaseResult]
+    sections: list[SectionResult]
     timings_ms: dict[str, float]
 
 
@@ -296,7 +300,7 @@ def gather(
         timings["rerank"] = _ms(started)
 
     conn.commit()
-    return Candidates(lexical, vector, seed_ranks, meta, graph_passages, rerank_scores, timings)
+    return Candidates(lexical, vector, seed_ranks, meta, graph_passages, rerank_scores, timings, query_vector)
 
 
 def search(
@@ -309,15 +313,24 @@ def search(
     date_from: date | None = None,
     date_to: date | None = None,
     config: RankingConfig = DEFAULT_CONFIG,
+    k_sections: int = 5,
+    section_config: SectionConfig = SectionConfig(),
 ) -> SearchResult:
     candidates = gather(conn, query, mode=mode, courts=courts, date_from=date_from, date_to=date_to)
     started = time.perf_counter()
     if mode != "hybrid":
         config = replace(config, graph_weight=0.0, rerank_weight=0.0)
-    top = rank(candidates, config)[:k]
-    cases = [to_result(hit, candidates.meta[hit.case_id]) for hit in top]
+    ranked = rank(candidates, config)
+    cases = [to_result(hit, candidates.meta[hit.case_id]) for hit in ranked[:k]]
     timings = {**candidates.timings_ms, "rank": _ms(started)}
-    return SearchResult(cases=cases, timings_ms=timings)
+
+    # Seed section search with the final top cases: the provisions strong results apply.
+    section_candidates = gather_sections(
+        conn, query, candidates.query_vector, [h.case_id for h in ranked[:SECTION_SEED_CASES]]
+    )
+    conn.commit()
+    sections = rank_sections(section_candidates, section_config)[:k_sections]
+    return SearchResult(cases=cases, sections=sections, timings_ms={**timings, **section_candidates.timings_ms})
 
 
 def to_result(hit: CaseHit, meta: CaseMeta) -> CaseResult:

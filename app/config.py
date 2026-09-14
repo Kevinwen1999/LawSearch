@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     database_url: str = "postgresql://lawsearch:lawsearch@localhost:5432/lawsearch"
+    # Downloaded source data (e.g. the Justice Laws XML clone). Point at a roomy drive.
+    data_dir: str = "data"
     db_pool_size: int = 8
     embedding_model: str = "BAAI/bge-m3"
     embedding_dim: int = 1024

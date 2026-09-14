@@ -19,6 +19,7 @@ from app.chunking import MIN_NUMBERED_PARAS, sequential_markers
 from app.citations import case_citations
 from app.config import settings
 from app.llm import get_backend
+from app.statute_refs import pick_chunk, statute_index
 
 # Bump whenever SYSTEM_PROMPT, INSTRUCTION, FILAC_SCHEMA or document rendering changes.
 PROMPT_VERSION = "filac-v1"
@@ -167,11 +168,20 @@ def _key_terms(authority: str) -> list[str]:
     return [name] if len(name) >= 4 else []
 
 
-def verify(summary: dict, doc: CaseDocument, resolve_cases: Callable[[list[str]], dict[str, dict]]) -> dict:
+StatuteResolver = Callable[[str], list[dict]]
+
+
+def verify(
+    summary: dict,
+    doc: CaseDocument,
+    resolve_cases: Callable[[list[str]], dict[str, dict]],
+    resolve_statutes: StatuteResolver | None = None,
+) -> dict:
     """Check every anchor exists and every cited authority actually appears in the decision.
 
     `problems` counts anchors that don't exist and authorities not found anywhere in the text;
-    either may mean the model invented something.
+    either may mean the model invented something. Law items that name federal statute sections
+    are resolved to stored sections, flagging wording that came into force after the decision.
     """
     document_text = _normalize(doc.body)
     citations = sorted({c for item in summary["law"]["items"] for c in case_citations(item["authority"])})
@@ -200,6 +210,17 @@ def verify(summary: dict, doc: CaseDocument, resolve_cases: Callable[[list[str]]
                 check["resolved_case"] = next(
                     (resolved[c] for c in case_citations(item["authority"]) if c in resolved), None
                 )
+                if resolve_statutes and item["kind"] != "case":
+                    sections_found = resolve_statutes(item["authority"])
+                    for section in sections_found:
+                        in_force = section.pop("in_force_start")
+                        # The stored text is the current consolidation; older decisions may have
+                        # applied different wording.
+                        section["in_force_start"] = in_force.isoformat() if in_force else None
+                        section["in_force_after_decision"] = bool(
+                            in_force and doc.decision_date and in_force > doc.decision_date
+                        )
+                    check["resolved_sections"] = sections_found
             checks.append(check)
         sections[name] = checks
 
@@ -210,6 +231,33 @@ def verify(summary: dict, doc: CaseDocument, resolve_cases: Callable[[list[str]]
         "sections": sections,
         "anchor_text": {str(a): doc.anchors[a][:ANCHOR_TEXT_CHARS] for a in sorted(cited)},
     }
+
+
+def _statute_resolver(conn: psycopg.Connection) -> StatuteResolver:
+    index = statute_index(conn)
+
+    def resolve(authority: str) -> list[dict]:
+        found, seen = [], set()
+        for ref in index.extract(authority):
+            rows = conn.execute(
+                "SELECT s.id, s.section_label, s.chunk_no, l.code, l.title, s.url_official, s.in_force_start "
+                "FROM legislation_sections s JOIN legislation l ON l.id = s.legislation_id "
+                "WHERE l.code = %s AND s.section_no = %s ORDER BY s.chunk_no",
+                (ref.code, ref.section_no),
+            ).fetchall()
+            row = pick_chunk(rows, ref)
+            # One entry per cited provision; 152(7) and 152(8) may share a stored chunk.
+            provision = (ref.code, ref.section_no, ref.pinpoint)
+            if row and provision not in seen:
+                seen.add(provision)
+                found.append({
+                    "chunk_id": str(row[0]), "code": row[3], "title": row[4],
+                    "section": f"{ref.section_no}{ref.pinpoint}", "section_label": row[1],
+                    "url": row[5], "in_force_start": row[6],
+                })
+        return found
+
+    return resolve
 
 
 def _case_resolver(conn: psycopg.Connection) -> Callable[[list[str]], dict[str, dict]]:
@@ -273,7 +321,7 @@ def generate(connection: ConnectionFactory, case_id: UUID, *, force: bool = Fals
     )
 
     with connection() as conn:
-        verification = verify(result.data, doc, _case_resolver(conn))
+        verification = verify(result.data, doc, _case_resolver(conn), _statute_resolver(conn))
         row = conn.execute(
             f"""
             INSERT INTO filac_summaries (case_id, prompt_version, model, backend, summary, verification, usage)
@@ -288,3 +336,20 @@ def generate(connection: ConnectionFactory, case_id: UUID, *, force: bool = Fals
         ).fetchone()
         conn.commit()
     return FilacRecord(*row)
+
+def reverify(connection: ConnectionFactory, case_id: UUID) -> FilacRecord | None:
+    """Re-run verification on a cached brief without calling the model (e.g. after loading
+    legislation, so Law items resolve to statute sections)."""
+    with connection() as conn:
+        record = get_cached(conn, case_id)
+        doc = load_document(conn, case_id)
+        if record is None or doc is None:
+            return None
+        verification = verify(record.summary, doc, _case_resolver(conn), _statute_resolver(conn))
+        conn.execute(
+            "UPDATE filac_summaries SET verification = %s WHERE case_id = %s AND prompt_version = %s AND model = %s",
+            (Jsonb(verification), case_id, record.prompt_version, record.model),
+        )
+        conn.commit()
+    record.verification = verification
+    return record

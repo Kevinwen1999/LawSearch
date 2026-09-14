@@ -30,9 +30,9 @@ def clean(text: str) -> str:
 def chunk_judgment(text: str) -> list[Chunk]:
     markers = sequential_markers(text)
     if len(markers) < MIN_NUMBERED_PARAS:
-        return [Chunk(w) for w in _windows(text)]
+        return [Chunk(w) for w in windows(text)]
 
-    chunks = [Chunk(w) for w in _windows(text[: markers[0][1]])]
+    chunks = [Chunk(w) for w in windows(text[: markers[0][1]])]
     ends = [start for _, start in markers[1:]] + [len(text)]
 
     buf: list[str] = []
@@ -45,7 +45,7 @@ def chunk_judgment(text: str) -> list[Chunk]:
             if buf:
                 chunks.append(Chunk("\n".join(buf), buf_start, buf_end))
                 buf, buf_len = [], 0
-            chunks.extend(Chunk(w, para_no, para_no) for w in _windows(body))
+            chunks.extend(Chunk(w, para_no, para_no) for w in windows(body))
             continue
 
         if buf and buf_len + len(body) > MAX_CHARS:
@@ -82,7 +82,7 @@ def sequential_markers(text: str) -> list[tuple[int, int]]:
     return found
 
 
-def _windows(text: str) -> list[str]:
+def windows(text: str) -> list[str]:
     text = text.strip()
     if len(text) <= MAX_CHARS:
         return [text] if text else []

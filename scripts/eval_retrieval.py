@@ -25,7 +25,16 @@ from pathlib import Path
 import yaml
 
 from app.db import connect
-from app.retrieval import DEFAULT_CONFIG, PHASE2_CONFIG, RankingConfig, gather, prepare_session, rank
+from app.retrieval import (
+    DEFAULT_CONFIG,
+    PHASE2_CONFIG,
+    SECTION_SEED_CASES,
+    RankingConfig,
+    gather,
+    prepare_session,
+    rank,
+)
+from app.section_search import SectionConfig, gather_sections, rank_sections
 
 SCENARIOS = Path(__file__).resolve().parent.parent / "eval" / "scenarios.yaml"
 GAIN = {"primary": 2, "supporting": 1}
@@ -39,6 +48,13 @@ PIPELINES = {
     "+ rerank": replace(PHASE2_CONFIG, rerank_weight=1.0),
     "default (phase 4)": DEFAULT_CONFIG,
 }
+
+SECTION_PIPELINES = {
+    "text only": SectionConfig(graph_weight=0.0, citation_weight=0.0),
+    "+ cited by top cases": SectionConfig(citation_weight=0.0),
+    "default": SectionConfig(),
+}
+SECTION_METRICS = ("recall@5", "recall@10", "mrr")
 
 GRID = {
     "graph_weight": [0.0, 0.5, 1.0, 2.0],
@@ -91,6 +107,36 @@ def score_scenario(gold: list[dict], results: list) -> dict:
         "mrr": 1 / first if first else 0.0,
         "ndcg@10": dcg / idcg if idcg else 0.0,
     }
+
+
+def statute_gold(scenario: dict) -> list[dict]:
+    return [a for a in scenario["expected_authorities"] if a["kind"] in ("statute", "regulation") and a.get("code")]
+
+
+def score_sections(gold: list[dict], results: list) -> dict:
+    ranks = {
+        f"{a['code']} s. {a['section']}": next(
+            (i for i, r in enumerate(results, 1) if r.code == a["code"] and r.section_no == str(a["section"])), None
+        )
+        for a in gold
+    }
+    first = min((r for r in ranks.values() if r), default=None)
+    return {
+        "ranks": ranks,
+        "recall@5": sum(1 for r in ranks.values() if r and r <= 5) / len(gold),
+        "recall@10": sum(1 for r in ranks.values() if r and r <= 10) / len(gold),
+        "mrr": 1 / first if first else 0.0,
+    }
+
+
+def print_section_table(named_rows: dict[str, list[dict]], split: str) -> None:
+    print(f"\n== statute sections, {split} split ==")
+    print(f"  {'pipeline':22} {'n':>3} " + " ".join(f"{m:>10}" for m in SECTION_METRICS))
+    for name, rows in named_rows.items():
+        subset = [r for r in rows if r["split"] == split]
+        if subset:
+            print(f"  {name:22} {len(subset):3d} "
+                  + " ".join(f"{sum(r[m] for r in subset) / len(subset):10.3f}" for m in SECTION_METRICS))
 
 
 def evaluate(scenarios: list[dict], gathered: dict, config: RankingConfig) -> list[dict]:
@@ -169,14 +215,28 @@ def main() -> None:
     print(f"scoring {len(scenarios)} scenarios ({splits}), depth {DEPTH}")
 
     started = time.monotonic()
-    gathered, lexical_only, vector_only = {}, {}, {}
+    gathered, lexical_only, vector_only, section_candidates = {}, {}, {}, {}
     with connect() as conn:
         prepare_session(conn)
         for s in scenarios:
             gathered[s["id"]] = gather(conn, s["scenario"], mode="hybrid")
             lexical_only[s["id"]] = gather(conn, s["scenario"], mode="lexical")
             vector_only[s["id"]] = gather(conn, s["scenario"], mode="vector")
+            if statute_gold(s):
+                seeds = [h.case_id for h in rank(gathered[s["id"]], DEFAULT_CONFIG)[:SECTION_SEED_CASES]]
+                section_candidates[s["id"]] = gather_sections(
+                    conn, s["scenario"], gathered[s["id"]].query_vector, seeds
+                )
     print(f"gathered candidates in {time.monotonic() - started:.0f}s")
+
+    section_rows = {
+        name: [
+            {"id": s["id"], "split": s["split"],
+             **score_sections(statute_gold(s), rank_sections(section_candidates[s["id"]], config)[:DEPTH])}
+            for s in scenarios if s["id"] in section_candidates
+        ]
+        for name, config in SECTION_PIPELINES.items()
+    }
 
     named = {
         "lexical only": evaluate(scenarios, lexical_only, PHASE2_CONFIG),
@@ -193,11 +253,19 @@ def main() -> None:
         print_table(f"== {split} split ==", named, split=split)
     for group in ("scc-gold", "lower-court"):
         print_table(f"== all scenarios, group {group} ==", named, group=group)
+    if section_candidates:
+        for split in ("tune", "test"):
+            print_section_table(section_rows, split)
 
     if args.verbose:
         for name in ("hybrid (phase 2)", "default (phase 4)"):
             print(f"\n--- {name}: rank of each gold authority (- = not in top {DEPTH}) ---")
             for row in named[name]:
+                ranks = ", ".join(f"{c} @{r or '-'}" for c, r in row["ranks"].items())
+                print(f"  {row['id']:14} [{row['split']}] {ranks}")
+        if section_candidates:
+            print("\n--- statute sections (default): rank of each gold section ---")
+            for row in section_rows["default"]:
                 ranks = ", ".join(f"{c} @{r or '-'}" for c, r in row["ranks"].items())
                 print(f"  {row['id']:14} [{row['split']}] {ranks}")
 
@@ -207,6 +275,7 @@ def main() -> None:
             "run_at": datetime.now().isoformat(timespec="seconds"),
             "pipelines": {name: {"tune": summarize(rows, split="tune"), "test": summarize(rows, split="test"),
                                  "scenarios": rows} for name, rows in named.items()},
+            "section_pipelines": section_rows,
         }
         args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")
         print(f"\nwrote {args.out}")

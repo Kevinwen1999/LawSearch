@@ -20,10 +20,26 @@ LABELS = {
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("citation")
+    parser.add_argument("citation", nargs="?")
     parser.add_argument("--court", help="disambiguate tribunal file numbers shared across courts")
     parser.add_argument("--force", action="store_true", help="regenerate even if cached")
+    parser.add_argument("--reverify-all", action="store_true",
+                        help="re-run verification on every cached brief (no model calls)")
     args = parser.parse_args()
+
+    if args.reverify_all:
+        with connect() as conn:
+            case_ids = [r[0] for r in conn.execute(
+                "SELECT case_id FROM filac_summaries WHERE prompt_version = %s AND model = %s",
+                (filac.PROMPT_VERSION, settings.filac_model),
+            )]
+        for case_id in case_ids:
+            record = filac.reverify(connect, case_id)
+            resolved = sum(len(c.get("resolved_sections", [])) for c in record.verification["sections"]["law"])
+            print(f"reverified {case_id}: {record.verification['problems']} problems, {resolved} statute sections resolved")
+        return
+    if not args.citation:
+        parser.error("citation is required unless --reverify-all")
 
     with connect() as conn:
         rows = conn.execute(

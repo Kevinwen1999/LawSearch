@@ -4,6 +4,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import FastAPI, HTTPException
+from psycopg.rows import dict_row
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 from app import filac, retrieval
@@ -78,11 +79,48 @@ class CaseOut(BaseModel):
     passages: list[PassageOut]
 
 
+class SectionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    chunk_id: UUID
+    code: str
+    kind: str
+    title: str
+    citation: str | None
+    consolidation_date: date | None
+    section_no: str
+    section_label: str
+    marginal_note: str | None
+    hierarchy_path: str | None
+    text: str
+    url: str | None
+    in_force_start: date | None
+    cited_by_count: int
+    score: float = 0.0
+    citing_cases: int = 0
+
+
 class SearchResponse(BaseModel):
     query: str
     mode: retrieval.Mode
     results: list[CaseOut]
+    sections: list[SectionOut]
     timings_ms: dict[str, float]
+
+
+class CitingCaseOut(BaseModel):
+    case_id: UUID
+    citation: str | None
+    style_of_cause: str | None
+    court: str | None
+    decision_date: date | None
+    cited_by_count: int
+
+
+class SectionDetailOut(BaseModel):
+    section: SectionOut
+    citing_cases: list[CitingCaseOut]
+    citing_cases_total: int
 
 
 class FilacOut(BaseModel):
@@ -145,8 +183,66 @@ def search(req: SearchRequest) -> SearchResponse:
         query=req.query,
         mode=req.mode,
         results=[CaseOut.model_validate(c) for c in result.cases],
+        sections=[SectionOut.model_validate(s) for s in result.sections],
         timings_ms=result.timings_ms,
     )
+
+
+_SECTION_COLUMNS = """
+    s.id AS chunk_id, l.code, l.kind, l.title, l.citation, l.consolidation_date, s.section_no,
+    s.section_label, s.marginal_note, s.hierarchy_path, s.text, s.url_official AS url,
+    s.in_force_start, s.cited_by_count
+"""
+
+
+@app.get("/sections/{chunk_id}", response_model=SectionDetailOut)
+def get_section(chunk_id: UUID, limit: int = 20) -> SectionDetailOut:
+    """A statute section and the decisions that cite it, most-cited decisions first."""
+    with get_pool().connection() as conn, conn.cursor(row_factory=dict_row) as cur:
+        section = cur.execute(
+            f"SELECT {_SECTION_COLUMNS} FROM legislation_sections s JOIN legislation l ON l.id = s.legislation_id "
+            "WHERE s.id = %s",
+            (chunk_id,),
+        ).fetchone()
+        if section is None:
+            raise HTTPException(404, "Section not found")
+        citing = cur.execute(
+            """
+            SELECT DISTINCT ON (c.cited_by_count, c.id) c.id AS case_id, c.citation, c.style_of_cause,
+                   c.court, c.decision_date, c.cited_by_count
+            FROM legislation_sections target
+            JOIN legislation_sections s ON s.legislation_id = target.legislation_id AND s.section_no = target.section_no
+            JOIN citation_edges e ON e.dst_id = s.id AND e.edge_kind = 'case_cites_statute'
+            JOIN cases c ON c.id = e.src_id
+            WHERE target.id = %s
+            ORDER BY c.cited_by_count DESC, c.id
+            LIMIT %s
+            """,
+            (chunk_id, min(limit, 100)),
+        ).fetchall()
+    return SectionDetailOut(
+        section=SectionOut(**section),
+        citing_cases=[CitingCaseOut(**c) for c in citing],
+        citing_cases_total=section["cited_by_count"],
+    )
+
+
+@app.get("/cases/{case_id}/statutes", response_model=list[SectionOut])
+def case_statutes(case_id: UUID) -> list[SectionOut]:
+    """Federal statute sections cited in a decision, most-cited sections first."""
+    with get_pool().connection() as conn, conn.cursor(row_factory=dict_row) as cur:
+        rows = cur.execute(
+            f"""
+            SELECT DISTINCT ON (s.cited_by_count, l.code, s.section_no) {_SECTION_COLUMNS}
+            FROM citation_edges e
+            JOIN legislation_sections s ON s.id = e.dst_id
+            JOIN legislation l ON l.id = s.legislation_id
+            WHERE e.src_id = %s AND e.edge_kind = 'case_cites_statute'
+            ORDER BY s.cited_by_count DESC, l.code, s.section_no, s.chunk_no
+            """,
+            (case_id,),
+        ).fetchall()
+    return [SectionOut(**r) for r in rows]
 
 
 @app.get("/cases/{case_id}/filac", response_model=FilacOut)

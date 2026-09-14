@@ -110,12 +110,72 @@ def draft(decision: dict) -> dict:
     return {**decision, "draft": result.data, "anchors": set(doc.anchors)}
 
 
+SCENARIOS_FILE = Path(__file__).resolve().parent.parent / "eval" / "scenarios.yaml"
+MIN_STATUTE_MENTIONS = 2
+MAX_STATUTE_GOLD = 3
+
+
+def add_statute_gold() -> None:
+    """Give drafted scenarios statute gold: the sections their source decision cites most.
+
+    Edits eval/scenarios.yaml as text so its comments survive. Skips scenarios that already
+    have statute gold.
+    """
+    from collections import Counter
+
+    from app.statute_refs import StatuteIndex
+
+    data = yaml.safe_load(SCENARIOS_FILE.read_text(encoding="utf-8"))
+    lines = SCENARIOS_FILE.read_text(encoding="utf-8").split("\n")
+    with connect() as conn:
+        index = StatuteIndex.from_db(conn)
+        titles = dict(conn.execute("SELECT code, title FROM legislation").fetchall())
+        for scenario in data["scenarios"]:
+            if scenario.get("source") != "drafted-from-decision":
+                continue
+            if any(a["kind"] in ("statute", "regulation") for a in scenario["expected_authorities"]):
+                continue
+            court = scenario["expected_authorities"][0].get("court")
+            row = conn.execute(
+                "SELECT full_text FROM cases WHERE citation = %s AND court = %s", (scenario["drafted_from"], court)
+            ).fetchone()
+            counts = Counter((r.code, r.section_no) for r in index.extract(row[0] or "")) if row else Counter()
+            chosen = [key for key, n in counts.most_common(MAX_STATUTE_GOLD) if n >= MIN_STATUTE_MENTIONS]
+            if not chosen:
+                print(f"  {scenario['id']}: no section cited {MIN_STATUTE_MENTIONS}+ times")
+                continue
+
+            start = lines.index(f"  - id: {scenario['id']}")
+            insert_at = next(i for i in range(start, len(lines)) if lines[i].strip().startswith("citations_resolved:"))
+            entries = []
+            for code, section in chosen:
+                entries += [
+                    f"    - citation: \"{titles[code]}, s {section}\"",
+                    "      kind: statute",
+                    f"      code: {code}",
+                    f"      section: '{section}'",
+                    "      relevance: supporting",
+                    "      source: extracted-from-decision",
+                ]
+            lines[insert_at:insert_at] = entries
+            print(f"  {scenario['id']}: {', '.join(f'{titles[c]} s {s} ({counts[(c, s)]}x)' for c, s in chosen)}")
+    SCENARIOS_FILE.write_text("\n".join(lines), encoding="utf-8")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--out", type=Path, help="write drafted scenarios here")
     parser.add_argument("--seed", type=int, default=20260913)
     parser.add_argument("--workers", type=int, default=3)
+    parser.add_argument("--add-statute-gold", action="store_true",
+                        help="add statute gold to drafted scenarios in eval/scenarios.yaml instead of drafting")
     args = parser.parse_args()
+
+    if args.add_statute_gold:
+        add_statute_gold()
+        return
+    if not args.out:
+        parser.error("--out is required when drafting")
 
     with connect() as conn:
         candidates = pick_decisions(conn, args.seed)

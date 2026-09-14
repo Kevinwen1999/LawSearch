@@ -145,6 +145,8 @@ scenarios:
       - citation: "RSC 1985, c 1 (5th Supp)"
         name: Income Tax Act, s 18(1)(a)
         kind: statute
+        code: I-3.3
+        section: "18"
         relevance: supporting
     citations_resolved: true
     verified: false
@@ -170,6 +172,8 @@ scenarios:
       - citation: "RSC 1985, c 1 (5th Supp)"
         name: Income Tax Act, s 245
         kind: statute
+        code: I-3.3
+        section: "245"
         relevance: supporting
     citations_resolved: true
     verified: false
@@ -292,6 +296,8 @@ scenarios:
       - citation: "RSC 1985, c L-2"
         name: Canada Labour Code, s 240
         kind: statute
+        code: L-2
+        section: "240"
         relevance: primary
     citations_resolved: true
     verified: false
@@ -310,8 +316,22 @@ scenarios:
         kind: case
         relevance: primary
       - citation: "Schedule B to the Canada Act 1982 (UK), 1982, c 11"
-        name: Canadian Charter of Rights and Freedoms, ss 8, 9, 24(2)
+        name: Canadian Charter of Rights and Freedoms, s 8
         kind: statute
+        code: CONST-1982
+        section: "8"
+        relevance: supporting
+      - citation: "Schedule B to the Canada Act 1982 (UK), 1982, c 11"
+        name: Canadian Charter of Rights and Freedoms, s 9
+        kind: statute
+        code: CONST-1982
+        section: "9"
+        relevance: supporting
+      - citation: "Schedule B to the Canada Act 1982 (UK), 1982, c 11"
+        name: Canadian Charter of Rights and Freedoms, s 24(2)
+        kind: statute
+        code: CONST-1982
+        section: "24"
         relevance: supporting
     citations_resolved: true
     verified: false
@@ -333,6 +353,8 @@ scenarios:
       - citation: "Schedule B to the Canada Act 1982 (UK), 1982, c 11"
         name: Canadian Charter of Rights and Freedoms, s 11(b)
         kind: statute
+        code: CONST-1982
+        section: "11"
         relevance: supporting
     citations_resolved: true
     verified: false
@@ -352,9 +374,23 @@ scenarios:
         kind: case
         relevance: primary
       - citation: "RSC 1985, c H-6"
-        name: Canadian Human Rights Act
+        name: Canadian Human Rights Act, s 7 (employment)
         kind: statute
+        code: H-6
+        section: "7"
         relevance: primary
+      - citation: "RSC 1985, c H-6"
+        name: Canadian Human Rights Act, s 3 (prohibited grounds)
+        kind: statute
+        code: H-6
+        section: "3"
+        relevance: primary
+      - citation: "RSC 1985, c H-6"
+        name: Canadian Human Rights Act, s 15 (exceptions, incl. accommodation and undue hardship)
+        kind: statute
+        code: H-6
+        section: "15"
+        relevance: supporting
     citations_resolved: true
     verified: false
     split: tune
@@ -453,6 +489,24 @@ scenarios:
       kind: case
       relevance: supporting
       court: FC
+    - citation: "Canadian Passport Order, s 10"
+      kind: statute
+      code: SI/81-86
+      section: '10'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Criminal Code, s 145"
+      kind: statute
+      code: C-46
+      section: '145'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Canadian Passport Order, s 9"
+      kind: statute
+      code: SI/81-86
+      section: '9'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: tune
@@ -590,6 +644,18 @@ scenarios:
       kind: case
       relevance: supporting
       court: FC
+    - citation: "Immigration and Refugee Protection Act, s 16"
+      kind: statute
+      code: I-2.5
+      section: '16'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Immigration and Refugee Protection Regulations, s 4"
+      kind: statute
+      code: SOR/2002-227
+      section: '4'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: test
@@ -694,6 +760,12 @@ scenarios:
       kind: case
       relevance: supporting
       court: SCC
+    - citation: "Public Service Employment Act, s 30"
+      kind: statute
+      code: P-33.01
+      section: '30'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: test
@@ -775,6 +847,12 @@ scenarios:
       kind: case
       relevance: primary
       court: TCC
+    - citation: "Income Tax Act, s 250"
+      kind: statute
+      code: I-3.3
+      section: '250'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: test
@@ -820,6 +898,18 @@ scenarios:
       kind: case
       relevance: supporting
       court: SCC
+    - citation: "Income Tax Act, s 18"
+      kind: statute
+      code: I-3.3
+      section: '18'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Income Tax Act, s 9"
+      kind: statute
+      code: I-3.3
+      section: '9'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: tune
@@ -855,6 +945,24 @@ scenarios:
       kind: case
       relevance: primary
       court: TCC
+    - citation: "Indian Act, s 87"
+      kind: statute
+      code: I-5
+      section: '87'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Constitution Act, 1982, s 25"
+      kind: statute
+      code: CONST-1982
+      section: '25'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Constitution Act, 1982, s 35"
+      kind: statute
+      code: CONST-1982
+      section: '35'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: test
@@ -900,6 +1008,12 @@ scenarios:
       kind: case
       relevance: supporting
       court: FC
+    - citation: "Immigration and Refugee Protection Act, s 110"
+      kind: statute
+      code: I-2.5
+      section: '110'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: tune
@@ -944,6 +1058,24 @@ scenarios:
       kind: case
       relevance: supporting
       court: SCC
+    - citation: "Immigration and Refugee Protection Act, s 111"
+      kind: statute
+      code: I-2.5
+      section: '111'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Immigration and Refugee Protection Act, s 170"
+      kind: statute
+      code: I-2.5
+      section: '170'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Immigration and Refugee Protection Act, s 3"
+      kind: statute
+      code: I-2.5
+      section: '3'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: test
@@ -994,6 +1126,12 @@ scenarios:
       kind: case
       relevance: supporting
       court: FCA
+    - citation: "Canada Pension Plan, s 42"
+      kind: statute
+      code: C-8
+      section: '42'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: tune
@@ -1041,6 +1179,12 @@ scenarios:
       kind: case
       relevance: supporting
       court: FCA
+    - citation: "Employment Insurance Act, s 29"
+      kind: statute
+      code: E-5.6
+      section: '29'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: test
@@ -1075,6 +1219,18 @@ scenarios:
       kind: case
       relevance: primary
       court: CIRB
+    - citation: "Canada Labour Code, s 94"
+      kind: statute
+      code: L-2
+      section: '94'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Canada Labour Code, s 24"
+      kind: statute
+      code: L-2
+      section: '24'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: tune
@@ -1121,6 +1277,12 @@ scenarios:
       kind: case
       relevance: supporting
       court: FPSLREB
+    - citation: "Federal Courts Act, s 39"
+      kind: statute
+      code: F-7
+      section: '39'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: test
@@ -1173,6 +1335,24 @@ scenarios:
       kind: case
       relevance: supporting
       court: FCA
+    - citation: "Canadian Human Rights Act, s 7"
+      kind: statute
+      code: H-6
+      section: '7'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Canadian Human Rights Act, s 50"
+      kind: statute
+      code: H-6
+      section: '50'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Canadian Human Rights Act, s 14"
+      kind: statute
+      code: H-6
+      section: '14'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: tune
@@ -1203,6 +1383,24 @@ scenarios:
       kind: case
       relevance: primary
       court: CITT
+    - citation: "Criminal Code, s 84"
+      kind: statute
+      code: C-46
+      section: '84'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Customs Act, s 60"
+      kind: statute
+      code: C-52.6
+      section: '60'
+      relevance: supporting
+      source: extracted-from-decision
+    - citation: "Customs Act, s 67"
+      kind: statute
+      code: C-52.6
+      section: '67'
+      relevance: supporting
+      source: extracted-from-decision
     citations_resolved: true
     verified: false
     split: test
