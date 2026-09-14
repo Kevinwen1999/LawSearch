@@ -5,8 +5,9 @@ authorities (cases *and* legislation) for **Ontario + federal** law, and summari
 **FILAC** (Facts, Issues, Law, Analysis, Conclusion).
 
 **Design in one line:** A2AJ open full-text corpus as the search/retrieval/FILAC engine, Justice
-Laws XML + e-Laws as the legislation corpus, CanLII metadata API as a breadth/detection layer for
-the gaps (notably ONSC), and a user-upload path as the bridge when full text isn't in the corpus.
+Laws XML (federal) + A2AJ `canadian-laws` (Ontario) as the legislation corpus, CanLII metadata API
+as a breadth/detection layer for the gaps (notably ONSC), and a user-upload path as the bridge
+when full text isn't in the corpus.
 
 ---
 
@@ -14,9 +15,9 @@ the gaps (notably ONSC), and a user-upload path as the bridge when full text isn
 
 ```
                  ┌─────────────── Offline ingestion (batch jobs) ───────────────┐
-                 │  A2AJ cases (Parquet/HF)   Justice Laws XML   e-Laws fetch     │
-                 │        │                        │                 │            │
-                 │   parse + chunk           parse hierarchy    parse hierarchy   │
+                 │  A2AJ cases (Parquet/HF)   Justice Laws XML   A2AJ canadian-  │
+                 │        │                        │             laws (ON)       │
+                 │   parse + chunk           parse hierarchy    parse sections   │
                  │        │                        │                 │            │
                  │   embed + index ──────►  Postgres + pgvector  ◄──── embed      │
                  │        │                  (cases, sections,        │           │
@@ -177,18 +178,51 @@ Phases 1–3 get you a working federal vertical slice fast; deepen after.
 - **Jurisdiction gate:** if province/level is unstated and matters, ask before retrieving.
 - **DoD:** upload a scenario PDF → get the same quality result as typed input.
 
-### Phase 7 — Ontario + gap handling (L)
-- Add A2AJ ONCA to the case corpus (mind the pre-1990 gap).
-- Ontario legislation: bespoke e-Laws fetcher/parser into the legislation tables; **confirm reuse
-  terms** (Queen's Printer for Ontario / OGL–Ontario) before caching.
-- CanLII client (§5.4): rate-limited, cached; use it to **detect** relevant ONSC/tribunal cases via
-  metadata + citator and surface them as "relevant — view on CanLII" (no text, no FILAC).
-- Upload-driven FILAC as the bridge: user supplies an ONSC decision → full FILAC + related-authority
-  search on it.
-- **DoD:** an Ontario scenario returns ONCA cases + Ontario statutes with FILAC, plus flagged ONSC
-  candidates via link-out, and an uploaded ONSC PDF gets full treatment.
+### Phase 7 — Ontario corpus + upload-driven FILAC (L)
+Split out from the original "Phase 7 — Ontario + gap handling" so everything **not** gated on the
+CanLII API key (still unprovisioned as of 2026-09-14) can proceed now; the CanLII-dependent half
+moved to Phase 8. See stack-and-setup.md §2/§5 for how each item below was confirmed.
+- Add A2AJ ONCA to the case corpus: confirmed available (`a2aj/canadian-case-law`,
+  `ONCA/train.parquet`, 24,121 cases, dated 1998-06-08 to 2026-09-11 — the real gap is pre-1998,
+  not pre-1990 as originally assumed). Load via the existing `scripts/ingest_a2aj.py ONCA`
+  (already generic over court codes; no new ingestion code needed).
+- Ontario legislation: **no bespoke e-Laws scraper needed.** `a2aj/canadian-laws`'s
+  `LEGISLATION-ON` parquet (confirmed: 856 Acts, section-grained via a per-Act
+  `unofficial_sections` JSON dict, bilingual, sourced from the official `ontario.ca/laws` API,
+  King's Printer for Ontario license — permits free reproduction, unofficial-copy labelling
+  required) supersedes the original e-Laws-fetcher plan and is simpler to ingest than Phase 5's
+  Justice Laws XML pipeline was. Caveat: no per-section in-force dates in this dataset, so FILAC's
+  "current wording came into force after this decision" flag (built for federal statutes in
+  Phase 5, §5.6) won't extend to Ontario sections without extra work — out of scope for this
+  phase's DoD.
+- Case-to-statute linking comes for free: `app/statute_refs.py`'s title index
+  (`StatuteIndex.from_db`) already queries `legislation` with no jurisdiction filter, so citations
+  to Ontario statutes in ONCA decisions resolve automatically once the titles are loaded (the
+  in-process index rebuilds on app restart — no code change needed, just a restart after ingest).
+- Update the jurisdiction gate (`app/fingerprint.py`'s `NOT_YET_COVERED`): drop `"ontario"` once
+  this phase's corpus is loaded, leaving `"other_province"` still gated.
+- Upload-driven FILAC bridge: generalize `filac.generate()`/`CaseDocument` so FILAC can run on
+  extracted text for a document that isn't a stored `cases` row — needed so an uploaded decision
+  outside the corpus (an ONSC PDF, for instance) gets a full FILAC brief through `/scenarios`.
+  Doesn't depend on CanLII or on ONSC being in the corpus.
+- **DoD:** an Ontario scenario returns ONCA cases + Ontario statutes with FILAC citing resolved
+  sections; an uploaded decision that isn't in the corpus gets a full FILAC brief via upload.
 
-### Phase 8 — Hardening (M, ongoing)
+### Phase 8 — CanLII-detected ONSC/tribunal candidates (M)
+Blocked on `CANLII_API_KEY` (apply via CanLII's feedback form — manual review, no self-serve
+signup; apply early since the review has a lead time). Everything else about this phase is
+buildable in parallel once the key is in hand; nothing here blocks Phase 7 or vice versa.
+- Rate-limited, cached CanLII client (§5.4): token-bucket 2 req/s, 1 concurrent, ≤5000/day
+  (provisional — the public docs don't independently confirm these numbers; verify the real
+  agreement once the key arrives); aggressive multi-day caching of metadata + citator responses;
+  cap citator hop-depth.
+- Wire into scenario search: for Ontario/ONSC-relevant scenarios, use CanLII's case browse +
+  citator to **detect** likely-relevant ONSC/tribunal decisions and surface them as "relevant —
+  view on CanLII" (no text fetched or cached, no FILAC — link-out only).
+- **DoD:** an Ontario scenario also surfaces flagged ONSC/tribunal candidates via CanLII link-out,
+  alongside Phase 7's ONCA cases and Ontario statutes.
+
+### Phase 9 — Hardening (M, ongoing)
 - Hallucination guards + citation verification (§5.5), point-in-time correctness on statutes,
   observability/logging, cost controls, and the production React UI.
 - **DoD:** every asserted authority resolves to a real corpus doc; no unverifiable citations reach the user.

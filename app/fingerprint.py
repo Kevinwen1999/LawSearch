@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from app.config import settings
 from app.llm import extract_with_fallback
 
-PROMPT_VERSION = "fingerprint-v1"
+PROMPT_VERSION = "fingerprint-v2"  # v2: coverage note updated for Phase 7 (Ontario)
 
 SYSTEM_PROMPT = """\
 You turn a client's legal scenario into a structured fingerprint that drives search over a \
@@ -26,9 +26,9 @@ particular case, statute section or outcome applies — this is a search aid, no
 a prediction.
 
 Jurisdiction
-- The database currently covers only federal case law and federal legislation (no provincial \
-case law or legislation yet). Set jurisdiction to what actually governs the scenario, even when \
-that is a jurisdiction not yet covered.
+- The database currently covers federal case law and legislation, and Ontario case law and \
+legislation. No other province's case law or legislation is covered yet. Set jurisdiction to \
+what actually governs the scenario, even when that is a jurisdiction not yet covered.
 - If the province or level of court/government isn't stated and it would change what's relevant \
 (most private-law areas — tenancy, most torts and contracts, family law, provincial regulatory \
 schemes — are provincial), add one short, specific item to needs_clarification asking for it. \
@@ -116,8 +116,10 @@ def search_query(fp: Fingerprint) -> str:
     return query or "; ".join(fp.areas_of_law)
 
 
-# Provinces aren't in the corpus yet (Phase 7 adds Ontario); federal is fully covered.
-NOT_YET_COVERED = {"ontario", "other_province"}
+# Federal and Ontario (ONCA cases + Ontario statutes, Phase 7) are covered; other provinces
+# aren't yet. Ontario Superior Court/tribunal cases still aren't (Phase 8, gated on CanLII) —
+# the search itself is still useful for Ontario, it just won't surface those specifically.
+NOT_YET_COVERED = {"other_province"}
 
 
 @dataclass

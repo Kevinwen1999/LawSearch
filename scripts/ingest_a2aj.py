@@ -39,6 +39,9 @@ FEDERAL_COURTS = [
     "CHRT", "CIRB", "CITT", "CT", "FPSLREB", "OHSTC", "OIC", "PSDPT",
     "RAD", "RPD", "RLLR", "SST", "TATC", "CART", "SCT",
 ]
+# Phase 7: Ontario courts, added alongside the federal ones (see implementation-plan.md Phase 7).
+ONTARIO_COURTS = ["ONCA"]
+JURISDICTION = {c: "federal" for c in FEDERAL_COURTS} | {c: "ontario" for c in ONTARIO_COURTS}
 
 LANG_COLUMNS = [
     "citation", "citation2", "name", "document_date", "url", "unofficial_text",
@@ -243,11 +246,11 @@ def write_batch(conn, decisions: list[Decision], embed) -> None:
             INSERT INTO cases (citation, citation2, style_of_cause, court, jurisdiction,
                                decision_date, language, source, url_official,
                                upstream_license, full_text)
-            VALUES (%s, %s, %s, %s, 'federal', %s, %s, 'a2aj', %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, 'a2aj', %s, %s, %s)
             RETURNING id
             """,
-            [(d.citation, d.citation2, d.name, d.court, d.decision_date, d.language,
-              d.url, d.license, d.text) for d in decisions],
+            [(d.citation, d.citation2, d.name, d.court, JURISDICTION[d.court], d.decision_date,
+              d.language, d.url, d.license, d.text) for d in decisions],
             returning=True,
         )
         case_ids = []
@@ -296,9 +299,9 @@ def main() -> None:
         return
 
     courts = FEDERAL_COURTS if args.federal else [c.upper() for c in args.courts]
-    unknown = [c for c in courts if c not in FEDERAL_COURTS]
+    unknown = [c for c in courts if c not in JURISDICTION]
     if not courts or unknown:
-        parser.error(f"choose courts from {FEDERAL_COURTS}" + (f"; unknown: {unknown}" if unknown else ""))
+        parser.error(f"choose courts from {list(JURISDICTION)}" + (f"; unknown: {unknown}" if unknown else ""))
 
     if args.dry_run:
         dry_run(courts, args.limit)

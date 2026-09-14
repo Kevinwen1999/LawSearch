@@ -15,7 +15,7 @@ from uuid import UUID
 import psycopg
 from psycopg.types.json import Jsonb
 
-from app.chunking import MIN_NUMBERED_PARAS, sequential_markers
+from app.chunking import MIN_NUMBERED_PARAS, chunk_judgment, sequential_markers
 from app.citations import case_citations
 from app.config import settings
 from app.llm import extract_with_fallback
@@ -292,6 +292,16 @@ class FilacRecord:
 
 _RECORD_COLUMNS = "case_id, prompt_version, model, backend, summary, verification, usage, created_at"
 
+
+def related_authority_query(record: FilacRecord) -> str:
+    """Search query for the upload-driven FILAC bridge's related-authority search: the brief's
+    own issues and facts, so a decision found outside the corpus surfaces genuinely comparable
+    authorities from inside it."""
+    parts = [item["text"] for item in record.summary["issues"]["items"]]
+    parts += [item["text"] for item in record.summary["facts"]["items"]]
+    return "; ".join(parts)
+
+
 ConnectionFactory = Callable[[], AbstractContextManager[psycopg.Connection]]
 
 
@@ -315,7 +325,34 @@ def generate(connection: ConnectionFactory, case_id: UUID, *, force: bool = Fals
         doc = load_document(conn, case_id)
     if doc is None:
         raise LookupError(f"case {case_id} not found")
+    return _extract_verify_store(connection, case_id, doc)
 
+
+def generate_for_upload(
+    connection: ConnectionFactory, case_id: UUID, full_text: str, *, force: bool = False
+) -> FilacRecord:
+    """Same as generate(), but for a decision that was uploaded rather than ingested: chunked
+    in-memory only, never written to case_chunks, so it never enters the searchable corpus (no
+    embedding, doesn't affect anyone else's /search or /scenarios results). `case_id` must
+    already exist as a minimal `cases` row (see filac.create_upload_case) so filac_summaries and
+    the statute/case-citation resolvers used by verify() have somewhere to key off.
+    """
+    with connection() as conn:
+        if not force and (cached := get_cached(conn, case_id)):
+            return cached
+        row = conn.execute(
+            "SELECT citation, style_of_cause, court, decision_date, language FROM cases WHERE id = %s",
+            (case_id,),
+        ).fetchone()
+    if row is None:
+        raise LookupError(f"case {case_id} not found")
+    meta = dict(zip(("citation", "style_of_cause", "court", "decision_date", "language"), row))
+    chunk_texts = [c.text for c in chunk_judgment(full_text)]
+    doc = build_document({"case_id": case_id, **meta}, full_text, chunk_texts)
+    return _extract_verify_store(connection, case_id, doc)
+
+
+def _extract_verify_store(connection: ConnectionFactory, case_id: UUID, doc: CaseDocument) -> FilacRecord:
     result = extract_with_fallback(
         system=SYSTEM_PROMPT, instruction=INSTRUCTION, document=doc.render(), schema=FILAC_SCHEMA,
         backend=settings.filac_backend, model=settings.filac_model, effort=settings.filac_effort,
@@ -340,6 +377,20 @@ def generate(connection: ConnectionFactory, case_id: UUID, *, force: bool = Fals
         ).fetchone()
         conn.commit()
     return FilacRecord(*row)
+
+
+def create_upload_case(conn: psycopg.Connection, *, full_text: str) -> UUID:
+    """Insert an uploaded decision as a minimal cases row (source='upload') so
+    generate_for_upload() has a case_id to key filac_summaries and the citation/statute
+    resolvers off, without the document ever being chunked/embedded into the searchable corpus.
+    """
+    row = conn.execute(
+        "INSERT INTO cases (source, language, full_text) VALUES ('upload', 'en', %s) RETURNING id",
+        (full_text,),
+    ).fetchone()
+    conn.commit()
+    return row[0]
+
 
 def reverify(connection: ConnectionFactory, case_id: UUID) -> FilacRecord | None:
     """Re-run verification on a cached brief without calling the model (e.g. after loading

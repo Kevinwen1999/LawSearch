@@ -219,8 +219,9 @@ with st.sidebar:
     k = st.slider("Cases to show", 3, 30, 10)
     st.divider()
     st.caption(
-        "Coverage: federal courts and tribunals from A2AJ. Federal Court and FCA decisions start in 2001. "
-        "Ontario courts are not covered yet."
+        "Coverage: federal courts and tribunals from A2AJ (Federal Court and FCA decisions start "
+        "in 2001), plus ONCA (from 1998). Ontario Superior Court and tribunal decisions aren't "
+        "covered yet — upload one directly for a full FILAC brief, or check CanLII."
     )
 
 scenario = st.text_area(

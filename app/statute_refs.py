@@ -49,16 +49,20 @@ _NUMBER = r"\d+(?:\.\d+)?(?:\s?\((?:\d+(?:\.\d+)?|[a-z]{1,4}(?:\.\d+)?)\))*"
 _NUMBER_LIST = rf"{_NUMBER}(?:\s*(?:,|and|or|to|&)\s*(?:{_KEYWORD}\.?\s*)?{_NUMBER})*"
 _REF_LIST = re.compile(rf"\b{_KEYWORD}\.?\s*({_NUMBER_LIST})", re.IGNORECASE)
 _SINGLE = re.compile(_NUMBER)
-# A statute citation between the name and the section: ', SC 2001, c 27', ', RSC 1985, c 1 (5th Supp)'.
+# A statute citation between the name and the section: ', SC 2001, c 27', ', RSC 1985, c 1 (5th Supp)',
+# ', RSO 1990, c O.2', ', SO 2000, c 3' — [CO] covers both federal (Canada) and Ontario citations.
+# The two capture groups (one per alternative) let callers recover which one, to disambiguate a
+# title that exists in both jurisdictions (see StatuteIndex._by_jurisdiction).
 _CITATION_TAIL = re.compile(
-    r",?\s*(?:(?:R\.?\s?S\.?\s?C\.?|S\.?\s?C\.?)\s*\d{4}(?:-\d{2})?,?\s*c\.?\s*[\w.\-]+(?:\s*\([^)]{1,20}\))?"
+    r",?\s*(?:(?:R\.?\s?S\.?\s?([CO])\.?|S\.?\s?([CO])\.?)\s*\d{4}(?:-\d{2})?,?\s*c\.?\s*[\w.\-]+(?:\s*\([^)]{1,20}\))?"
     r"|SOR/\d{2,4}-\d+|C\.?\s?R\.?\s?C\.?,?\s*c\.?\s*\d+)\s*$"
 )
+_TAIL_JURISDICTION = {"C": "federal", "O": "ontario"}
 # '(“IRPA” or the “Act”)' right after a title, optionally past its citation. Nothing else may sit
 # between, or '... Privacy Act and the Freedom of Information ... Act (FIPPA)' hands FIPPA to the
 # wrong law.
 _DEFINED_ALIAS = re.compile(
-    r'(?:,?\s*(?:(?:R\.?\s?S\.?\s?C\.?|S\.?\s?C\.?)\s*\d{4}(?:-\d{2})?,?\s*c\.?\s*[\w.\-]+(?:\s*\([^)]{1,20}\))?'
+    r'(?:,?\s*(?:(?:R\.?\s?S\.?\s?[CO]\.?|S\.?\s?[CO]\.?)\s*\d{4}(?:-\d{2})?,?\s*c\.?\s*[\w.\-]+(?:\s*\([^)]{1,20}\))?'
     r'|SOR/\d{2,4}-\d+))?'
     r'\s*[(\[]\s*(?:the\s+)?"?([A-Z][A-Za-z.]{1,11}|Act|Regulations|Code|Charter)"?'
     r'(?:\s*(?:or|,)\s*(?:the\s+)?"?(Act|Regulations|Code|Charter)"?)?\s*[)\]]'
@@ -86,6 +90,7 @@ class _Mention:
     end: int
     code: str
     kind: str
+    title_key: tuple[str, ...]
 
 
 _LEAD_INS = {"the", "this", "that", "under", "in", "see", "and", "or", "of", "by", "pursuant", "to",
@@ -116,12 +121,56 @@ def _title_key(title: str) -> tuple[str, ...]:
     return tuple(_TOKEN.findall(title.translate(_QUOTES).lower()))
 
 
+_YEAR_SUFFIX = re.compile(r",\s*(\d{4})$")
+
+
+def _laws_from_rows(
+    rows: list[tuple[str, str, str, str]],
+) -> tuple[dict[str, tuple[str, str]], dict[str, dict[str, tuple[str, str]]]]:
+    """(title, code, kind, jurisdiction) rows -> (laws, collisions) for StatuteIndex.__init__.
+
+    Also registers a year-stripped alias for titles like 'Municipal Act, 2001' or 'Limitations
+    Act, 2002' — many Ontario statutes embed their enactment year, but courts and FILAC briefs
+    often cite the short form without it — as long as the short form doesn't already name a
+    different law.
+    """
+    laws: dict[str, tuple[str, str]] = {}
+    by_title: dict[str, dict[str, tuple[str, str]]] = {}
+    for title, code, kind, jurisdiction in rows:
+        by_title.setdefault(title, {})[jurisdiction] = (code, kind)
+        # Federal wins the default slot when a title collides — it's the larger, established
+        # corpus; the returned collisions dict still gives an Ontario citation the right target.
+        if title not in laws or jurisdiction == "federal":
+            laws[title] = (code, kind)
+    collisions = {title: by_jur for title, by_jur in by_title.items() if len(by_jur) > 1}
+    for title, target in list(laws.items()):
+        match = _YEAR_SUFFIX.search(title)
+        if match:
+            laws.setdefault(title[: match.start()], target)
+    return laws, collisions
+
+
 class StatuteIndex:
-    def __init__(self, laws: dict[str, tuple[str, str]]):
-        """laws: title -> (code, kind)."""
+    def __init__(
+        self,
+        laws: dict[str, tuple[str, str]],
+        collisions: dict[str, dict[str, tuple[str, str]]] | None = None,
+    ):
+        """laws: title -> (code, kind), the default resolution for that title.
+
+        collisions: title -> {jurisdiction: (code, kind)}, only for titles that name more than
+        one law (e.g. "Income Tax Act" is both federal and Ontario legislation). An explicit
+        citation naming the jurisdiction (R.S.O./S.O. vs R.S.C./S.C., see _law_before) picks the
+        right one instead of always resolving to whichever `laws` happened to pick.
+        """
         self.titles: dict[tuple[str, ...], tuple[str, str]] = {}
+        self._by_jurisdiction: dict[tuple[str, ...], dict[str, tuple[str, str]]] = {}
         for title, target in laws.items():
             self._add(title, target)
+        for title, by_jurisdiction in (collisions or {}).items():
+            key = _title_key(title)
+            if key:
+                self._by_jurisdiction[key] = by_jurisdiction
         if CHARTER_CODE in {code for code, _ in laws.values()}:
             self._add(CHARTER_TITLE, (CHARTER_CODE, "constitution"))
         for alias, title in ALIASES.items():
@@ -140,8 +189,9 @@ class StatuteIndex:
 
     @classmethod
     def from_db(cls, conn) -> "StatuteIndex":
-        rows = conn.execute("SELECT title, code, kind FROM legislation").fetchall()
-        return cls({title: (code, kind) for title, code, kind in rows})
+        rows = conn.execute("SELECT title, code, kind, jurisdiction FROM legislation").fetchall()
+        laws, collisions = _laws_from_rows(rows)
+        return cls(laws, collisions)
 
     def extract(self, text: str) -> list[StatuteRef]:
         text = text.translate(_QUOTES)
@@ -184,10 +234,11 @@ class StatuteIndex:
                 first = i - size + 1
                 if first <= taken_until or first < 0:
                     continue
-                hit = self.titles.get(tuple(words[first:i + 1]))
+                key = tuple(words[first:i + 1])
+                hit = self.titles.get(key)
                 if hit:
                     if not _ends_longer_name(text, tokens, first):
-                        found.append(_Mention(tokens[first][1], tokens[i][2], *hit))
+                        found.append(_Mention(tokens[first][1], tokens[i][2], *hit, key))
                     taken_until = i
                     break
         return found
@@ -213,10 +264,18 @@ class StatuteIndex:
         offset = max(0, pos - BEFORE_WINDOW)
         # Only commas, spaces and a statute citation may separate the law from the section keyword.
         window = text[offset:pos].rstrip(", ").rstrip()
-        window = _CITATION_TAIL.sub("", window).rstrip(", ").rstrip()
+        tail = _CITATION_TAIL.search(window)
+        jurisdiction = _TAIL_JURISDICTION.get(tail.group(1) or tail.group(2)) if tail else None
+        if tail:
+            window = window[:tail.start()].rstrip(", ").rstrip()
         mention = by_end.get(offset + len(window))
         if mention:
-            return mention.code, True
+            code = mention.code
+            if jurisdiction:
+                alt = self._by_jurisdiction.get(mention.title_key, {}).get(jurisdiction)
+                if alt:
+                    code = alt[0]
+            return code, True
         generic = _GENERIC_BEFORE.search(window)
         if generic:
             return self._resolve_generic(generic.group(1), offset + generic.start(1), mentions, ends, defined)

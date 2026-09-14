@@ -1,7 +1,8 @@
+from datetime import datetime
 from uuid import uuid4
 
 from app.citations import canonical, case_citations
-from app.filac import FILAC_SCHEMA, SECTIONS, build_document, verify
+from app.filac import FILAC_SCHEMA, SECTIONS, FilacRecord, build_document, related_authority_query, verify
 
 META = {
     "case_id": uuid4(), "citation": "2020 TEST 1", "style_of_cause": "A v B",
@@ -87,3 +88,27 @@ def test_schema_requires_every_field_and_forbids_extras():
 
     walk(FILAC_SCHEMA)
     assert set(FILAC_SCHEMA["required"]) == set(SECTIONS)
+
+
+def make_record(**summary_overrides) -> FilacRecord:
+    summary = empty_summary()
+    summary.update(summary_overrides)
+    return FilacRecord(
+        case_id=uuid4(), prompt_version="filac-v1", model="m", backend="b",
+        summary=summary, verification={}, usage={}, created_at=datetime.now(),
+    )
+
+
+def test_related_authority_query_joins_issues_then_facts():
+    record = make_record(
+        issues={"status": "stated", "items": [{"text": "duty of care", "anchor": 1}]},
+        facts={"status": "stated", "items": [{"text": "slip on a wet floor", "anchor": 2}]},
+    )
+
+    assert related_authority_query(record) == "duty of care; slip on a wet floor"
+
+
+def test_related_authority_query_empty_when_nothing_stated():
+    record = make_record()
+
+    assert related_authority_query(record) == ""

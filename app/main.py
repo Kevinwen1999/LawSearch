@@ -360,3 +360,53 @@ def delete_scenario_upload(key: UploadKey) -> dict:
     full_key = f"uploads/{key}"
     intake.delete_upload(full_key)
     return {"deleted": full_key}
+
+
+class UploadedDecisionResponse(BaseModel):
+    case_id: UUID
+    upload_key: str
+    extracted_chars: int
+    filac: FilacOut
+    related: SearchResponse | None
+
+
+@app.post("/uploads/decisions", response_model=UploadedDecisionResponse)
+async def create_uploaded_decision(
+    file: UploadFile = File(...), k: Annotated[int, Form(ge=1, le=50)] = 10
+) -> UploadedDecisionResponse:
+    """Phase 7's upload-driven FILAC bridge: for a decision outside the corpus (e.g. an ONSC
+    judgment, not covered until CanLII detection lands in Phase 8) — upload it, get a full FILAC
+    brief and a related-authority search grounded in that brief's own issues and facts. The
+    document is chunked in-memory only for FILAC anchors; it's never embedded or added to
+    case_chunks, so it never affects anyone else's /search or /scenarios results.
+    """
+    content = await file.read()
+    try:
+        text = intake.extract_text(file.filename or "", content)
+    except intake.ExtractionError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    upload_key = intake.store_upload(file.filename or "upload", content).key
+
+    with get_pool().connection() as conn:
+        case_id = filac.create_upload_case(conn, full_text=text)
+
+    try:
+        record = filac.generate_for_upload(get_pool().connection, case_id, text)
+    except LLMError as exc:
+        raise HTTPException(502, f"FILAC generation failed: {exc}") from exc
+
+    related = None
+    if query := filac.related_authority_query(record):
+        with get_pool().connection() as conn:
+            result = retrieval.search(conn, query, k=k)
+        related = SearchResponse(
+            query=query, mode="hybrid",
+            results=[CaseOut.model_validate(c) for c in result.cases],
+            sections=[SectionOut.model_validate(s) for s in result.sections],
+            timings_ms=result.timings_ms,
+        )
+
+    return UploadedDecisionResponse(
+        case_id=case_id, upload_key=upload_key, extracted_chars=len(text),
+        filac=FilacOut.model_validate(record), related=related,
+    )

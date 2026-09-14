@@ -101,13 +101,13 @@ def test_gate_ok_for_federal_with_no_clarification_needed():
     assert gate.message is None
 
 
-def test_gate_flags_unsupported_ontario_jurisdiction():
-    fp = make_fp(jurisdiction="ontario")
+def test_gate_ok_for_ontario_now_that_phase_7_loaded_the_corpus():
+    fp = make_fp(jurisdiction="ontario", needs_clarification=[])
 
     gate = check_jurisdiction(fp)
 
-    assert gate.status == "unsupported_jurisdiction"
-    assert "ontario" in gate.message.lower()
+    assert gate.status == "ok"
+    assert gate.message is None
 
 
 def test_gate_flags_unsupported_other_province_jurisdiction():
@@ -128,7 +128,7 @@ def test_gate_asks_for_clarification_when_jurisdiction_unstated_and_matters():
 
 
 def test_gate_prefers_unsupported_jurisdiction_over_clarification():
-    fp = make_fp(jurisdiction="ontario", needs_clarification=["something else"])
+    fp = make_fp(jurisdiction="other_province", needs_clarification=["something else"])
 
     gate = check_jurisdiction(fp)
 

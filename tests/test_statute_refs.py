@@ -1,6 +1,6 @@
 import pytest
 
-from app.statute_refs import StatuteIndex
+from app.statute_refs import StatuteIndex, _laws_from_rows
 
 LAWS = {
     "Immigration and Refugee Protection Act": ("I-2.5", "act"),
@@ -94,3 +94,68 @@ def test_federal_title_inside_a_longer_provincial_name_is_not_matched():
     index = StatuteIndex({**LAWS, "Human Rights Code": ("X-1", "act")})
     assert [(r.code, r.section_no) for r in index.extract("s. 5 of the Ontario Human Rights Code")] == []
     assert [(r.code, r.section_no) for r in index.extract("The Human Rights Code, s. 5, applies")] == [("X-1", "5")]
+
+
+def test_ontario_citation_tail_resolves_like_the_federal_one():
+    index = StatuteIndex({**LAWS, "Occupiers' Liability Act": ("RSO1990cO2", "act")})
+    assert [(r.code, r.section_no) for r in index.extract(
+        "Occupiers' Liability Act, R.S.O. 1990, c. O.2, s. 3(1)"
+    )] == [("RSO1990cO2", "3")]
+
+
+def test_colliding_title_resolves_by_citation_jurisdiction():
+    laws = {**LAWS, "Income Tax Act": ("I-3.3", "act")}  # federal default, as from_db would pick
+    collisions = {"Income Tax Act": {"federal": ("I-3.3", "act"), "ontario": ("RSO1990cI2", "act")}}
+    index = StatuteIndex(laws, collisions)
+
+    assert [(r.code, r.section_no) for r in index.extract(
+        "Income Tax Act, R.S.C. 1985, c. 1 (5th Supp.), s. 18(1)(a)"
+    )] == [("I-3.3", "18")]
+    assert [(r.code, r.section_no) for r in index.extract(
+        "Income Tax Act, R.S.O. 1990, c. I.2, s. 4"
+    )] == [("RSO1990cI2", "4")]
+
+
+def test_colliding_title_with_no_citation_tail_falls_back_to_default():
+    laws = {**LAWS, "Income Tax Act": ("I-3.3", "act")}
+    collisions = {"Income Tax Act": {"federal": ("I-3.3", "act"), "ontario": ("RSO1990cI2", "act")}}
+    index = StatuteIndex(laws, collisions)
+
+    assert [(r.code, r.section_no) for r in index.extract("under s. 4 of the Income Tax Act")] == [("I-3.3", "4")]
+
+
+def test_laws_from_rows_prefers_federal_and_reports_collision():
+    rows = [
+        ("Income Tax Act", "I-3.3", "act", "federal"),
+        ("Income Tax Act", "RSO1990cI2", "act", "ontario"),
+        ("Occupiers' Liability Act", "RSO1990cO2", "act", "ontario"),
+    ]
+    laws, collisions = _laws_from_rows(rows)
+
+    assert laws["Income Tax Act"] == ("I-3.3", "act")
+    assert collisions == {
+        "Income Tax Act": {"federal": ("I-3.3", "act"), "ontario": ("RSO1990cI2", "act")}
+    }
+    assert "Occupiers' Liability Act" not in collisions
+
+
+def test_laws_from_rows_registers_year_stripped_alias():
+    rows = [("Municipal Act, 2001", "SO2001c25", "act", "ontario")]
+    laws, _ = _laws_from_rows(rows)
+
+    assert laws["Municipal Act"] == ("SO2001c25", "act")
+    assert laws["Municipal Act, 2001"] == ("SO2001c25", "act")
+
+
+def test_laws_from_rows_year_alias_does_not_override_a_distinct_title():
+    rows = [
+        ("Some Act, 2001", "SO2001cX", "act", "ontario"),
+        ("Some Act", "C-99", "act", "federal"),  # a genuinely different law, loaded either order
+    ]
+    laws, _ = _laws_from_rows(rows)
+
+    assert laws["Some Act"] == ("C-99", "act")
+
+    rows_reversed = list(reversed(rows))
+    laws_reversed, _ = _laws_from_rows(rows_reversed)
+    assert laws_reversed["Some Act"] == ("C-99", "act")
