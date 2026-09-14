@@ -91,6 +91,24 @@ def render_brief(brief: dict) -> None:
     )
 
 
+JURISDICTION_LABELS = {
+    "federal": "Federal", "ontario": "Ontario", "other_province": "Other province", "unknown": "Unknown",
+}
+
+
+def render_fingerprint(fp: dict) -> None:
+    with st.expander("What we understood from your scenario", expanded=False):
+        st.markdown(f"**Jurisdiction:** {JURISDICTION_LABELS.get(fp['jurisdiction'], fp['jurisdiction'])}")
+        for label, key in [
+            ("Areas of law", "areas_of_law"), ("Issues", "issues"), ("Key facts", "key_facts"),
+            ("Causes of action", "causes_of_action"), ("Candidate statutes", "candidate_statutes"),
+            ("Search terms", "search_terms"),
+        ]:
+            if fp[key]:
+                st.markdown(f"**{label}:** " + "; ".join(fp[key]))
+        st.caption(f"Fingerprinted by {fp.get('model', fp['backend'])} via {fp['backend']}")
+
+
 def section_heading(section: dict) -> str:
     note = f" — {section['marginal_note']}" if section["marginal_note"] else ""
     return f"{section['title']}, s. {section['section_label']}{note}"
@@ -210,21 +228,48 @@ scenario = st.text_area(
     height=150,
     placeholder="e.g. My client was dismissed without cause and her bonus plan says she must be actively employed to receive it...",
 )
+uploaded_file = st.file_uploader("...or upload a scenario document", type=["pdf", "docx", "txt", "md"])
+st.caption(
+    "Either field works on its own; if both are filled the uploaded file is used. "
+    "Courts/date filters above apply once results come back — the fingerprint step decides "
+    "whether to search at all (e.g. Ontario matters aren't covered yet)."
+)
 
-if st.button("Search", type="primary", disabled=not scenario.strip()):
-    with st.spinner("Searching..."):
-        response = httpx.post(
-            f"{API}/search",
-            json={"query": scenario, "k": k, "courts": selected_courts or None},
-            timeout=120,
-        )
+if st.button("Search", type="primary", disabled=not (scenario.strip() or uploaded_file)):
+    with st.spinner("Reading the scenario and searching..."):
+        data = {"k": k, "courts": selected_courts or []}
+        if uploaded_file is not None:
+            files = {"file": (uploaded_file.name, uploaded_file.getvalue())}
+        else:
+            files = None
+            data["text"] = scenario
+        response = httpx.post(f"{API}/scenarios", data=data, files=files, timeout=180)
     if response.status_code == 200:
         body = response.json()
-        st.session_state.results = body["results"]
-        st.session_state.sections = body["sections"]
+        st.session_state.fingerprint = body["fingerprint"]
+        st.session_state.gate = body["gate"]
+        if body["results"]:
+            st.session_state.results = body["results"]["results"]
+            st.session_state.sections = body["results"]["sections"]
+        else:
+            st.session_state.results, st.session_state.sections = None, None
     else:
-        st.session_state.results, st.session_state.sections = [], []
-        st.error(f"Search failed: {response.text[:300]}")
+        st.session_state.fingerprint, st.session_state.gate = None, None
+        st.session_state.results, st.session_state.sections = None, None
+        detail = response.json().get("detail", response.text[:300]) if response.headers.get(
+            "content-type", ""
+        ).startswith("application/json") else response.text[:300]
+        st.error(f"Search failed: {detail}")
+
+fingerprint = st.session_state.get("fingerprint")
+if fingerprint:
+    render_fingerprint(fingerprint)
+
+gate = st.session_state.get("gate")
+if gate and gate["status"] == "unsupported_jurisdiction":
+    st.warning(gate["message"])
+elif gate and gate["status"] == "needs_clarification":
+    st.info(f"Before searching, it would help to know: {gate['message']}")
 
 results = st.session_state.get("results")
 if results is not None:

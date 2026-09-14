@@ -3,12 +3,16 @@
 - ClaudeCliBackend: `claude -p` headless, on whatever the Claude Code CLI is logged in with
   (e.g. a claude.ai subscription). Suited to low-volume local testing, not serving others.
 - AnthropicApiBackend: the Anthropic SDK with ANTHROPIC_API_KEY.
+- LmStudioBackend: a local model served by LM Studio's OpenAI-compatible endpoint.
 
-Both take the same system prompt, instruction, document and JSON schema, so callers switch
-with the FILAC_BACKEND setting alone.
+All three take the same system prompt, instruction, document and JSON schema, and `model`/
+`effort` are passed in per call rather than fixed per backend — so any call site (FILAC today,
+scenario fingerprinting later) can pick its own backend and model, local or cloud, via its own
+settings, through get_backend(name).extract(...).
 """
 
 import json
+import logging
 import os
 import subprocess
 import tempfile
@@ -17,6 +21,8 @@ from functools import lru_cache
 from typing import Protocol
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class LLMError(RuntimeError):
@@ -34,17 +40,21 @@ class StructuredResult:
 class StructuredBackend(Protocol):
     name: str
 
-    def extract(self, *, system: str, instruction: str, document: str, schema: dict) -> StructuredResult: ...
+    def extract(
+        self, *, system: str, instruction: str, document: str, schema: dict, model: str, effort: str
+    ) -> StructuredResult: ...
 
 
 class ClaudeCliBackend:
     name = "claude-cli"
 
-    def extract(self, *, system: str, instruction: str, document: str, schema: dict) -> StructuredResult:
+    def extract(
+        self, *, system: str, instruction: str, document: str, schema: dict, model: str, effort: str
+    ) -> StructuredResult:
         cmd = [
             settings.claude_cli_path, "-p", instruction,
-            "--model", settings.filac_model,
-            "--effort", settings.filac_effort,
+            "--model", model,
+            "--effort", effort,
             "--system-prompt", system,
             "--json-schema", json.dumps(schema),
             "--output-format", "json",
@@ -110,11 +120,15 @@ class AnthropicApiBackend:
         self._anthropic = anthropic
         self._client = client or anthropic.Anthropic(timeout=settings.llm_timeout_seconds)
 
-    def extract(self, *, system: str, instruction: str, document: str, schema: dict) -> StructuredResult:
+    def extract(
+        self, *, system: str, instruction: str, document: str, schema: dict, model: str, effort: str
+    ) -> StructuredResult:
         # No prompt caching: each case is briefed once and stored, so cache writes would add
         # cost without later reads.
         try:
-            with self._client.beta.messages.stream(**self.request(system, instruction, document, schema)) as stream:
+            with self._client.beta.messages.stream(
+                **self.request(system, instruction, document, schema, model, effort)
+            ) as stream:
                 message = stream.get_final_message()
         except self._anthropic.APIStatusError as exc:
             raise LLMError(f"Anthropic API error {exc.status_code}: {exc.message}") from exc
@@ -139,9 +153,9 @@ class AnthropicApiBackend:
         return StructuredResult(json.loads(text), "api", message.model, usage)
 
     @staticmethod
-    def request(system: str, instruction: str, document: str, schema: dict) -> dict:
+    def request(system: str, instruction: str, document: str, schema: dict, model: str, effort: str) -> dict:
         return {
-            "model": settings.filac_model,
+            "model": model,
             "max_tokens": 64000,
             # Judgments describe violence and crime; a server-side fallback keeps an occasional
             # classifier decline from failing the brief.
@@ -149,7 +163,7 @@ class AnthropicApiBackend:
             "fallbacks": "default",
             "thinking": {"type": "adaptive"},
             "output_config": {
-                "effort": settings.filac_effort,
+                "effort": effort,
                 "format": {"type": "json_schema", "schema": schema},
             },
             "system": system,
@@ -163,8 +177,104 @@ class AnthropicApiBackend:
         }
 
 
-@lru_cache(maxsize=1)
-def get_backend() -> StructuredBackend:
-    if settings.filac_backend == "api":
-        return AnthropicApiBackend()
-    return ClaudeCliBackend()
+class LmStudioBackend:
+    name = "lmstudio"
+
+    def extract(
+        self, *, system: str, instruction: str, document: str, schema: dict, model: str, effort: str
+    ) -> StructuredResult:
+        # LM Studio has no notion of "effort"; local models take whatever compute they take.
+        del effort
+        import httpx
+
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": f"{document}\n\n{instruction}"},
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {"name": "structured_output", "strict": True, "schema": schema},
+            },
+            "temperature": 0,
+            "max_tokens": settings.lmstudio_max_tokens,
+        }
+        try:
+            resp = httpx.post(
+                f"{settings.lmstudio_base_url}/chat/completions",
+                json=payload,
+                timeout=settings.llm_timeout_seconds,
+            )
+            resp.raise_for_status()
+        except httpx.ConnectError as exc:
+            raise LLMError(f"LM Studio unreachable at {settings.lmstudio_base_url}: {exc}") from exc
+        except httpx.HTTPStatusError as exc:
+            raise LLMError(f"LM Studio error {exc.response.status_code}: {exc.response.text[:500]}") from exc
+        except httpx.TimeoutException as exc:
+            raise LLMError(f"LM Studio request timed out after {settings.llm_timeout_seconds}s") from exc
+
+        body = resp.json()
+        choice = body["choices"][0]
+        if choice.get("finish_reason") == "length":
+            raise LLMError("LM Studio response was cut off at max_tokens (reasoning may have used the budget)")
+
+        content = (choice["message"].get("content") or "").strip()
+        if not content:
+            raise LLMError("LM Studio returned no content")
+        if content.startswith("```"):
+            content = content.strip("`").removeprefix("json").strip()
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError as exc:
+            raise LLMError(f"LM Studio returned non-JSON content: {content[:500]}") from exc
+
+        usage = body.get("usage", {})
+        return StructuredResult(
+            data,
+            "lmstudio",
+            model,
+            {
+                "input_tokens": usage.get("prompt_tokens", 0),
+                "output_tokens": usage.get("completion_tokens", 0),
+                "served_by": model,
+            },
+        )
+
+
+_BACKENDS: dict[str, type] = {
+    "claude-cli": ClaudeCliBackend,
+    "api": AnthropicApiBackend,
+    "lmstudio": LmStudioBackend,
+}
+
+
+@lru_cache(maxsize=None)
+def get_backend(name: str = "") -> StructuredBackend:
+    return _BACKENDS[name or settings.filac_backend]()
+
+
+def extract_with_fallback(
+    *, system: str, instruction: str, document: str, schema: dict,
+    backend: str, model: str, effort: str,
+    fallback_backend: str, fallback_model: str, fallback_effort: str,
+) -> StructuredResult:
+    """Try `backend`/`model` first; on any LLMError (e.g. a local backend that isn't running,
+    or a local model that got cut off), retry once with the fallback. Callers with a local-first
+    setting use this so a down local server degrades to cloud instead of failing outright."""
+    try:
+        return get_backend(backend).extract(
+            system=system, instruction=instruction, document=document, schema=schema,
+            model=model, effort=effort,
+        )
+    except LLMError as exc:
+        if backend == fallback_backend and model == fallback_model:
+            raise
+        logger.warning(
+            "extract via %s/%s failed (%s); falling back to %s/%s",
+            backend, model, exc, fallback_backend, fallback_model,
+        )
+        return get_backend(fallback_backend).extract(
+            system=system, instruction=instruction, document=document, schema=schema,
+            model=fallback_model, effort=fallback_effort,
+        )

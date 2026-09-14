@@ -1,13 +1,13 @@
 from contextlib import asynccontextmanager
 from datetime import date, datetime
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from psycopg.rows import dict_row
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
-from app import filac, retrieval
+from app import filac, fingerprint, intake, retrieval
 from app.config import settings
 from app.db import get_pool
 from app.embeddings import embed
@@ -264,3 +264,99 @@ def create_filac(case_id: UUID, force: bool = False) -> FilacOut:
     except LLMError as exc:
         raise HTTPException(502, f"FILAC generation failed: {exc}") from exc
     return FilacOut.model_validate(record)
+
+
+class FingerprintOut(BaseModel):
+    jurisdiction: str
+    areas_of_law: list[str]
+    issues: list[str]
+    key_facts: list[str]
+    causes_of_action: list[str]
+    candidate_statutes: list[str]
+    search_terms: list[str]
+    needs_clarification: list[str]
+    model: str
+    backend: str
+    usage: dict
+
+
+class GateOut(BaseModel):
+    status: Literal["ok", "needs_clarification", "unsupported_jurisdiction"]
+    message: str | None
+
+
+class ScenarioResponse(BaseModel):
+    source: Literal["upload", "text"]
+    upload_key: str | None
+    extracted_chars: int
+    fingerprint: FingerprintOut
+    gate: GateOut
+    results: SearchResponse | None
+
+
+UploadKey = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}\.[A-Za-z0-9]{1,10}$")]
+
+
+@app.post("/scenarios", response_model=ScenarioResponse)
+async def create_scenario(
+    file: UploadFile | None = File(None),
+    text: Annotated[str | None, Form()] = None,
+    k: Annotated[int, Form(ge=1, le=50)] = 10,
+    courts: Annotated[list[CourtCode] | None, Form()] = None,
+    date_from: Annotated[date | None, Form()] = None,
+    date_to: Annotated[date | None, Form()] = None,
+) -> ScenarioResponse:
+    """Upload a scenario document (PDF/DOCX/text) or pass raw text; fingerprint it, gate on
+    jurisdiction, and run the same retrieval a typed query would use."""
+    if file is None and not (text and text.strip()):
+        raise HTTPException(400, "provide either a file or text")
+
+    upload_key = None
+    if file is not None:
+        content = await file.read()
+        try:
+            scenario_text = intake.extract_text(file.filename or "", content)
+        except intake.ExtractionError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        upload_key = intake.store_upload(file.filename or "upload", content).key
+        source = "upload"
+    else:
+        scenario_text = text.strip()
+        source = "text"
+
+    try:
+        fp = fingerprint.generate(scenario_text)
+    except LLMError as exc:
+        raise HTTPException(502, f"fingerprinting failed: {exc}") from exc
+
+    gate = fingerprint.check_jurisdiction(fp)
+
+    results = None
+    if gate.status == "ok":
+        query = fingerprint.search_query(fp)
+        with get_pool().connection() as conn:
+            result = retrieval.search(
+                conn, query, k=k, courts=courts, date_from=date_from, date_to=date_to
+            )
+        results = SearchResponse(
+            query=query, mode="hybrid",
+            results=[CaseOut.model_validate(c) for c in result.cases],
+            sections=[SectionOut.model_validate(s) for s in result.sections],
+            timings_ms=result.timings_ms,
+        )
+
+    return ScenarioResponse(
+        source=source,
+        upload_key=upload_key,
+        extracted_chars=len(scenario_text),
+        fingerprint=FingerprintOut(**fp.__dict__),
+        gate=GateOut(status=gate.status, message=gate.message),
+        results=results,
+    )
+
+
+@app.delete("/scenarios/uploads/{key}")
+def delete_scenario_upload(key: UploadKey) -> dict:
+    full_key = f"uploads/{key}"
+    intake.delete_upload(full_key)
+    return {"deleted": full_key}

@@ -22,6 +22,7 @@ from pathlib import Path
 import yaml
 
 from app.citations import canonical, case_citations
+from app.config import settings
 from app.db import connect
 from app.filac import load_document
 from app.llm import LLMError, get_backend
@@ -103,8 +104,10 @@ def draft(decision: dict) -> dict:
     with connect() as conn:
         doc = load_document(conn, decision["id"])
     try:
-        result = get_backend().extract(system=SYSTEM_PROMPT, instruction=INSTRUCTION,
-                                       document=doc.render(), schema=SCHEMA)
+        result = get_backend(settings.filac_backend).extract(
+            system=SYSTEM_PROMPT, instruction=INSTRUCTION, document=doc.render(), schema=SCHEMA,
+            model=settings.filac_model, effort=settings.filac_effort,
+        )
     except LLMError as exc:
         return {**decision, "error": str(exc)}
     return {**decision, "draft": result.data, "anchors": set(doc.anchors)}

@@ -1,9 +1,19 @@
 import json
 from types import SimpleNamespace
 
+import httpx
 import pytest
 
-from app.llm import AnthropicApiBackend, LLMError, parse_cli_output
+from app import llm
+from app.llm import (
+    AnthropicApiBackend,
+    LLMError,
+    LmStudioBackend,
+    StructuredResult,
+    extract_with_fallback,
+    get_backend,
+    parse_cli_output,
+)
 
 SCHEMA = {"type": "object", "additionalProperties": False, "required": ["x"], "properties": {"x": {"type": "string"}}}
 
@@ -76,7 +86,10 @@ def test_api_backend_sends_schema_fallbacks_and_document():
     captured: dict = {}
     backend = AnthropicApiBackend(client=fake_client(api_message(), captured))
 
-    result = backend.extract(system="sys", instruction="brief it", document="[1] text", schema=SCHEMA)
+    result = backend.extract(
+        system="sys", instruction="brief it", document="[1] text", schema=SCHEMA,
+        model="claude-opus-5", effort="high",
+    )
 
     assert result.data == {"x": "ok"}
     assert result.usage == {"input_tokens": 5000, "output_tokens": 900, "served_by": "claude-opus-5"}
@@ -95,4 +108,153 @@ def test_api_backend_raises_on_refusal_and_truncation():
     ]:
         backend = AnthropicApiBackend(client=fake_client(message, {}))
         with pytest.raises(LLMError, match=match):
-            backend.extract(system="s", instruction="i", document="d", schema=SCHEMA)
+            backend.extract(system="s", instruction="i", document="d", schema=SCHEMA, model="claude-opus-5", effort="high")
+
+
+def lmstudio_response(**overrides) -> httpx.Response:
+    body = {
+        "choices": [{
+            "finish_reason": "stop",
+            "message": {"content": json.dumps({"x": "ok"}), "reasoning_content": "thinking..."},
+        }],
+        "usage": {"prompt_tokens": 120, "completion_tokens": 40},
+    }
+    body.update(overrides)
+    return httpx.Response(200, json=body, request=httpx.Request("POST", "http://x/chat/completions"))
+
+
+def test_lmstudio_backend_sends_json_schema_and_parses_content(monkeypatch):
+    captured: dict = {}
+
+    def fake_post(url, *, json, timeout):
+        captured["url"] = url
+        captured["json"] = json
+        return lmstudio_response()
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+
+    result = LmStudioBackend().extract(
+        system="sys", instruction="brief it", document="[1] text", schema=SCHEMA,
+        model="qwen/qwen3.8-27b", effort="high",
+    )
+
+    assert result.data == {"x": "ok"}
+    assert result.backend == "lmstudio"
+    assert result.usage == {"input_tokens": 120, "output_tokens": 40, "served_by": "qwen/qwen3.8-27b"}
+    assert captured["url"].endswith("/chat/completions")
+    assert captured["json"]["response_format"] == {
+        "type": "json_schema",
+        "json_schema": {"name": "structured_output", "strict": True, "schema": SCHEMA},
+    }
+    assert captured["json"]["messages"] == [
+        {"role": "system", "content": "sys"},
+        {"role": "user", "content": "[1] text\n\nbrief it"},
+    ]
+
+
+def test_lmstudio_backend_raises_on_length_cutoff(monkeypatch):
+    monkeypatch.setattr(httpx, "post", lambda *a, **k: lmstudio_response(
+        choices=[{"finish_reason": "length", "message": {"content": ""}}]
+    ))
+
+    with pytest.raises(LLMError, match="cut off"):
+        LmStudioBackend().extract(
+            system="s", instruction="i", document="d", schema=SCHEMA, model="m", effort="high"
+        )
+
+
+def test_lmstudio_backend_raises_when_unreachable(monkeypatch):
+    def fake_post(*a, **k):
+        raise httpx.ConnectError("refused", request=httpx.Request("POST", "http://x"))
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+
+    with pytest.raises(LLMError, match="unreachable"):
+        LmStudioBackend().extract(
+            system="s", instruction="i", document="d", schema=SCHEMA, model="m", effort="high"
+        )
+
+
+def test_get_backend_selects_by_name():
+    assert get_backend("lmstudio") is get_backend("lmstudio")
+    assert isinstance(get_backend("lmstudio"), LmStudioBackend)
+
+
+class FakeNamedBackend:
+    """Records which (backend name, model) called it; raises for names in `fails`."""
+
+    def __init__(self, fails: set[str] = frozenset()):
+        self.fails = fails
+        self.calls: list[tuple[str, str]] = []
+
+    def make(self, name: str):
+        def extract(**kwargs):
+            self.calls.append((name, kwargs["model"]))
+            if name in self.fails:
+                raise LLMError(f"{name} is down")
+            return StructuredResult({"x": "ok"}, name, kwargs["model"], {})
+
+        return extract
+
+
+def _install(monkeypatch, fake: FakeNamedBackend):
+    monkeypatch.setattr(llm, "get_backend", lambda name: SimpleNamespace(extract=fake.make(name)))
+
+
+def test_fallback_not_used_when_primary_succeeds(monkeypatch):
+    fake = FakeNamedBackend()
+    _install(monkeypatch, fake)
+
+    result = extract_with_fallback(
+        system="s", instruction="i", document="d", schema=SCHEMA,
+        backend="lmstudio", model="local-model", effort="low",
+        fallback_backend="claude-cli", fallback_model="claude-sonnet-5", fallback_effort="low",
+    )
+
+    assert result.data == {"x": "ok"}
+    assert result.backend == "lmstudio"
+    assert fake.calls == [("lmstudio", "local-model")]
+
+
+def test_fallback_used_when_primary_raises(monkeypatch):
+    fake = FakeNamedBackend(fails={"lmstudio"})
+    _install(monkeypatch, fake)
+
+    result = extract_with_fallback(
+        system="s", instruction="i", document="d", schema=SCHEMA,
+        backend="lmstudio", model="local-model", effort="low",
+        fallback_backend="claude-cli", fallback_model="claude-sonnet-5", fallback_effort="low",
+    )
+
+    assert result.backend == "claude-cli"
+    assert result.model == "claude-sonnet-5"
+    assert fake.calls == [("lmstudio", "local-model"), ("claude-cli", "claude-sonnet-5")]
+
+
+def test_fallback_reraises_when_both_fail(monkeypatch):
+    fake = FakeNamedBackend(fails={"lmstudio", "claude-cli"})
+    _install(monkeypatch, fake)
+
+    with pytest.raises(LLMError, match="claude-cli is down"):
+        extract_with_fallback(
+            system="s", instruction="i", document="d", schema=SCHEMA,
+            backend="lmstudio", model="local-model", effort="low",
+            fallback_backend="claude-cli", fallback_model="claude-sonnet-5", fallback_effort="low",
+        )
+
+    assert fake.calls == [("lmstudio", "local-model"), ("claude-cli", "claude-sonnet-5")]
+
+
+def test_fallback_skipped_when_identical_to_primary(monkeypatch):
+    """FILAC's default fallback is the same backend+model as primary — a no-op, not a retry."""
+    fake = FakeNamedBackend(fails={"claude-cli"})
+    _install(monkeypatch, fake)
+
+    with pytest.raises(LLMError, match="claude-cli is down"):
+        extract_with_fallback(
+            system="s", instruction="i", document="d", schema=SCHEMA,
+            backend="claude-cli", model="claude-opus-5", effort="high",
+            fallback_backend="claude-cli", fallback_model="claude-opus-5", fallback_effort="high",
+        )
+
+    assert fake.calls == [("claude-cli", "claude-opus-5")]

@@ -18,7 +18,7 @@ from psycopg.types.json import Jsonb
 from app.chunking import MIN_NUMBERED_PARAS, sequential_markers
 from app.citations import case_citations
 from app.config import settings
-from app.llm import get_backend
+from app.llm import extract_with_fallback
 from app.statute_refs import pick_chunk, statute_index
 
 # Bump whenever SYSTEM_PROMPT, INSTRUCTION, FILAC_SCHEMA or document rendering changes.
@@ -316,8 +316,12 @@ def generate(connection: ConnectionFactory, case_id: UUID, *, force: bool = Fals
     if doc is None:
         raise LookupError(f"case {case_id} not found")
 
-    result = get_backend().extract(
-        system=SYSTEM_PROMPT, instruction=INSTRUCTION, document=doc.render(), schema=FILAC_SCHEMA
+    result = extract_with_fallback(
+        system=SYSTEM_PROMPT, instruction=INSTRUCTION, document=doc.render(), schema=FILAC_SCHEMA,
+        backend=settings.filac_backend, model=settings.filac_model, effort=settings.filac_effort,
+        fallback_backend=settings.filac_fallback_backend,
+        fallback_model=settings.filac_fallback_model,
+        fallback_effort=settings.filac_fallback_effort,
     )
 
     with connection() as conn:

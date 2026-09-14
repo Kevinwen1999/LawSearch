@@ -12,3 +12,7 @@ pytest
 sentence-transformers
 streamlit
 pyyaml
+pypdfium2
+python-docx
+rapidocr-onnxruntime
+minio
