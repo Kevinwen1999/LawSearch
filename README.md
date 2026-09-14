@@ -29,6 +29,29 @@ docker compose up -d
 The first smoke test run downloads `BAAI/bge-m3` (~4.3 GB) into `HF_HOME` from `.env`
 (A2AJ dataset downloads land there too — point it at a drive with room).
 
+## Run it
+
+With the data loaded, one command starts the database, the API (waits for the models to
+load) and the UI at http://localhost:8501. Ctrl+C stops the UI and API. The database keeps
+running until `docker compose stop`. API output goes to `logs\api.log`.
+
+```powershell
+.\run.ps1          # database + API + UI
+.\run.ps1 -NoUi    # database + API only
+```
+
+To build or refresh the data, `rebuild.ps1` runs the load steps below in order. It asks
+before starting; `-Yes` skips the prompt. Every step is safe to re-run, and a failed step
+prints the command to resume from it.
+
+```powershell
+.\rebuild.ps1                                    # migrate, cases (~5 h), citations, legislation, statute-links, briefs
+.\rebuild.ps1 -From legislation                  # after pulling a newer Justice Laws consolidation
+.\rebuild.ps1 -From citations -To citations      # a single step
+```
+
+If Windows blocks the scripts, run them as `powershell -ExecutionPolicy Bypass -File .\run.ps1`.
+
 ## Load the case corpus (Phase 1)
 
 Federal courts and tribunals from A2AJ: ~117k decisions → 3.43M chunks, ~25 GB in
@@ -253,8 +276,11 @@ app/          FastAPI app, settings, DB pool, embeddings, reranker, chunking, ci
               retrieval (gather + rank), FILAC extraction + verification, LLM backends
 docker/       custom Postgres image (pgvector + pg_textsearch)
 migrations/   numbered SQL migrations, applied by scripts/migrate.py
-scripts/      migrate, smoke_test, ingest_a2aj, load_citations, search_cli, eval_retrieval,
-              draft_eval_scenarios, filac_cli, ingest_legislation, link_statutes
+run.ps1       start database + API + UI
+rebuild.ps1   load or refresh all data, steps in dependency order
+scripts/      common.ps1 (shared by run/rebuild), migrate, smoke_test, ingest_a2aj,
+              load_citations, search_cli, eval_retrieval, draft_eval_scenarios, filac_cli,
+              ingest_legislation, link_statutes
 ui/           Streamlit MVP (talks to the API over HTTP)
 tests/        pytest unit tests
 eval/         eval scenarios (citations resolved, relevance needs human review) and runs/

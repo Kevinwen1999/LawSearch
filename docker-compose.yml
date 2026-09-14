@@ -54,6 +54,6 @@ services:
       retries: 10
 
 volumes:
-  # pg17 data. The old pg16 volume (lawsearch_pgdata) is left in place for rollback.
+  # pg17 data (the old pg16 volume was removed after the upgrade was verified).
   pgdata17:
   miniodata:
