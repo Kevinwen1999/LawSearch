@@ -83,11 +83,17 @@ def _provision_lines(elem, depth: int = 0) -> list[str]:
     return [line for line in lines if line]
 
 
-def _pack(units: list[tuple[str | None, str]], section_no: str) -> list[tuple[str, str]]:
-    """Group (subsection label, text) units into chunks <= MAX_CHARS -> (section_label, text)."""
-    chunks: list[tuple[str, str]] = []
+def _pack(units: list[tuple[str | None, str | None, str]], section_no: str) -> list[tuple[str, str | None, str]]:
+    """Group (subsection label, marginal note, text) units into chunks <= MAX_CHARS.
+
+    Returns (section_label, marginal note, text). A marginal note covers the provisions after it until
+    the next note, so each chunk takes the note in force at its first unit.
+    """
+    chunks: list[tuple[str, str | None, str]] = []
     labels: list[str] = []
     parts: list[str] = []
+    note: str | None = None
+    chunk_note: str | None = None
 
     def flush() -> None:
         if not parts:
@@ -99,41 +105,51 @@ def _pack(units: list[tuple[str | None, str]], section_no: str) -> list[tuple[st
             label = f"{section_no}{subs[0]}"
         else:
             label = f"{section_no}{subs[0]}-{subs[-1]}"
-        chunks.append((label, "\n".join(parts)))
+        chunks.append((label, chunk_note, "\n".join(parts)))
         labels.clear()
         parts.clear()
 
-    for sub_label, text in units:
+    for sub_label, unit_note, text in units:
+        note = unit_note or note
         if len(text) > MAX_CHARS:
             flush()
             label = f"{section_no}{sub_label}" if sub_label else section_no
-            chunks.extend((label, w) for w in windows(text))
+            chunks.extend((label, note, w) for w in windows(text))
             continue
         if parts and sum(len(p) for p in parts) + len(text) > MAX_CHARS:
             flush()
+        if not parts:
+            chunk_note = note
         labels.append(sub_label)
         parts.append(text)
     flush()
     return chunks
 
 
-def _section_units(section) -> list[tuple[str | None, str]]:
-    """Split a section into units at subsection boundaries (the text before them is one unit)."""
-    units: list[tuple[str | None, str]] = []
+def _section_units(section) -> list[tuple[str | None, str | None, str]]:
+    """Split a section into (label, marginal note, text) units at subsection boundaries.
+
+    The text before the first subsection is one unit. The marginal note before the section label
+    belongs to the first unit: in Justice Laws XML it heads subsection (1), not the whole section.
+    """
+    units: list[tuple[str | None, str | None, str]] = []
     lead: list[str] = []
     for child in section:
         if not isinstance(child.tag, str) or child.tag in SKIP:
             continue
         if child.tag == "Subsection":
-            note = child.findtext("MarginalNote")
-            lines = ([_clean(note)] if note else []) + _provision_lines(child)
-            units.append((child.findtext("Label"), "\n".join(lines)))
+            note = _clean(child.findtext("MarginalNote") or "") or None
+            lines = ([note] if note else []) + _provision_lines(child)
+            units.append((child.findtext("Label"), note, "\n".join(lines)))
         elif child.tag in PROVISIONS or child.tag.startswith("Continued"):
             lead.extend(_provision_lines(child))
         else:
             lead.append(_clean("".join(child.itertext())))
     lead_text = "\n".join(line for line in lead if line)
-    return ([(None, lead_text)] if lead_text else []) + units
+    units = ([(None, None, lead_text)] if lead_text else []) + units
+    if units and not units[0][1]:
+        units[0] = (units[0][0], _clean(section.findtext("MarginalNote") or "") or None, units[0][2])
+    return units
 
 
 def _is_repealed(section) -> bool:
@@ -183,11 +199,10 @@ def parse_xml(path: Path) -> LegislationDoc | None:
         section_no = _clean(elem.findtext("Label") or "")
         if not section_no:
             continue
-        note = _clean(elem.findtext("MarginalNote") or "") or None
         path_text = " > ".join(headings[k] for k in sorted(headings))
         in_force = _date(elem.get(f"{LIMS}inforce-start-date"))
         section_url = f"{url}section-{section_no}.html"
-        for chunk_no, (label, text) in enumerate(_pack(_section_units(elem), section_no)):
+        for chunk_no, (label, note, text) in enumerate(_pack(_section_units(elem), section_no)):
             header = f"{title}, s. {label}" + (f" — {note}" if note else "")
             doc.chunks.append(SectionChunk(section_no, label, chunk_no, note, path_text,
                                            f"{header}\n{text}", in_force, section_url))

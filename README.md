@@ -158,6 +158,71 @@ decision 67 s; 0 verification problems on the three briefs generated so far.
 API: `GET /cases/{case_id}/filac` returns a cached brief (404 if none),
 `POST /cases/{case_id}/filac?force=false` generates one; `GET /courts` lists courts.
 
+## Federal legislation (Phase 5)
+
+Search now returns the statute sections behind a scenario, next to the cases. Legislation
+comes from the official Justice Laws XML (4,016 acts and regulations) plus the Constitution
+Acts, 1867 and 1982, including the Charter. That is 141,979 section chunks, embedded and
+BM25-indexed like case chunks. Only the current consolidation is loaded; each section keeps
+its in-force start date.
+
+```powershell
+# clone + parse Justice Laws XML and the Constitution page, embed, index (clears statute links)
+.venv\Scripts\python -m scripts.ingest_legislation --dry-run
+.venv\Scripts\python -m scripts.ingest_legislation
+# extract case->statute references from every decision (~13 min); --sample N prints link context
+.venv\Scripts\python -m scripts.link_statutes --sample 20
+# re-run FILAC verification on cached briefs so Law items link to sections (no model calls)
+.venv\Scripts\python -m scripts.filac_cli --reverify-all
+```
+
+**Case→statute links.** `app/statute_refs.py` finds references like "s. 97(1)(b) of the
+Immigration and Refugee Protection Act", "IRPA, s. 170(i)", "subsection 21(3) of the Act"
+(resolved to the act the decision defined as "the Act") and statute citations, and links them
+to the section chunk covering the pinpoint. It found 292,010 links, in 77% of decisions. Each
+section stores how many decisions cite it.
+
+**Section ranking.** BM25 and vector hits over section chunks are grouped to one result per
+section, then fused with RRF. A third list adds sections cited by at least 2 of the top 20
+ranked cases, so a query about an avoidance scheme surfaces ITA s. 245 because the GAAR cases
+cite it.
+
+**FILAC.** Statute items in a brief's Law section link to the resolved sections. A link is
+flagged when the section's current wording came into force after the decision, since the
+court applied an earlier version.
+
+**UI and API.** The UI has a "Relevant legislation" panel with "Decisions citing this
+section", and a "Legislation cited" list per case.
+
+- `POST /search` returns `sections` alongside `results`.
+- `GET /sections/{chunk_id}?limit=` returns a section with the decisions citing it.
+- `GET /cases/{case_id}/statutes` lists the sections a decision cites.
+
+**Eval.** 20 scenarios carry statute gold (37 sections). The SCC scenarios' gold is
+hand-written; for drafted scenarios it is the sections their source decision cites 2+ times.
+Held-out **test** split (`eval/runs/phase5.json`):
+
+| Pipeline | Recall@5 | Recall@10 | MRR |
+|---|---|---|---|
+| Section text only (BM25 + vector) | 0.394 | 0.455 | 0.346 |
+| + sections cited by top cases | 0.530 | 0.682 | 0.530 |
+| **Phase 5 default** (+ citation-count prior) | **0.621** | **0.712** | **0.594** |
+
+Tune split, text only → default: recall@10 0.370 → 0.778, MRR 0.258 → 0.627.
+
+Case ranking is unchanged from Phase 4.
+
+Limits:
+- **Current text only.** An old decision citing a since-renumbered section links to today's
+  section with that number. A reference to a repealed predecessor act links to its
+  replacement.
+- **"The Act" can resolve to the wrong act.** It resolves to the act the decision last
+  defined or named in full, which can be wrong when a decision discusses several.
+- **Charter provisions rank weakly.** The Charter's sections are short and cited in general
+  terms, so on the criminal scenarios ss. 8, 9 and 11 rank 11th, 15th and 8th.
+- **Extracted gold is unreviewed.** It reflects what the source decision cites, which is not
+  always what the scenario needs.
+
 ## Tests
 
 ```powershell
@@ -184,11 +249,12 @@ retriever; interactive docs at `http://localhost:8000/docs`.
 
 ```
 app/          FastAPI app, settings, DB pool, embeddings, reranker, chunking, citations,
+              statute parsing + reference extraction, section search,
               retrieval (gather + rank), FILAC extraction + verification, LLM backends
 docker/       custom Postgres image (pgvector + pg_textsearch)
 migrations/   numbered SQL migrations, applied by scripts/migrate.py
 scripts/      migrate, smoke_test, ingest_a2aj, load_citations, search_cli, eval_retrieval,
-              draft_eval_scenarios, filac_cli
+              draft_eval_scenarios, filac_cli, ingest_legislation, link_statutes
 ui/           Streamlit MVP (talks to the API over HTTP)
 tests/        pytest unit tests
 eval/         eval scenarios (citations resolved, relevance needs human review) and runs/
