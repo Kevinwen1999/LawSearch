@@ -220,6 +220,10 @@ class StatuteIndex:
                 refs.append(StatuteRef(code, section_no, number[len(section_no):], m.group(0).strip(), m.start(), explicit))
         return refs
 
+    def named_codes(self, text: str) -> set[str]:
+        """Codes of every law named in the text, whether or not a section is cited."""
+        return {m.code for m in self._mentions(text.translate(_QUOTES))}
+
     def _mentions(self, text: str) -> list[_Mention]:
         """Laws named in the text, longest title first, without overlaps. Ordered by position."""
         tokens = [(m.group(0).lower(), m.start(), m.end()) for m in _TOKEN.finditer(text)]

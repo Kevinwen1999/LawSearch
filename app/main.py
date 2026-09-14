@@ -13,6 +13,7 @@ from app.db import get_pool
 from app.embeddings import embed
 from app.llm import LLMError
 from app.reranker import score_pairs
+from app.statute_refs import statute_index
 
 
 @asynccontextmanager
@@ -335,8 +336,10 @@ async def create_scenario(
     if gate.status == "ok":
         query = fingerprint.search_query(fp)
         with get_pool().connection() as conn:
-            result = retrieval.search(
-                conn, query, k=k, courts=courts, date_from=date_from, date_to=date_to
+            result = retrieval.search_scenario(
+                conn, query, fingerprint.issue_queries(fp), k=k, courts=courts or fingerprint.case_courts(fp),
+                date_from=date_from, date_to=date_to,
+                section_scope=fingerprint.section_scope(fp, statute_index(conn)),
             )
         results = SearchResponse(
             query=query, mode="hybrid",

@@ -116,7 +116,10 @@ def section_heading(section: dict) -> str:
 
 def render_sections(sections: list[dict]) -> None:
     st.subheader("Relevant legislation")
-    st.caption("Current federal consolidation from Justice Laws. Unofficial text — check the official version.")
+    st.caption(
+        "Federal legislation from Justice Laws; Ontario Acts from A2AJ (Ontario regulations aren't "
+        "covered yet). Unofficial text — check each section's \"current to\" date and the official version."
+    )
     cited_by_section = st.session_state.setdefault("section_citations", {})
     for section in sections:
         with st.container(border=True):
@@ -149,7 +152,7 @@ def render_case_statutes(case_id: str) -> None:
     if case_id in statutes:
         with st.expander(f"Legislation cited in this decision ({len(statutes[case_id])})", expanded=True):
             if not statutes[case_id]:
-                st.caption("No federal statute sections recognized.")
+                st.caption("No federal or Ontario statute sections recognized.")
             for section in statutes[case_id]:
                 link = f" · [Official text]({section['url']})" if section["url"] else ""
                 st.markdown(f"- {section_heading(section)}{link}")
@@ -233,7 +236,7 @@ uploaded_file = st.file_uploader("...or upload a scenario document", type=["pdf"
 st.caption(
     "Either field works on its own; if both are filled the uploaded file is used. "
     "Courts/date filters above apply once results come back — the fingerprint step decides "
-    "whether to search at all (e.g. Ontario matters aren't covered yet)."
+    "whether to search at all (e.g. other provinces aren't covered yet)."
 )
 
 if st.button("Search", type="primary", disabled=not (scenario.strip() or uploaded_file)):

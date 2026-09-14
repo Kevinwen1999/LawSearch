@@ -8,12 +8,15 @@ never assert that a case exists or predict an outcome — it proposes concepts a
 holdings, so downstream retrieval and FILAC remain the only places an authority is ever asserted.
 """
 
+import re
 from dataclasses import dataclass
 
 from app.config import settings
 from app.llm import extract_with_fallback
+from app.section_search import SectionScope
+from app.statute_refs import StatuteIndex
 
-PROMPT_VERSION = "fingerprint-v2"  # v2: coverage note updated for Phase 7 (Ontario)
+PROMPT_VERSION = "fingerprint-v3"  # v3: issues are searched one by one, so phrase them to search well
 
 SYSTEM_PROMPT = """\
 You turn a client's legal scenario into a structured fingerprint that drives search over a \
@@ -36,6 +39,10 @@ Leave needs_clarification empty when jurisdiction plainly doesn't matter to find
 authorities (e.g. immigration, tax, federal criminal procedure, employment insurance, patents).
 
 Output
+- issues: each distinct legal question the scenario raises, most important first, at most 8. \
+Each is searched on its own, so phrase each as a general legal question in legal terms (e.g. \
+"whether a termination clause that breaches the ESA is void") — no party names, dates, amounts \
+or one-off evidence details — and merge near-duplicates rather than listing them twice.
 - search_terms: short keyword phrases suited to a keyword search engine (legal tests, terms of \
 art, statute names) — not full sentences.
 - candidate_statutes: named Acts or regulations that plausibly govern, only if the facts \
@@ -116,6 +123,36 @@ def search_query(fp: Fingerprint) -> str:
     return query or "; ".join(fp.areas_of_law)
 
 
+MAX_ISSUE_QUERIES = 8
+
+
+def issue_queries(fp: Fingerprint) -> list[str]:
+    """One query per issue: in a single combined query, the issue with the most matching text
+    (e.g. termination-clause case law) crowds out the rest (e.g. a Human Rights Code claim)."""
+    return [issue for issue in fp.issues if issue.strip()][:MAX_ISSUE_QUERIES]
+
+
+def section_scope(fp: Fingerprint, index: StatuteIndex) -> SectionScope | None:
+    """Keep legislation to the scenario's jurisdiction, plus any statute the fingerprint names —
+    so an Ontario employment matter doesn't surface the Canada Labour Code unless it's raised."""
+    if fp.jurisdiction not in ("federal", "ontario"):
+        return None
+    text = "; ".join(fp.candidate_statutes)
+    # "Ontario Human Rights Code": the index won't match a title inside a longer capitalized name.
+    named = index.named_codes(text) | index.named_codes(re.sub(r"\bOntario\s+", "", text))
+    return SectionScope((fp.jurisdiction,), tuple(sorted(named)))
+
+
+ONTARIO_BINDING_COURTS = ["ONCA", "SCC"]
+
+
+def case_courts(fp: Fingerprint) -> list[str] | None:
+    """Ontario matters: Ontario Court of Appeal and SCC decisions only — federal courts and
+    tribunals (e.g. the federal public service labour board) don't govern them. Federal matters
+    aren't narrowed, since ONCA decisions on federal law (e.g. criminal) still apply."""
+    return ONTARIO_BINDING_COURTS if fp.jurisdiction == "ontario" else None
+
+
 # Federal and Ontario (ONCA cases + Ontario statutes, Phase 7) are covered; other provinces
 # aren't yet. Ontario Superior Court/tribunal cases still aren't (Phase 8, gated on CanLII) —
 # the search itself is still useful for Ontario, it just won't surface those specifically.
@@ -135,8 +172,9 @@ def check_jurisdiction(fp: Fingerprint) -> Gate:
         return Gate(
             "unsupported_jurisdiction",
             f"This looks like a {fp.jurisdiction.replace('_', ' ')} matter. LawSearch currently "
-            "covers federal case law and federal legislation only — provincial coverage is "
-            "planned but not yet available, so results would not be reliable here.",
+            "covers federal case law and legislation, and Ontario case law and legislation — "
+            "other provincial coverage is planned but not yet available, so results would not "
+            "be reliable here.",
         )
     if fp.needs_clarification:
         return Gate("needs_clarification", "; ".join(fp.needs_clarification))

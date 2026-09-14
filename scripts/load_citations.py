@@ -18,7 +18,7 @@ from huggingface_hub import hf_hub_download
 
 from app.citations import canonical, scr_citations
 from app.db import connect
-from scripts.ingest_a2aj import FEDERAL_COURTS, REPO
+from scripts.ingest_a2aj import JURISDICTION, REPO
 
 
 def build_resolver(conn) -> tuple[dict[str, UUID], dict[tuple[str, str], UUID]]:
@@ -45,7 +45,7 @@ def main() -> None:
     with connect() as conn:
         by_citation, by_court = build_resolver(conn)
 
-        for court in FEDERAL_COURTS:
+        for court in JURISDICTION:
             path = hf_hub_download(REPO, f"{court}/train.parquet", repo_type="dataset")
             columns = ["citation_en", "citation_fr", "cases_cited_en", "cases_cited_fr"]
             for row in pq.read_table(path, columns=columns).to_pylist():

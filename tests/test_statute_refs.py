@@ -159,3 +159,7 @@ def test_laws_from_rows_year_alias_does_not_override_a_distinct_title():
     rows_reversed = list(reversed(rows))
     laws_reversed, _ = _laws_from_rows(rows_reversed)
     assert laws_reversed["Some Act"] == ("C-99", "act")
+
+
+def test_named_codes_finds_laws_without_section_references(index):
+    assert index.named_codes("Criminal Code; Income Tax Act (federal); Ontario Human Rights Code") == {"C-46", "I-3.3"}

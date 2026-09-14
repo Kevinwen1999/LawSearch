@@ -1,8 +1,10 @@
 from types import SimpleNamespace
 
 from app import fingerprint, llm
-from app.fingerprint import Fingerprint, check_jurisdiction, search_query
+from app.fingerprint import Fingerprint, check_jurisdiction, issue_queries, search_query, section_scope
 from app.llm import StructuredResult
+from app.section_search import SectionScope
+from app.statute_refs import StatuteIndex
 
 
 def make_fp(**overrides) -> Fingerprint:
@@ -141,3 +143,48 @@ def test_gate_ok_when_jurisdiction_unknown_but_no_clarification_flagged():
     gate = check_jurisdiction(fp)
 
     assert gate.status == "ok"
+
+
+def test_issue_queries_drops_blanks_and_caps():
+    fp = make_fp(issues=["a", " ", *[f"issue {i}" for i in range(10)]])
+
+    queries = issue_queries(fp)
+
+    assert queries[:2] == ["a", "issue 0"]
+    assert len(queries) == fingerprint.MAX_ISSUE_QUERIES
+
+
+INDEX = StatuteIndex({
+    "Employment Standards Act, 2000": ("SO2000c41", "act"),
+    "Canada Labour Code": ("L-2", "act"),
+    "Criminal Code": ("C-46", "act"),
+    "Human Rights Code": ("RSO1990cH19", "act"),
+})
+
+
+def test_section_scope_keeps_jurisdiction_and_named_statutes():
+    fp = make_fp(jurisdiction="ontario", candidate_statutes=["Employment Standards Act, 2000", "Criminal Code"])
+
+    assert section_scope(fp, INDEX) == SectionScope(("ontario",), ("C-46", "SO2000c41"))
+
+
+def test_section_scope_does_not_let_unnamed_federal_statutes_in():
+    fp = make_fp(jurisdiction="ontario", candidate_statutes=["Occupiers' Liability Act"])
+
+    assert section_scope(fp, INDEX) == SectionScope(("ontario",), ())
+
+
+def test_section_scope_resolves_ontario_prefixed_names():
+    fp = make_fp(jurisdiction="ontario", candidate_statutes=["Ontario Human Rights Code, R.S.O. 1990, c. H.19"])
+
+    assert section_scope(fp, INDEX).named_codes == ("RSO1990cH19",)
+
+
+def test_section_scope_unscoped_when_jurisdiction_unknown():
+    assert section_scope(make_fp(jurisdiction="unknown"), INDEX) is None
+
+
+def test_case_courts_narrows_ontario_to_binding_courts_only():
+    assert fingerprint.case_courts(make_fp(jurisdiction="ontario")) == ["ONCA", "SCC"]
+    assert fingerprint.case_courts(make_fp(jurisdiction="federal")) is None
+    assert fingerprint.case_courts(make_fp(jurisdiction="unknown")) is None

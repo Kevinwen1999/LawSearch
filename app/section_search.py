@@ -3,14 +3,17 @@ the top case results actually cite. Same gather/rank split as app/retrieval.py."
 
 import math
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from uuid import UUID
 
 from pgvector import HalfVector
 
+from app.reranker import score_pairs
+
 RRF_K = 60
 SECTION_CANDIDATES = 100
+RERANK_POOL = 20  # from each of lexical, vector and cited-by-top-cases, before de-duplication
 BM25_INDEX = "legislation_sections_bm25_idx"
 CITED_BY_NORM = math.log1p(20_000)
 
@@ -22,6 +25,14 @@ class SectionConfig:
     graph_weight: float = 1.0       # RRF weight of "cited by the top case results"; 0 disables
     min_citing_cases: int = 2
     citation_weight: float = 0.004  # additive prior by how many decisions cite the section
+
+
+@dataclass(frozen=True)
+class SectionScope:
+    """Restrict section search to these jurisdictions' legislation, plus the Constitution and any
+    law explicitly named (by code) — e.g. a federal Act the scenario itself points to."""
+    jurisdictions: tuple[str, ...]
+    named_codes: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -51,6 +62,7 @@ class SectionCandidates:
     seed_chunks: dict[SectionKey, UUID]      # the chunk those cases cite
     rows: dict[UUID, SectionChunkRow]
     timings_ms: dict[str, float]
+    rerank_scores: dict[UUID, float] = field(default_factory=dict)  # chunk id -> cross-encoder score
 
 
 @dataclass
@@ -73,18 +85,34 @@ class SectionResult:
     lexical_rank: int | None = None
     vector_rank: int | None = None
     citing_cases: int = 0
+    rerank_score: float | None = None
 
 
-def gather_sections(conn, query: str, query_vector: HalfVector | None, seed_case_ids: list[UUID]) -> SectionCandidates:
+def gather_sections(
+    conn,
+    query: str,
+    query_vector: HalfVector | None,
+    seed_case_ids: list[UUID],
+    scope: SectionScope | None = None,
+    rerank: bool = False,
+) -> SectionCandidates:
     timings: dict[str, float] = {}
+    scope_filter, scope_params = "", {}
+    if scope:
+        scope_filter = (
+            "legislation_id IN (SELECT id FROM legislation WHERE jurisdiction = ANY(%(jurisdictions)s) "
+            "OR kind = 'constitution' OR code = ANY(%(named_codes)s))"
+        )
+        scope_params = {"jurisdictions": list(scope.jurisdictions), "named_codes": list(scope.named_codes)}
+    where = f"WHERE {scope_filter}" if scope_filter else ""
 
     started = time.perf_counter()
     rows = conn.execute(
         f"""
-        SELECT id, text <@> to_bm25query(%(q)s, '{BM25_INDEX}') AS score FROM legislation_sections
+        SELECT id, text <@> to_bm25query(%(q)s, '{BM25_INDEX}') AS score FROM legislation_sections {where}
         ORDER BY text <@> to_bm25query(%(q)s, '{BM25_INDEX}') LIMIT %(n)s
         """,
-        {"q": query, "n": SECTION_CANDIDATES},
+        {**scope_params, "q": query, "n": SECTION_CANDIDATES},
     ).fetchall()
     lexical = [r[0] for r in rows if r[1] < 0]
     timings["sections_lexical"] = _ms(started)
@@ -93,8 +121,9 @@ def gather_sections(conn, query: str, query_vector: HalfVector | None, seed_case
     if query_vector is not None:
         started = time.perf_counter()
         rows = conn.execute(
-            "SELECT id, embedding <=> %(v)s AS d FROM legislation_sections ORDER BY embedding <=> %(v)s LIMIT %(n)s",
-            {"v": query_vector, "n": SECTION_CANDIDATES},
+            f"SELECT id, embedding <=> %(v)s AS d FROM legislation_sections {where} "
+            "ORDER BY embedding <=> %(v)s LIMIT %(n)s",
+            {**scope_params, "v": query_vector, "n": SECTION_CANDIDATES},
         ).fetchall()
         vector = [r[0] for r in sorted(rows, key=lambda r: r[1])]
         timings["sections_vector"] = _ms(started)
@@ -105,13 +134,14 @@ def gather_sections(conn, query: str, query_vector: HalfVector | None, seed_case
     seed_chunks: dict[SectionKey, UUID] = {}
     if seed_case_ids:
         for case_id, legislation_id, section_no, chunk_id in conn.execute(
-            """
+            f"""
             SELECT e.src_id, s.legislation_id, s.section_no, min(s.id::text)::uuid
             FROM citation_edges e JOIN legislation_sections s ON s.id = e.dst_id
-            WHERE e.edge_kind = 'case_cites_statute' AND e.src_id = ANY(%s)
+            WHERE e.edge_kind = 'case_cites_statute' AND e.src_id = ANY(%(seeds)s)
+            {"AND s." + scope_filter if scope_filter else ""}
             GROUP BY e.src_id, s.legislation_id, s.section_no
             """,
-            (seed_case_ids,),
+            {**scope_params, "seeds": seed_case_ids},
         ):
             key = (legislation_id, section_no)
             seed_ranks.setdefault(key, []).append(seed_rank[case_id])
@@ -119,7 +149,20 @@ def gather_sections(conn, query: str, query_vector: HalfVector | None, seed_case
     timings["sections_graph"] = _ms(started)
 
     ids = set(lexical) | set(vector) | set(seed_chunks.values())
-    return SectionCandidates(lexical, vector, seed_ranks, seed_chunks, _rows(conn, list(ids)), timings)
+    rows = _rows(conn, list(ids))
+
+    rerank_scores: dict[UUID, float] = {}
+    if rerank:
+        started = time.perf_counter()
+        by_support = sorted(seed_chunks, key=lambda key: len(seed_ranks[key]), reverse=True)
+        pool = list(dict.fromkeys(
+            lexical[:RERANK_POOL] + vector[:RERANK_POOL] + [seed_chunks[key] for key in by_support[:RERANK_POOL]]
+        ))
+        pool = [c for c in pool if c in rows]
+        rerank_scores = dict(zip(pool, score_pairs(query, [rows[c].text for c in pool])))
+        timings["sections_rerank"] = _ms(started)
+
+    return SectionCandidates(lexical, vector, seed_ranks, seed_chunks, rows, timings, rerank_scores)
 
 
 def rank_sections(candidates: SectionCandidates, config: SectionConfig = SectionConfig()) -> list[SectionResult]:
@@ -161,6 +204,14 @@ def rank_sections(candidates: SectionCandidates, config: SectionConfig = Section
                 continue
             result.citing_cases = len(candidates.seed_ranks[key])
             result.score += config.graph_weight / (RRF_K + graph_rank)
+
+    # Annotation only: as a ranking signal it lowered recall@5 on the eval tune split at every
+    # weight tried (0.5-4), so it doesn't move sections; callers may filter on it instead.
+    for chunk_id, score in candidates.rerank_scores.items():
+        row = candidates.rows.get(chunk_id)
+        result = results.get((row.legislation_id, row.section_no)) if row else None
+        if result is not None and (result.rerank_score is None or score > result.rerank_score):
+            result.rerank_score = score
 
     if config.citation_weight:
         for result in results.values():

@@ -8,9 +8,10 @@ Split in two so ranking can be tuned cheaply:
 
 import math
 import time
+from collections.abc import Callable, Hashable
 from dataclasses import dataclass, field, replace
 from datetime import date
-from typing import Literal
+from typing import Literal, TypeVar
 from uuid import UUID
 
 import psycopg
@@ -18,9 +19,10 @@ from pgvector import HalfVector
 
 from app.embeddings import embed
 from app.reranker import score_pairs
-from app.section_search import SectionConfig, SectionResult, gather_sections, rank_sections
+from app.section_search import SectionConfig, SectionResult, SectionScope, gather_sections, rank_sections
 
 Mode = Literal["hybrid", "lexical", "vector"]
+T = TypeVar("T")
 
 RRF_K = 60
 CHUNK_CANDIDATES = 200
@@ -315,6 +317,8 @@ def search(
     config: RankingConfig = DEFAULT_CONFIG,
     k_sections: int = 5,
     section_config: SectionConfig = SectionConfig(),
+    section_scope: SectionScope | None = None,
+    rerank_sections: bool = False,
 ) -> SearchResult:
     candidates = gather(conn, query, mode=mode, courts=courts, date_from=date_from, date_to=date_to)
     started = time.perf_counter()
@@ -326,11 +330,93 @@ def search(
 
     # Seed section search with the final top cases: the provisions strong results apply.
     section_candidates = gather_sections(
-        conn, query, candidates.query_vector, [h.case_id for h in ranked[:SECTION_SEED_CASES]]
+        conn, query, candidates.query_vector, [h.case_id for h in ranked[:SECTION_SEED_CASES]], section_scope,
+        rerank=rerank_sections,
     )
     conn.commit()
     sections = rank_sections(section_candidates, section_config)[:k_sections]
     return SearchResult(cases=cases, sections=sections, timings_ms={**timings, **section_candidates.timings_ms})
+
+
+def search_scenario(
+    conn: psycopg.Connection,
+    query: str,
+    issue_queries: list[str],
+    *,
+    k: int = 10,
+    courts: list[str] | None = None,
+    date_from: date | None = None,
+    date_to: date | None = None,
+    k_sections: int = 8,
+    section_scope: SectionScope | None = None,
+) -> SearchResult:
+    """Search the combined query and each issue separately, then merge (see merge_issue_results)."""
+    results, timings = [], {}
+    for i, q in enumerate([query, *issue_queries]):
+        result = search(
+            conn, q, k=k, courts=courts, date_from=date_from, date_to=date_to,
+            k_sections=k_sections, section_scope=section_scope, rerank_sections=i > 0,
+        )
+        results.append(result)
+        for name, ms in result.timings_ms.items():
+            timings[name] = round(timings.get(name, 0.0) + ms, 1)
+    named = set(section_scope.named_codes) if section_scope else set()
+    cases, sections = merge_issue_results(results, k, k_sections, named)
+    return SearchResult(cases=cases, sections=sections, timings_ms=timings)
+
+
+# Cross-encoder logits. An issue query always returns *something*; below these, what it returns
+# is noise (e.g. an issue with no real counterpart in the corpus) and shouldn't take a slot.
+MIN_ISSUE_CASE_RERANK = 0.0
+MIN_ISSUE_SECTION_RERANK = -5.0
+# The combined query's top cases go first. Chosen on the eval tune split (fingerprinted scenarios):
+# the near-tie with combined-only on case nDCG@10 (0.494 vs 0.500) that keeps the section gain.
+COMBINED_LEAD = 3
+
+
+def merge_issue_results(
+    results: list[SearchResult], k: int, k_sections: int, named_codes: set[str] = frozenset()
+) -> tuple[list[CaseResult], list[SectionResult]]:
+    """Interleave the combined query's results (results[0]) with each issue query's, so every issue
+    gets its best authorities in rather than only the issue with the most matching text. Issue
+    queries only contribute what the cross-encoder judges relevant to that issue, and for sections
+    only from a law the scenario already supports — named, found by the combined query, or cited
+    by top cases — since nearly every Act has some section mentioning "damages" or "termination"."""
+    combined, issues = results[0], results[1:]
+    case_lists = [combined.cases] + [
+        [c for c in r.cases if c.rerank_score is not None and c.rerank_score > MIN_ISSUE_CASE_RERANK]
+        for r in issues
+    ]
+    supported_laws = (
+        set(named_codes)
+        | {s.code for s in combined.sections}
+        | {s.code for r in results for s in r.sections if s.citing_cases}
+    )
+    section_lists = [combined.sections] + [
+        [
+            s for s in r.sections
+            if s.code in supported_laws and s.rerank_score is not None and s.rerank_score > MIN_ISSUE_SECTION_RERANK
+        ]
+        for r in issues
+    ]
+    head = combined.cases[:min(COMBINED_LEAD, k)]
+    taken = {c.case_id for c in head}
+    cases = head + [c for c in interleave(case_lists, lambda c: c.case_id, k + len(head)) if c.case_id not in taken]
+    return cases[:k], interleave(section_lists, lambda s: (s.code, s.section_no), k_sections)
+
+
+def interleave(lists: list[list[T]], key: Callable[[T], Hashable], k: int) -> list[T]:
+    """Round-robin over ranked lists, skipping items already taken. Earlier lists pick first."""
+    out: list[T] = []
+    seen: set[Hashable] = set()
+    for rank in range(max((len(items) for items in lists), default=0)):
+        for items in lists:
+            if rank < len(items) and key(items[rank]) not in seen:
+                seen.add(key(items[rank]))
+                out.append(items[rank])
+                if len(out) == k:
+                    return out
+    return out
 
 
 def to_result(hit: CaseHit, meta: CaseMeta) -> CaseResult:
