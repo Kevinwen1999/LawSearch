@@ -4,6 +4,90 @@ Scenario → relevant Canadian authorities (Ontario + federal) → FILAC summari
 See [implementation-plan.md](implementation-plan.md) for the design and
 [stack-and-setup.md](stack-and-setup.md) for stack decisions.
 
+## Architecture
+
+### Components
+
+```mermaid
+flowchart LR
+    user(["Researcher"]) --> ui["Streamlit UI<br/>ui/streamlit_app.py :8501"]
+    tunnel["Cloudflare Tunnel<br/>(optional, for remote testing)"] -.-> ui
+    ui -- HTTP --> api["FastAPI<br/>app/main.py :8000"]
+
+    subgraph gpu["Local GPU models"]
+        emb["bge-m3<br/>embeddings"]
+        rr["bge-reranker-v2-m3<br/>cross-encoder"]
+    end
+
+    subgraph llm["LLMs (app/llm.py)"]
+        local["LM Studio<br/>qwen3.8-27b"]
+        claude["Claude<br/>(claude-cli or API)"]
+    end
+
+    api --> emb & rr
+    api -- "fingerprint<br/>(falls back to Claude)" --> local
+    api -- "FILAC briefs,<br/>fingerprint fallback" --> claude
+    api --> pg[("Postgres 17<br/>pgvector HNSW + pg_textsearch BM25")]
+    api --> minio[("MinIO<br/>uploaded files")]
+```
+
+### Scenario search (`POST /scenarios`)
+
+```mermaid
+flowchart TD
+    input["Scenario text or file<br/>(PDF / DOCX / TXT)"] --> intake["Intake: extract text, OCR fallback<br/>app/intake.py → file stored in MinIO"]
+    intake --> fp["Fingerprint (LLM, structured JSON)<br/>jurisdiction · issues · key facts ·<br/>candidate statutes · search terms<br/>app/fingerprint.py"]
+    fp --> gate{"Jurisdiction gate"}
+    gate -- "other province" --> unsupported["Warn: not covered yet<br/>(no search)"]
+    gate -- "jurisdiction unstated<br/>and it matters" --> clarify["Ask a clarifying question<br/>(no search)"]
+    gate -- ok --> scope["Scope the search<br/>Ontario → cases from ONCA + SCC<br/>legislation → scenario's jurisdiction<br/>+ Constitution + named statutes"]
+
+    scope --> combined["Combined query<br/>all fingerprint fields"]
+    scope --> issues["One query per issue<br/>(up to 8)"]
+
+    subgraph search["retrieval.search() — run for each query"]
+        direction TB
+        cand["BM25 + vector over case chunks<br/>→ RRF fusion"] --> expand["Citation-graph expansion<br/>(cases cited by top results)"]
+        expand --> rerank["Cross-encoder rerank<br/>+ court and citation-count priors"]
+        rerank --> sections["Statute sections: BM25 + vector<br/>+ sections cited by top cases"]
+    end
+
+    combined --> search
+    issues --> search
+    search --> merge["Merge (retrieval.merge_issue_results)<br/>combined query's top 3 cases first, then round-robin across issues;<br/>issue results must pass the reranker, and issue sections<br/>must come from a law the scenario already supports"]
+    merge --> results["Ranked cases + relevant legislation"]
+    results --> brief["FILAC brief on demand<br/>POST /cases/{id}/filac → Claude<br/>every item anchored to a paragraph and verified"]
+```
+
+Typed queries (`POST /search`) skip intake, fingerprinting and the per-issue merge: one
+`retrieval.search()` call over the whole corpus. A decision that isn't in the corpus (e.g. an
+Ontario Superior Court ruling) can be uploaded to `POST /uploads/decisions` for a FILAC brief
+plus related authorities; it is never added to the searchable corpus.
+
+### Data pipeline (offline)
+
+```mermaid
+flowchart LR
+    subgraph sources["Sources"]
+        a2aj_cases["A2AJ canadian-case-law<br/>federal courts + tribunals, ONCA"]
+        jl["Justice Laws XML<br/>+ Constitution Acts"]
+        a2aj_laws["A2AJ canadian-laws<br/>Ontario Acts (no regulations)"]
+    end
+
+    a2aj_cases --> ingest_cases["ingest_a2aj<br/>chunk by paragraph, embed"] --> cases[("cases<br/>case_chunks")]
+    jl --> ingest_fed["ingest_legislation"] --> leg[("legislation<br/>legislation_sections")]
+    a2aj_laws --> ingest_on["ingest_ontario_legislation"] --> leg
+
+    cases --> cite["load_citations<br/>case → case graph,<br/>cited_by_count"] --> edges[("citation_edges")]
+    cases & leg --> link["link_statutes<br/>case → statute section references"] --> edges
+    edges --> reverify["filac_cli --reverify-all<br/>re-link cached briefs"]
+```
+
+`rebuild.ps1` runs the federal steps in order. ONCA
+(`python -m scripts.ingest_a2aj ONCA`) and Ontario legislation
+(`python -m scripts.ingest_ontario_legislation`) are separate commands. Re-run
+`load_citations` and `link_statutes` after either.
+
 ## Prerequisites
 
 - Docker Desktop (WSL2 backend; virtualization enabled in BIOS)
