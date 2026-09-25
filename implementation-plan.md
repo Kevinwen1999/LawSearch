@@ -209,18 +209,25 @@ moved to Phase 8. See stack-and-setup.md §2/§5 for how each item below was con
   sections; an uploaded decision that isn't in the corpus gets a full FILAC brief via upload.
 
 ### Phase 8 — CanLII-detected ONSC/tribunal candidates (M)
-Blocked on `CANLII_API_KEY` (apply via CanLII's feedback form — manual review, no self-serve
-signup; apply early since the review has a lead time). Everything else about this phase is
-buildable in parallel once the key is in hand; nothing here blocks Phase 7 or vice versa.
+Unblocked 2026-09-24: `CANLII_API_KEY` is provisioned and verified live. CanLII's usage plan
+(confirmed from the key agreement, see stack-and-setup.md §2): **metadata only** (no document text,
+no text search within documents), **5,000 queries/day, 2 requests/second, 1 request at a time**.
+CanLII states limit increases and content access won't be granted, so these are hard ceilings.
 - Rate-limited, cached CanLII client (§5.4): token-bucket 2 req/s, 1 concurrent, ≤5000/day
-  (provisional — the public docs don't independently confirm these numbers; verify the real
-  agreement once the key arrives); aggressive multi-day caching of metadata + citator responses;
-  cap citator hop-depth.
-- Wire into scenario search: for Ontario/ONSC-relevant scenarios, use CanLII's case browse +
-  citator to **detect** likely-relevant ONSC/tribunal decisions and surface them as "relevant —
-  view on CanLII" (no text fetched or cached, no FILAC — link-out only).
+  (tracked in Postgres so the budget survives restarts); aggressive multi-day caching of metadata
+  + citator responses; cap citator hop-depth.
+- Wire into scenario search: for Ontario-relevant scenarios, **detect** likely-relevant
+  ONSC/tribunal decisions and surface them as "relevant — view on CanLII" (no text fetched or
+  cached, no FILAC — link-out only). Since the API has no text search, detection runs through the
+  citator: take our top-ranked corpus cases, pull the decisions citing them, keep ONSC/Ontario
+  tribunal ones, and rank by how many of our top cases each one cites (then recency/metadata).
 - **DoD:** an Ontario scenario also surfaces flagged ONSC/tribunal candidates via CanLII link-out,
   alongside Phase 7's ONCA cases and Ontario statutes.
+- **Status (2026-09-24): DoD met.** `app/canlii.py` (client), `app/canlii_detect.py` (detection),
+  `POST /canlii/candidates`, migration 008, and an Ontario-only UI panel. Verified live: a
+  slip-and-fall scenario through the UI lists occupiers'-liability ONSC decisions; an
+  accident-benefits scenario lists Licence Appeal Tribunal and Divisional Court decisions (21
+  queries, 14.5 s uncached; 0 queries, 0.8 s cached). See README "CanLII detection".
 
 ### Phase 9 — Hardening (M, ongoing)
 - Hallucination guards + citation verification (§5.5), point-in-time correctness on statutes,
@@ -271,9 +278,10 @@ statements to *who said them* (court vs. losing party's argument) to avoid prese
 argument as the holding.
 
 ### 5.4 Rate-limited CanLII client
-Token-bucket limiter enforcing **2 req/s, 1 concurrent, ≤5000/day**; aggressive multi-day caching of
-metadata + citator responses (they rarely change); cap citator hop-depth. Used only for
-detection/link-out, never to fetch or cache full document text.
+Token-bucket limiter enforcing **2 req/s, 1 concurrent, ≤5000/day** (confirmed 2026-09-24 as
+CanLII's hard limits; no increases granted); aggressive multi-day caching of metadata + citator
+responses (they rarely change); cap citator hop-depth. The API exposes metadata only (no document
+text, no text search), so it is used only for detection/link-out.
 
 ### 5.5 Citation extraction + verification
 - Detect neutral citations (`\d{4}\s[A-Z]+\s\d+`) and statute refs (`R?S[OC]\s\d{4},?\s*c\.?\s*\S+`,

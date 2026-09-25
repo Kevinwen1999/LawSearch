@@ -67,5 +67,16 @@ class Settings(BaseSettings):
     # can't tie up the GPU-shared OCR pass for minutes.
     ocr_max_pages: int = 25
 
+    # CanLII metadata API (Phase 8). The usage plan allows 5,000 queries/day, 2 req/s and one
+    # request at a time, with no increases. Pacing at exactly 0.5 s still drew occasional 429s
+    # (network jitter), hence the margin; the daily cap leaves headroom for manual use and for
+    # CanLII's day boundary not being UTC.
+    canlii_api_key: str = ""
+    canlii_min_interval_seconds: float = 0.65
+    canlii_daily_limit: int = 4500
+    canlii_timeout_seconds: float = 60.0
+    canlii_metadata_ttl_days: int = 30
+    canlii_citator_ttl_days: int = 7
+
 
 settings = Settings()

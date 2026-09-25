@@ -29,6 +29,7 @@ flowchart LR
     api -- "FILAC briefs,<br/>fingerprint fallback" --> claude
     api --> pg[("Postgres 17<br/>pgvector HNSW + pg_textsearch BM25")]
     api --> minio[("MinIO<br/>uploaded files")]
+    api -- "citator + metadata<br/>(Ontario scenarios)" --> canlii["CanLII API<br/>metadata only, ≤2 req/s"]
 ```
 
 ### Scenario search (`POST /scenarios`)
@@ -56,6 +57,7 @@ flowchart TD
     issues --> search
     search --> merge["Merge (retrieval.merge_issue_results)<br/>combined query's top 3 cases first, then round-robin across issues;<br/>issue results must pass the reranker, and issue sections<br/>must come from a law the scenario already supports"]
     merge --> results["Ranked cases + relevant legislation"]
+    results --> canliid["Ontario only: CanLII link-outs<br/>POST /canlii/candidates — ONSC and tribunal<br/>decisions citing the top cases (no text)"]
     results --> brief["FILAC brief on demand<br/>POST /cases/{id}/filac → Claude<br/>every item anchored to a paragraph and verified"]
 ```
 
@@ -330,6 +332,31 @@ Limits:
 - **Extracted gold is unreviewed.** It reflects what the source decision cites, which is not
   always what the scenario needs.
 
+## CanLII detection (Phase 8)
+
+Ontario Superior Court and Ontario tribunal decisions aren't in the corpus. For Ontario
+scenarios, `POST /canlii/candidates` (called by the UI after the case list renders) finds
+likely-relevant ones on CanLII and returns them as link-outs: no text, no FILAC.
+
+CanLII's API is metadata only, with no text search, so detection works through the citator:
+
+1. **Seeds**: the scenario's top cases with a neutral citation CanLII can look up
+   (`2020 ONCA 391` → `onca/2020onca391`), at most 8. Older SCC/ONCA decisions cited only by
+   report or docket number can't seed.
+2. **Pool**: Ontario decisions outside the corpus (every Ontario database except `onca`) that
+   cite the seeds. Each seed adds `1 / sqrt(its candidate count)` to every candidate citing it,
+   with a gentle rank decay, so citing several seeds counts most and landmark seeds (*Housen*,
+   ~2,000 Ontario citers) count little. Top 12 go on.
+3. **Rerank**: the cross-encoder scores the fingerprint query against each candidate's CanLII
+   title, topics and keywords; candidates below −4.0 are dropped, and the rest are returned best first.
+
+`app/canlii.py` enforces CanLII's usage plan (5,000 queries/day, 2 req/s, 1 at a time) across
+every process via Postgres: an advisory lock serializes requests, `canlii_usage` holds the
+day's count (capped at `CANLII_DAILY_LIMIT`, default 4,500) and paces requests
+`CANLII_MIN_INTERVAL_SECONDS` apart (default 0.65 s; exactly 0.5 s drew occasional 429s).
+Responses are cached in `canlii_cache` (metadata 30 days, citator 7 days). An uncached
+scenario costs ~21 queries and ~15 s; a cached one under 1 s. `GET /health` shows today's usage.
+
 ## Tests
 
 ```powershell
@@ -342,8 +369,8 @@ Limits:
 .venv\Scripts\python -m uvicorn app.main:app --reload
 ```
 
-`GET /health` reports extension versions and corpus counts; `POST /search` runs the
-retriever; interactive docs at `http://localhost:8000/docs`.
+`GET /health` reports extension versions, corpus counts and today's CanLII usage;
+`POST /search` runs the retriever; interactive docs at `http://localhost:8000/docs`.
 
 ## Services
 
@@ -357,7 +384,8 @@ retriever; interactive docs at `http://localhost:8000/docs`.
 ```
 app/          FastAPI app, settings, DB pool, embeddings, reranker, chunking, citations,
               statute parsing + reference extraction, section search,
-              retrieval (gather + rank), FILAC extraction + verification, LLM backends
+              retrieval (gather + rank), FILAC extraction + verification, LLM backends,
+              CanLII client (canlii.py) + ONSC/tribunal detection (canlii_detect.py)
 docker/       custom Postgres image (pgvector + pg_textsearch)
 migrations/   numbered SQL migrations, applied by scripts/migrate.py
 run.ps1       start database + API + UI

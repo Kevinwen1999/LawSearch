@@ -154,8 +154,8 @@ def case_courts(fp: Fingerprint) -> list[str] | None:
 
 
 # Federal and Ontario (ONCA cases + Ontario statutes, Phase 7) are covered; other provinces
-# aren't yet. Ontario Superior Court/tribunal cases still aren't (Phase 8, gated on CanLII) —
-# the search itself is still useful for Ontario, it just won't surface those specifically.
+# aren't yet. Ontario Superior Court/tribunal decisions aren't in the corpus; Phase 8 surfaces
+# likely-relevant ones from CanLII as link-outs (POST /canlii/candidates), without text.
 NOT_YET_COVERED = {"other_province"}
 
 

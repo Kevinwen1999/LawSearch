@@ -204,6 +204,62 @@ def render_case(rank: int, case: dict) -> None:
                 st.error(response.json().get("detail", f"Brief failed (HTTP {response.status_code})"))
 
 
+CANLII_NOTICES = {
+    "partial": "CanLII stopped answering part-way, so some decisions below may lack details.",
+    "no_seeds": "None of the top cases could be looked up on CanLII, so there was nothing to trace.",
+    "disabled": "CanLII detection is off (no API key configured).",
+    "budget_exhausted": "Today's CanLII query budget is used up; try again tomorrow.",
+    "error": "CanLII lookup failed.",
+}
+
+
+def render_canlii(query: str, results: list[dict]) -> None:
+    st.subheader("Ontario Superior Court and tribunal decisions (CanLII)")
+    st.caption(
+        "These decisions aren't in LawSearch's corpus. They were found on CanLII because they cite "
+        "the top cases above, then ranked by CanLII's own keywords for each decision. Link-out only: "
+        "no text or FILAC brief here, and relevance is a lead to check, not a finding."
+    )
+    if st.session_state.get("canlii") is None:
+        with st.spinner("Tracing citations on CanLII (up to ~20 s when nothing is cached)..."):
+            try:
+                response = httpx.post(
+                    f"{API}/canlii/candidates",
+                    json={"query": query, "seed_case_ids": [c["case_id"] for c in results], "k": 8},
+                    timeout=300,
+                )
+                body = response.json() if response.status_code == 200 else {
+                    "status": "error", "message": f"HTTP {response.status_code}", "candidates": [],
+                }
+            except httpx.HTTPError as exc:
+                body = {"status": "error", "message": type(exc).__name__, "candidates": []}
+        st.session_state.canlii = body
+    body = st.session_state.canlii
+
+    if body["status"] != "ok":
+        notice = CANLII_NOTICES.get(body["status"], "CanLII lookup failed.")
+        detail = f" ({body['message']})" if body.get("message") and body["status"] in ("error", "partial") else ""
+        st.info(notice + detail)
+    if not body["candidates"]:
+        if body["status"] in ("ok", "partial"):
+            st.caption("No sufficiently related Ontario decisions cite the top cases.")
+        return
+    for cand in body["candidates"]:
+        with st.container(border=True):
+            title = cand["title"] or cand["citation"] or "Untitled decision"
+            st.markdown(f"**[{title}]({cand['url']})**" if cand["url"] else f"**{title}**")
+            facts = [f for f in (cand["citation"], cand["court_name"], cand["decision_date"]) if f]
+            cites = "; ".join(s["title"] or s["citation"] for s in cand["cites"])
+            st.caption(" · ".join(facts) + f" · cites {cites}")
+            if cand["topics"]:
+                st.caption(f"Topics: {cand['topics']}")
+            if cand["keywords"]:
+                with st.expander("CanLII keywords"):
+                    st.write(cand["keywords"])
+    if body.get("queries_sent"):
+        st.caption(f"Used {body['queries_sent']} CanLII queries ({body['queries_today']:,}/{body['daily_limit']:,} today).")
+
+
 st.title("LawSearch")
 st.caption(
     "Research assistance, not legal advice. Case text comes from unofficial copies and briefs are "
@@ -223,8 +279,8 @@ with st.sidebar:
     st.divider()
     st.caption(
         "Coverage: federal courts and tribunals from A2AJ (Federal Court and FCA decisions start "
-        "in 2001), plus ONCA (from 1998). Ontario Superior Court and tribunal decisions aren't "
-        "covered yet — upload one directly for a full FILAC brief, or check CanLII."
+        "in 2001), plus ONCA (from 1998). Ontario Superior Court and tribunal decisions aren't in "
+        "the corpus; for Ontario scenarios, ones that cite the top cases are listed as CanLII links."
     )
 
 scenario = st.text_area(
@@ -252,9 +308,11 @@ if st.button("Search", type="primary", disabled=not (scenario.strip() or uploade
         body = response.json()
         st.session_state.fingerprint = body["fingerprint"]
         st.session_state.gate = body["gate"]
+        st.session_state.canlii = None
         if body["results"]:
             st.session_state.results = body["results"]["results"]
             st.session_state.sections = body["results"]["sections"]
+            st.session_state.search_query = body["results"]["query"]
         else:
             st.session_state.results, st.session_state.sections = None, None
     else:
@@ -284,3 +342,5 @@ if results is not None:
         st.info("No matching cases.")
     for rank, case in enumerate(results, 1):
         render_case(rank, case)
+    if results and fingerprint and fingerprint["jurisdiction"] == "ontario":
+        render_canlii(st.session_state.search_query, results)

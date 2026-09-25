@@ -7,7 +7,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from psycopg.rows import dict_row
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
-from app import filac, fingerprint, intake, retrieval
+from app import canlii, canlii_detect, filac, fingerprint, intake, retrieval
 from app.config import settings
 from app.db import get_pool
 from app.embeddings import embed
@@ -156,6 +156,11 @@ def health() -> dict:
         "cases": cases,
         "chunks_estimate": chunks,
         "filac": {"backend": settings.filac_backend, "model": settings.filac_model},
+        "canlii": {
+            "configured": bool(settings.canlii_api_key),
+            "queries_today": canlii.default_client().store.used_today(),
+            "daily_limit": settings.canlii_daily_limit,
+        },
     }
 
 
@@ -378,7 +383,7 @@ async def create_uploaded_decision(
     file: UploadFile = File(...), k: Annotated[int, Form(ge=1, le=50)] = 10
 ) -> UploadedDecisionResponse:
     """Phase 7's upload-driven FILAC bridge: for a decision outside the corpus (e.g. an ONSC
-    judgment, not covered until CanLII detection lands in Phase 8) — upload it, get a full FILAC
+    judgment; Phase 8's CanLII detection only links out to those) — upload it, get a full FILAC
     brief and a related-authority search grounded in that brief's own issues and facts. The
     document is chunked in-memory only for FILAC anchors; it's never embedded or added to
     case_chunks, so it never affects anyone else's /search or /scenarios results.
@@ -412,4 +417,78 @@ async def create_uploaded_decision(
     return UploadedDecisionResponse(
         case_id=case_id, upload_key=upload_key, extracted_chars=len(text),
         filac=FilacOut.model_validate(record), related=related,
+    )
+
+
+class CanLIIRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    # The scenario's search query (ScenarioResponse.results.query) and its top cases, best first.
+    query: str = Field(min_length=1, max_length=8000)
+    seed_case_ids: list[UUID] = Field(min_length=1, max_length=30)
+    k: int = Field(8, ge=1, le=20)
+
+
+class CanLIISeedOut(BaseModel):
+    citation: str
+    title: str | None
+
+
+class CanLIICandidateOut(BaseModel):
+    citation: str | None
+    title: str | None
+    court_name: str | None
+    database_id: str
+    decision_date: date | None
+    url: str | None
+    topics: str | None
+    keywords: str | None
+    cites: list[CanLIISeedOut]
+    rerank_score: float | None
+
+
+class CanLIIResponse(BaseModel):
+    status: Literal["ok", "partial", "no_seeds", "disabled", "budget_exhausted", "error"]
+    message: str | None
+    candidates: list[CanLIICandidateOut]
+    seeds_checked: list[CanLIISeedOut]
+    queries_sent: int
+    queries_today: int
+    daily_limit: int
+
+
+@app.post("/canlii/candidates", response_model=CanLIIResponse)
+def canlii_candidates(req: CanLIIRequest) -> CanLIIResponse:
+    """Phase 8: Ontario Superior Court and tribunal decisions on CanLII that cite the scenario's
+    top cases, reranked against CanLII's keywords — link-out only, no text and no FILAC. Separate
+    from /scenarios because an uncached run spends ~20 CanLII queries at under 2/s (~15 s)."""
+    with get_pool().connection() as conn:
+        rows = conn.execute(
+            "SELECT id, citation, court, style_of_cause FROM cases WHERE id = ANY(%s)",
+            (req.seed_case_ids,),
+        ).fetchall()
+    by_id = {r[0]: r[1:] for r in rows}
+    seeds = [
+        seed for case_id in req.seed_case_ids
+        if case_id in by_id and (seed := canlii_detect.to_seed(*by_id[case_id]))
+    ]
+    client = canlii.default_client()
+    result = canlii_detect.detect(client, req.query, seeds, score_pairs, k=req.k)
+    return CanLIIResponse(
+        status=result.status,
+        message=result.message,
+        candidates=[
+            CanLIICandidateOut(
+                **{f: getattr(c, f) for f in (
+                    "citation", "title", "court_name", "database_id", "decision_date", "url",
+                    "topics", "keywords", "rerank_score",
+                )},
+                cites=[CanLIISeedOut(citation=s.citation, title=s.title) for s in c.cites],
+            )
+            for c in result.candidates
+        ],
+        seeds_checked=[CanLIISeedOut(citation=s.citation, title=s.title) for s in result.seeds],
+        queries_sent=result.queries_sent,
+        queries_today=client.store.used_today(),
+        daily_limit=client.daily_limit,
     )

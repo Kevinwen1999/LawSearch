@@ -16,7 +16,7 @@ and the local machine. Dated 2026-09-12.
 | Python | ⚠️ 3.10, 3.12 (Windows Store), 3.13 all installed, no clean 3.12 | install Python 3.12 from python.org (not the Store build — it sandboxes filesystem access and complicates venvs); create the project venv against it explicitly |
 | `psql` CLI | ❌ not on PATH | not needed — Postgres runs in the `pgvector` Docker container; exec in (`docker exec -it ... psql`) or use a GUI client (DBeaver/pgAdmin) if preferred |
 | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `HF_TOKEN` | ❌ none set | must be provisioned before Phase 3 (LLM calls) — see §3 |
-| `CANLII_API_KEY` | ❌ not yet requested (still empty as of 2026-09-14) | **apply today** — see §2. No longer blocks Phase 7 (split out to Phase 8 on 2026-09-14, see §5), but Phase 8 can't start without it and the review has a lead time |
+| `CANLII_API_KEY` | ✅ provisioned; live call verified 2026-09-24 | usage plan confirmed — see §2 (CanLII API). Unblocks Phase 8 |
 
 ---
 
@@ -67,18 +67,25 @@ and the local machine. Dated 2026-09-12.
   `app/statute_refs.py`'s title index queries `legislation` with no jurisdiction filter — case→
   statute linking for ONCA decisions works the moment the titles are loaded, no new code.
 
-### CanLII API — ✅ confirmed, but has a lead time
+### CanLII API — ✅ key provisioned, usage plan confirmed (2026-09-24)
 - Real, read-only REST API. Endpoints: case browse (by court/database), case metadata, citator
   (cited-by / cites, both directions), legislation browse/metadata. Matches the plan's "detection +
   link-out" use exactly — no full-text redistribution permitted, consistent with never caching
   full text (§5.4 of the plan).
-- **Access requires a manual application** through CanLII's feedback form, describing project
-  scope — not instant, self-serve signup. Since it now only gates Phase 8 (split out from the
-  original Phase 7 on 2026-09-14 specifically so the CanLII-independent work isn't blocked) but
-  the review could take a while, **apply now** so the key is ready when you get there.
-- The plan's "2 req/s, ≤5000/day" limiter numbers weren't independently visible in the public docs
-  (they may be stated in the agreement CanLII sends with the key) — treat as provisional until the
-  key arrives and confirm the actual cap then.
+- Access required a manual application through CanLII's feedback form. The key is now in `.env`;
+  a live `caseBrowse` call returned HTTP 200 with 409 case databases, including every Ontario one
+  Phase 8 targets (`onsc`, `onscdc`, `oncj`, `onltb`, `onhrt`, `onwsiat`, `onlat`, …).
+- **Usage plan, confirmed from CanLII's key agreement (2026-09-24):**
+  - Access is to **metadata only**. Document text, and text-based searches within documents, are
+    not available through the API.
+  - **5,000 queries per day; 2 requests per second; 1 request at a time.**
+  - CanLII states that requests to raise these limits or to allow direct access to content won't
+    be granted and might be ignored, so design within them; don't plan on an increase.
+- Responses carry no rate-limit headers, so the client has to enforce the limits itself rather
+  than react to server signals.
+- Consequence for Phase 8: with no text search, the API can't find ONSC decisions by topic.
+  Detection has to go through the citator (decisions that cite the corpus cases our own retrieval
+  already ranked highly), plus metadata (title, keywords) for ranking.
 
 ### Citation parsing — ⚠️ don't depend on `legal-citation-parser`
 - It exists on PyPI and does what §5.5 describes (extracts/normalizes citations, can hit the CanLII
@@ -155,3 +162,6 @@ sources and packages.
 | 2026-09-14 | Section search over one federal+Ontario pool; `/scenarios` ran one combined query | `/scenarios` (only — `/search` unchanged): sections scoped to the fingerprint's jurisdiction + Constitution + statutes it names; Ontario matters' cases scoped to ONCA+SCC unless the user picks courts; combined query plus one query per fingerprint issue (≤8), merged with the combined query's top 3 first, then round-robin | Same review: an Ontario employment scenario surfaced the Canada Labour Code, and its Human Rights Code branch vanished behind termination-clause case law. Eval on the 33 scoreable scenarios, fingerprinted (all single-issue federal, so a regression guard): recall@10 0.543→0.591, nDCG@10 0.414→0.435, section recall 0.725→0.850; tune split case nDCG@10 0.500→0.494 (inside the 0.01 near-tie rule), test 0.322→0.372. Issue queries only contribute cases with a cross-encoder score > 0, and sections > −5 from a law the combined query, a named statute or top cases' citations already support (without that, unrelated Acts' "damages" sections got in) |
 | 2026-09-14 | (tried) Cross-encoder reranking of statute sections | Not used for ranking; scores only gate per-issue section results | Lowered section recall@5 on the tune split at every weight tried (0.574 → 0.463–0.537); long scenario queries likely crowd the passage out of the input |
 | 2026-09-14 | "A2AJ `canadian-laws` also carries Ontario statutes + regulations" (row above) | Acts only — no Ontario regulations in the dataset | O. Reg. 288/01 (ESA termination/severance) and every other Ontario regulation are a coverage gap that needs another source (e-Laws), not a ranking fix; the legislation caption in the UI now says so |
+| 2026-09-24 | CanLII limits "2 req/s, ≤5000/day" provisional (§2) | **Confirmed** by CanLII's key agreement: 5,000 queries/day, 2 req/s, 1 concurrent, metadata only, no increases granted | Phase 8's limiter and daily budget are sized against these as hard ceilings. No text search via the API, so ONSC detection runs through the citator from our own top-ranked cases |
+| 2026-09-24 | CanLII "case browse + citator" to detect ONSC candidates (plan Phase 8) | Citator only, seeded by the scenario's top corpus cases; pooled by co-citation (`1/sqrt(candidates per seed)`, gentle rank decay), top 12 get a metadata call, then the cross-encoder scores the fingerprint query against CanLII's title/topics/keywords with a −4.0 floor | The API has no text search, and case browse only lists by date, so browse can't find by topic. Calibrated on the three Ontario eval scenarios: raw scenario text as the rerank query left on-point decisions at −5 to −6.5, mixed with noise; the fingerprint query lifted them to −4.2 and above and pushed noise (e.g. a Charter-evidence ruling citing a slip-and-fall appeal) below. Pre-neutral-citation SCC/ONCA seeds (`[1951] SCR 470`, dockets) can't be mapped to CanLII ids and are skipped |
+| 2026-09-24 | Limiter "token bucket 2 req/s" (plan §5.4) | Postgres-backed: advisory lock (1 at a time across processes), `canlii_usage` (daily count, UTC day, capped at 4,500) and 0.65 s pacing, with a retry on 429 | Pacing at exactly 0.5 s drew a 429 in 1 of 8 live requests (jitter). No rate-limit headers to react to, and the API server, scripts and manual probes must share one budget, so the state lives in the database rather than in-process |
