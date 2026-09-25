@@ -1,0 +1,65 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "5f98edfee520e6a3fc304792f6427c877aedb088",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Patent law",
+   "Pharmaceutical/PM(NOC) regulatory litigation",
+   "Patent validity - sound prediction/utility",
+   "Patent validity - specification sufficiency and misrepresentation"
+  ],
+  "issues": [
+   "Whether the patent is invalid for lack of demonstrated or soundly predicted utility, given the compound was never tested in humans before filing",
+   "Whether the doctrine of sound prediction was satisfied as of the filing/priority date based only on animal data",
+   "Whether inaccuracies between the patent's reported test data (species used, dosing/timing, toxicity figures) and the actual underlying lab records render the patent invalid for misrepresentation, insufficient disclosure, or lack of factual basis for the prediction",
+   "Whether statements in the patent regarding low toxicity, longer duration of action, and greater safety versus prior compounds constitute a 'promise of the patent' that, if unfulfilled, invalidates the claims",
+   "Whether a new invalidity argument (data inaccuracy) not pleaded in the original notice of allegation can be raised or considered given it was based on information obtained only through later disclosure/discovery",
+   "Whether the adequacy/sufficiency of the notice of allegation can be raised by the court on its own motion, and what standard applies",
+   "Whether the composition claim for treating senile dementia is separately vulnerable to inutility/overbreadth even if the compound claim survives"
+  ],
+  "key_facts": [
+   "Generic manufacturer filed an abbreviated new drug submission and served a notice of allegation (NOA) challenging validity of a listed compound patent",
+   "Brand company and foreign patent owner commenced prohibition/infringement-related proceeding to block regulatory approval pending patent expiry",
+   "Patent filed in the late 1980s, prosecuted based solely on animal (non-human) testing",
+   "Patent claims both the compound itself and a composition for treating senile dementia",
+   "Post-filing disclosure of lab notebooks revealed discrepancies: wrong rodent species reported for a brain tissue test, incorrect dosing/timing described in a learning-impairment study, and a toxicity figure that was extrapolated rather than actually administered",
+   "Client alleges patent text promises low toxicity, longer duration of action, and greater safety versus two comparator drugs",
+   "The data-accuracy invalidity argument was not raised in the original NOA because lab records were unavailable at that time",
+   "The judge raised the adequacy of the NOA sua sponte at the hearing"
+  ],
+  "causes_of_action": [
+   "Patent invalidity - lack of utility / no sound prediction",
+   "Patent invalidity - insufficiency of disclosure / inaccurate specification",
+   "Impeachment of patent validity in response to prohibition application",
+   "Procedural challenge to scope/adequacy of notice of allegation"
+  ],
+  "candidate_statutes": [
+   "Patent Act (Canada)",
+   "Patented Medicines (Notice of Compliance) Regulations",
+   "Food and Drug Regulations (Canada)"
+  ],
+  "search_terms": [
+   "sound prediction doctrine patent utility",
+   "promise of the patent doctrine",
+   "utility date of filing animal testing patent",
+   "notice of allegation sufficiency PM(NOC)",
+   "amending notice of allegation new grounds",
+   "inutility inaccurate data patent specification",
+   "factual basis and line of reasoning sound prediction",
+   "listed patent compound composition claim senile dementia",
+   "prohibition application generic drug patent",
+   "court raising issue sua sponte notice of allegation adequacy"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 11384,
+   "output_tokens": 1339,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.024378800000000003,
+   "duration_ms": 14218
+  }
+ }
+}

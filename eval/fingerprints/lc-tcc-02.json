@@ -1,0 +1,65 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "8cac5958ed821b635fa1c105e3beeed292e96439",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Tax litigation / Tax Court of Canada procedure",
+   "Income tax - deductibility of expenses",
+   "Civil procedure - pleadings"
+  ],
+  "issues": [
+   "Whether a reply's pleaded assumptions that recite evidence, argument, or characterizations rather than material facts should be struck",
+   "Whether pleading unproven allegations of fraud or illegality as 'assumptions' improperly shifts the burden of proof onto the taxpayer",
+   "Whether allegations concerning the conduct and internal affairs of third parties are relevant and properly pleaded in a reply",
+   "Whether settlement payments, interest and legal fees paid without any judicial finding of wrongdoing are deductible as business expenses under the Income Tax Act",
+   "Whether a legal theory that expenses are non-deductible where conduct is 'egregious or repulsive', absent a finding of wrongdoing, is so untenable as to be struck at a preliminary stage",
+   "Whether the requirement that pleaded facts (not evidence or argument) be included in a reply has been breached",
+   "What the appropriate remedy is where a reply mixes proper assumptions with improper argument and evidentiary detail (strike whole reply vs. particular paragraphs vs. leave to amend)"
+  ],
+  "key_facts": [
+   "Client is a large Canadian financial institution acting through foreign affiliates",
+   "Affiliates participated in structured financing transactions with an energy company that later collapsed in an accounting scandal",
+   "Client was named in a securities class action and in claims by the bankruptcy estate, both settled for billions",
+   "No court ever made a finding that the client did anything wrongful",
+   "Client deducted settlement payments, interest, and legal fees as business expenses",
+   "Minister denied the deductions and reassessed",
+   "Crown's reply in the Tax Court appeal exceeds 80 pages, with roughly 70 pages of pleaded assumptions",
+   "Assumptions characterize the financings as 'disguised loans' and assert the client knowingly aided fraud and falsified financial statements",
+   "Reply recites conduct/internal affairs of the energy company and other third parties, quotes U.S. pleadings, and names dismissed employees",
+   "Crown's theory is that 'egregious or repulsive' conduct bars deduction regardless of income-earning purpose"
+  ],
+  "causes_of_action": [
+   "Tax Court of Canada appeal from reassessment (deductibility of business expenses)",
+   "Motion to strike portions of the Crown's reply / motion for particulars"
+  ],
+  "candidate_statutes": [
+   "Income Tax Act (Canada), s. 18(1)(a) and s. 18(1)(b)",
+   "Tax Court of Canada Rules (General Procedure)"
+  ],
+  "search_terms": [
+   "motion to strike reply Tax Court",
+   "assumptions of fact vs argument pleading",
+   "pleading evidence not permitted",
+   "burden of proof assumptions taxpayer",
+   "deductibility of settlement payments business expense",
+   "egregious or repulsive conduct deduction",
+   "public policy limitation business expense deduction",
+   "income-earning purpose test section 18(1)(a)",
+   "scandalous frivolous vexatious pleading strike",
+   "relevance third party conduct pleadings",
+   "65302 British Columbia Ltd v Canada illegal payments deduction",
+   "fraud allegations pleaded as assumptions"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 15370,
+   "output_tokens": 2498,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0466992,
+   "duration_ms": 19296
+  }
+ }
+}

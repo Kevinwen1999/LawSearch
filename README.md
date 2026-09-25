@@ -55,8 +55,8 @@ flowchart TD
 
     combined --> search
     issues --> search
-    search --> merge["Merge (retrieval.merge_issue_results)<br/>combined query's top 3 cases first, then round-robin across issues;<br/>issue results must pass the reranker, and issue sections<br/>must come from a law the scenario already supports"]
-    merge --> results["Ranked cases + relevant legislation"]
+    search --> merge["Group (retrieval.group_issue_results)<br/>cases: best k overall, then each issue's own best issue_k<br/>(issue cases must pass the reranker);<br/>sections: round-robin, issue sections only from a law<br/>the scenario already supports"]
+    merge --> results["Cases grouped by issue + relevant legislation"]
     results --> canliid["Ontario only: CanLII link-outs<br/>POST /canlii/candidates — ONSC and tribunal<br/>decisions citing the top cases (no text)"]
     results --> brief["FILAC brief on demand<br/>POST /cases/{id}/filac → Claude<br/>every item anchored to a paragraph and verified"]
 ```
@@ -184,6 +184,21 @@ POST /search
 
 The Phase 2 baseline on the original 14 SCC-gold scenarios is in
 `eval/runs/phase2-baseline.json` (hybrid recall@10 0.607). Phase 4 below supersedes it.
+
+## Scenario eval (`/scenarios` pipeline)
+
+`scripts/eval_retrieval.py` (below) scores one search over the raw scenario text.
+`scripts/eval_scenarios.py` scores what `/scenarios` does: fingerprint, combined + per-issue
+searches, then merge. It compares merge strategies on the same search results, and reports
+per-issue coverage for scenarios whose gold authorities carry `issues` tags (`on-003`/`on-004`).
+
+```powershell
+.venv\Scripts\python -m scripts.eval_scenarios -v --out eval/runs/scenarios.json
+.venv\Scripts\python -m scripts.eval_scenarios --reuse     # re-score without searching again
+```
+
+Fingerprints are cached in `eval/fingerprints/` (keyed by prompt version and scenario text), so
+reruns need no LLM calls. Open gaps it found are tracked in [IMPROVEMENTS.md](IMPROVEMENTS.md).
 
 ## Retrieval quality (Phase 4)
 
@@ -391,7 +406,7 @@ migrations/   numbered SQL migrations, applied by scripts/migrate.py
 run.ps1       start database + API + UI
 rebuild.ps1   load or refresh all data, steps in dependency order
 scripts/      common.ps1 (shared by run/rebuild), migrate, smoke_test, ingest_a2aj,
-              load_citations, search_cli, eval_retrieval, draft_eval_scenarios, filac_cli,
+              load_citations, search_cli, eval_retrieval, eval_scenarios, draft_eval_scenarios, filac_cli,
               ingest_legislation, link_statutes
 ui/           Streamlit MVP (talks to the API over HTTP)
 tests/        pytest unit tests

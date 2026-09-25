@@ -1,0 +1,55 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "b822a6f55aa1091e071fe1f05c5d63bbcb3dd210",
+ "fingerprint": {
+  "jurisdiction": "unknown",
+  "areas_of_law": [
+   "employment law",
+   "wrongful dismissal",
+   "contract interpretation"
+  ],
+  "issues": [
+   "whether an employee terminated without cause is entitled to damages representing bonus/LTIP payments that would have vested during the reasonable notice period",
+   "whether an 'actively employed' eligibility clause in an incentive plan is sufficiently clear and unambiguous to rebut the presumptive entitlement to damages for lost incentive compensation during the notice period",
+   "whether such a clause was brought to the employee's attention so as to be enforceable",
+   "how reasonable notice period is calculated for the purposes of assessing damages that would include the incentive plan payout",
+   "whether the incentive plan is a 'wage' or otherwise governed by employment standards legislation restricting termination-related exclusions"
+  ],
+  "key_facts": [
+   "client was terminated without cause",
+   "client participated in a long-term incentive plan (LTIP)",
+   "the LTIP would have paid out during what should have been the reasonable notice period",
+   "the plan contains an 'actively employed' eligibility requirement to qualify for payout"
+  ],
+  "causes_of_action": [
+   "wrongful dismissal",
+   "breach of contract (failure to pay damages in lieu of reasonable notice, including lost incentive compensation)"
+  ],
+  "candidate_statutes": [
+   "Employment Standards Act, 2000 (Ontario)",
+   "Canada Labour Code"
+  ],
+  "search_terms": [
+   "actively employed clause bonus notice period",
+   "Matthews v Ocean Nutrition",
+   "reasonable notice damages incentive plan",
+   "unambiguous exclusion clause bonus entitlement",
+   "wrongful dismissal LTIP payout",
+   "bonus during reasonable notice period",
+   "termination clause bringing to attention",
+   "damages in lieu of notice bonus entitlement"
+  ],
+  "needs_clarification": [
+   "What province or jurisdiction governs the employment relationship (e.g., where the employee worked/was employed), and is the employer federally regulated?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2157,
+   "output_tokens": 809,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.012572400000000001,
+   "duration_ms": 8301
+  }
+ }
+}

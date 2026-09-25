@@ -1,0 +1,58 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "9f3d0a80d4ce42eaff155c0e35ac32a7a3faf3da",
+ "fingerprint": {
+  "jurisdiction": "unknown",
+  "areas_of_law": [
+   "Contract law",
+   "Commercial law - distribution agreements",
+   "Good faith in contractual performance"
+  ],
+  "issues": [
+   "Whether a non-renewal clause can be defeated by dishonest conduct in the exercise of contractual discretion",
+   "Whether the duty of honest performance under Bhasin v Hrynew was breached by active misrepresentation about renewal intentions",
+   "Whether damages are available for reliance losses caused by a party's misleading conduct during the term of a contract that allowed non-renewal",
+   "What remedies are available where a party fails to exercise a contractual right (non-renewal) honestly",
+   "Whether the misleading statements constitute negligent or fraudulent misrepresentation independent of the contractual non-renewal right",
+   "How damages would be measured (expectation vs reliance) if a breach of the duty of honest performance is found"
+  ],
+  "key_facts": [
+   "Distribution agreement between the parties",
+   "Contract contained a clause permitting non-renewal by either party",
+   "During the final year, the other party actively misled the client about its intentions regarding renewal",
+   "The misleading conduct caused the client not to seek alternative arrangements",
+   "Agreement was ultimately not renewed"
+  ],
+  "causes_of_action": [
+   "Breach of the duty of honest performance (Bhasin v Hrynew)",
+   "Breach of good faith in contractual performance",
+   "Negligent misrepresentation",
+   "Fraudulent misrepresentation",
+   "Breach of contract (bad faith exercise of non-renewal right)"
+  ],
+  "candidate_statutes": [],
+  "search_terms": [
+   "duty of honest performance",
+   "Bhasin v Hrynew",
+   "good faith contractual performance",
+   "bad faith non-renewal",
+   "negligent misrepresentation reliance damages",
+   "distribution agreement termination",
+   "organizing principle of good faith",
+   "reliance damages misrepresentation",
+   "duty to correct false impression"
+  ],
+  "needs_clarification": [
+   "Which province or jurisdiction governs the distribution agreement (e.g., where the parties operate/contract was performed), since this affects which court's law and precedents apply?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2161,
+   "output_tokens": 847,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.012951400000000002,
+   "duration_ms": 8595
+  }
+ }
+}

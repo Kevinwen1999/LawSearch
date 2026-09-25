@@ -1,0 +1,75 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "838dabe44d12d173e74dfd64654496355baad44e",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Canada Pension Plan disability benefits",
+   "Federal social benefits/administrative law",
+   "Employment (background context, low probative weight)"
+  ],
+  "issues": [
+   "Whether the claimant had a 'severe and prolonged' disability, within the meaning of s. 42(2) CPP, on or before the end of his minimum qualifying period (MQP)",
+   "Whether retrospective medical and lay evidence (psychiatrist's contemporaneous report ~1 year post-MQP, later psychiatrist report, absence of the original family doctor's records, and later family doctor records showing no significant limitations) is sufficient to establish disability as of the MQP date",
+   "How to weigh a gap in contemporaneous medical evidence caused by loss of original records against later corroborating specialist evidence, and what inferences may be drawn from post-MQP records showing improvement or lack of limitations",
+   "Whether the claimant's low, sporadic earnings (factory, dishwashing, cashier, stock work) constitute valid pensionable/contributory employment income for CPP purposes, affecting the calculation of the contributory/minimum qualifying period",
+   "How far back CPP disability benefits and retroactive payment can be paid given the statutory limit on retroactivity (generally up to 15 months prior to application under s. 69/s. 42(2)) despite a 16-year delay in applying",
+   "Whether the 'incapacity' provisions (if still legally available for this application) could extend the period for late application based on the claimant's ongoing psychiatric condition preventing him from forming/expressing intention to apply",
+   "Whether the combined effect of PTSD, major depression, and chronic back pain meets the 'severe' (incapable regularly of pursuing any substantially gainful occupation) and 'prolonged' (long continued and of indefinite duration) test",
+   "Whether the claimant's personal characteristics (age, education, language, work history) are relevant to assessing employability under the Villani real-world/employability approach"
+  ],
+  "key_facts": [
+   "Claimant is a man in his late fifties, a refugee who arrived alone in his twenties",
+   "High school education from abroad plus one year of ESL; limited language proficiency",
+   "Work history: low-paying entry-level jobs (factory, dishwashing, cashier, stock work) with long gaps on EI and welfare",
+   "Recurring major depression since early 2000s",
+   "Laid off from last job in the mid-2000s",
+   "While off work and in psychiatric treatment, was robbed and violently beaten, causing PTSD",
+   "Also has long-standing chronic back pain from an earlier workplace injury",
+   "Went onto provincial disability benefits shortly after the assault and has not worked since",
+   "Applied for CPP disability approximately 16 years after the relevant coverage period ended",
+   "His CPP minimum qualifying period (based on contributions) ended at the end of the year of the assault",
+   "Original family doctor who treated him at the relevant time has retired and those records are lost/unavailable",
+   "Only medical records available: (1) a new family doctor's records starting 8 years after the MQP ended, which the government says show no significant limitations; (2) a psychiatrist's report prepared for a lawyer about one year after the assault; (3) a recent report from the same psychiatrist",
+   "Claimant's past earnings were very low but steady across various entry-level jobs"
+  ],
+  "causes_of_action": [
+   "Application/appeal for Canada Pension Plan disability benefits",
+   "Appeal to Social Security Tribunal (General Division and/or Appeal Division) from denial of CPP-D",
+   "Possible request for incapacity provision to extend/backdate application under s. 60 CPP (if applicable) or late application under s. 42(2)"
+  ],
+  "candidate_statutes": [
+   "Canada Pension Plan, R.S.C. 1985, c. C-8 (esp. ss. 42(2), 44(1)(b), 44(2), 66, 67, 69, 70, 74, 81)",
+   "Canada Pension Plan Regulations",
+   "Department of Employment and Social Development Act (governs Social Security Tribunal jurisdiction/appeals)",
+   "Income Tax Act (relevant only to characterization of income for CPP contribution/QPP purposes)"
+  ],
+  "search_terms": [
+   "CPP disability severe and prolonged",
+   "minimum qualifying period CPP",
+   "Villani test employability",
+   "Social Security Tribunal CPP disability appeal",
+   "retroactive CPP disability payments 15 months",
+   "incapacity provision CPP late application",
+   "contemporaneous medical evidence disability onset",
+   "post-MQP medical evidence retrospective diagnosis",
+   "pensionable earnings low income CPP contributions",
+   "chronic pain PTSD depression disability claim",
+   "loss of medical records disability claim evidentiary gap",
+   "real world approach personal characteristics disability CPP"
+  ],
+  "needs_clarification": [
+   "What is the exact application date and the exact end date of the minimum qualifying period, to calculate maximum permissible retroactivity and confirm the 15-month retroactive payment limit under s. 42(2)/s. 69 CPP?",
+   "Is there any evidence (medical, psychiatric, or lay) suggesting the claimant was incapable of forming or expressing an intention to apply for CPP-D benefits during some or all of the 16-year delay, which could support an incapacity argument, or has that provision already been repealed/inapplicable to this application?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 11407,
+   "output_tokens": 1930,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.030402800000000004,
+   "duration_ms": 21535
+  }
+ }
+}

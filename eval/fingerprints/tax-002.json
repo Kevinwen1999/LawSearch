@@ -1,0 +1,53 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "1ed22d63e20d0bd1a9e118bf8a1736422a4e3325",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Tax law",
+   "Income tax - general anti-avoidance rule (GAAR)"
+  ],
+  "issues": [
+   "Whether a series of transactions constitutes an avoidance transaction under the GAAR",
+   "How abuse or misuse of the Income Tax Act's provisions is assessed for GAAR purposes",
+   "What is the object, spirit and purpose of the specific provisions relied upon in the transactions",
+   "Whether the transactions frustrate or defeat the underlying rationale of the provisions relied upon despite literal compliance",
+   "Who bears the burden of proof on the abuse/misuse analysis under GAAR",
+   "What is the appropriate standard of review on appeal of a GAAR determination"
+  ],
+  "key_facts": [
+   "A corporate group carried out a series of transactions",
+   "The transactions technically complied with the literal wording of the Income Tax Act",
+   "The only real effect of the transactions was to eliminate or reduce tax otherwise payable",
+   "CRA has invoked the general anti-avoidance rule (GAAR) in response"
+  ],
+  "causes_of_action": [
+   "Application/assessment under the general anti-avoidance rule (section 245, Income Tax Act)"
+  ],
+  "candidate_statutes": [
+   "Income Tax Act, RSC 1985, c 1 (5th Supp), s 245 (GAAR)",
+   "Income Tax Act - specific provisions relied upon in the impugned transactions (e.g., relevant deduction, rollover, or attribution provisions)"
+  ],
+  "search_terms": [
+   "general anti-avoidance rule",
+   "GAAR abuse test",
+   "object spirit and purpose",
+   "avoidance transaction section 245",
+   "series of transactions tax avoidance",
+   "misuse or abuse Income Tax Act",
+   "textual contextual and purposive analysis tax",
+   "Canada Trustco GAAR",
+   "Copthorne Holdings abuse test"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2166,
+   "output_tokens": 788,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0123774,
+   "duration_ms": 8305
+  }
+ }
+}

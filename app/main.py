@@ -101,12 +101,19 @@ class SectionOut(BaseModel):
     citing_cases: int = 0
 
 
+class IssueGroupOut(BaseModel):
+    issue: str | None  # None: best matches for the scenario overall
+    case_ids: list[UUID]
+
+
 class SearchResponse(BaseModel):
     query: str
     mode: retrieval.Mode
     results: list[CaseOut]
     sections: list[SectionOut]
     timings_ms: dict[str, float]
+    # /scenarios only: which of `results` answer which fingerprinted issue (a case can be in several).
+    groups: list[IssueGroupOut] = []
 
 
 class CitingCaseOut(BaseModel):
@@ -308,12 +315,14 @@ async def create_scenario(
     file: UploadFile | None = File(None),
     text: Annotated[str | None, Form()] = None,
     k: Annotated[int, Form(ge=1, le=50)] = 10,
+    issue_k: Annotated[int, Form(ge=0, le=10)] = retrieval.ISSUE_CASES,
     courts: Annotated[list[CourtCode] | None, Form()] = None,
     date_from: Annotated[date | None, Form()] = None,
     date_to: Annotated[date | None, Form()] = None,
 ) -> ScenarioResponse:
     """Upload a scenario document (PDF/DOCX/text) or pass raw text; fingerprint it, gate on
-    jurisdiction, and run the same retrieval a typed query would use."""
+    jurisdiction, and run the same retrieval a typed query would use. Cases come back grouped:
+    the best `k` overall, then each fingerprinted issue's best `issue_k`."""
     if file is None and not (text and text.strip()):
         raise HTTPException(400, "provide either a file or text")
 
@@ -342,7 +351,8 @@ async def create_scenario(
         query = fingerprint.search_query(fp)
         with get_pool().connection() as conn:
             result = retrieval.search_scenario(
-                conn, query, fingerprint.issue_queries(fp), k=k, courts=courts or fingerprint.case_courts(fp),
+                conn, query, fingerprint.issue_queries(fp), k=k, per_issue=issue_k,
+                courts=courts or fingerprint.case_courts(fp),
                 date_from=date_from, date_to=date_to,
                 section_scope=fingerprint.section_scope(fp, statute_index(conn)),
             )
@@ -351,6 +361,7 @@ async def create_scenario(
             results=[CaseOut.model_validate(c) for c in result.cases],
             sections=[SectionOut.model_validate(s) for s in result.sections],
             timings_ms=result.timings_ms,
+            groups=[IssueGroupOut(issue=g.issue, case_ids=[c.case_id for c in g.cases]) for g in result.groups],
         )
 
     return ScenarioResponse(

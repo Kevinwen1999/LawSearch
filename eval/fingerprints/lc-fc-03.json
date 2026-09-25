@@ -1,0 +1,59 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "7e5b739c60e9960ab43c50dc06a236fd58b2ecc4",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Refugee and immigration law",
+   "Judicial review of administrative decisions"
+  ],
+  "issues": [
+   "Whether the Refugee Appeal Division's implausibility findings meet the standard that such findings be made only in the clearest of cases",
+   "Whether the Board reasonably relied on general country-condition documentation to reject an individualized account of attempted forced recruitment",
+   "Whether discounting a single expert source's reference to 'anecdotal evidence' of forced recruitment, and distinguishing urban from rural incidence, was reasonable given the claimant's specific circumstances",
+   "Whether the Board's finding that supporting documents (medical report, leases, family letters) failed to corroborate the recruitment allegation was reasonable given what those documents could realistically show",
+   "Whether the Board's reasoning was internally inconsistent or illogical in finding it implausible both that the group could not locate the claimant for two years and that armed men would abandon an abduction attempt when confronted",
+   "What weight, if any, recent Federal Court decisions addressing the same country documentation and similar recruitment allegations should have on judicial review of this decision",
+   "What standard of review (reasonableness) applies to the Refugee Appeal Division's plausibility and credibility findings on judicial review"
+  ],
+  "key_facts": [
+   "Claimant holds dual citizenship in two Middle Eastern countries and fled the one where he was residing",
+   "An armed political-militia group pressured him by phone for about two years to join fighters in a neighbouring country's war, escalating from appeals/money offers to threats",
+   "Claimant repeatedly changed phone number, job and address in the capital to evade the group",
+   "Masked men with machine guns forced entry into his mother's home and tried to drag him out, injuring his mother when she and his sister resisted; the men left empty-handed",
+   "The Refugee Appeal Division rejected the claim as implausible",
+   "The RAD relied on national documentation package material from academics, embassy staff and NGOs stating the group does not forcibly recruit",
+   "The RAD discounted a single expert's reference to anecdotal evidence of forced recruitment as occurring mainly in rural areas, distinguishing the claimant's urban residence",
+   "The RAD found it implausible that a group with claimed intelligence/military capacity could not locate the claimant for two years yet abandoned an armed abduction attempt when confronted by two women",
+   "The RAD found supporting evidence (medical report, leases, family letters) did not corroborate the recruitment allegation",
+   "Two recent Federal Court decisions involving the same country documentation and similar recruitment allegations found the Board's reasoning unreasonable"
+  ],
+  "causes_of_action": [
+   "Application for judicial review of a Refugee Appeal Division decision"
+  ],
+  "candidate_statutes": [
+   "Immigration and Refugee Protection Act",
+   "Federal Courts Act"
+  ],
+  "search_terms": [
+   "implausibility findings clearest of cases",
+   "plausibility findings refugee claim reasonableness",
+   "forced recruitment militia country conditions",
+   "national documentation package weight expert evidence",
+   "reasonableness review Vavilov RAD decision",
+   "corroborating evidence credibility refugee claim",
+   "internal inconsistency implausibility finding judicial review",
+   "anecdotal evidence country condition documents weight"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 14866,
+   "output_tokens": 2032,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0400692,
+   "duration_ms": 18845
+  }
+ }
+}

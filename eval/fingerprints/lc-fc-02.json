@@ -1,0 +1,65 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "cbfb7161ec89f5f6f56511d24a9435e50e911d6f",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "immigration and refugee law",
+   "administrative law / judicial review"
+  ],
+  "issues": [
+   "What is the correct legal test and standard of proof for assessing an internal flight alternative (IFA) in a refugee appeal",
+   "Whether the tribunal applied too high a standard of proof in assessing the risk of being located by the agent of persecution in the proposed IFA location",
+   "Whether a claimant's sworn testimony is presumed truthful absent reasons to doubt it, and whether lack of corroboration alone can rebut that presumption",
+   "Whether the tribunal erred by giving little weight to a psychological report because it was based on a single non-treating assessment",
+   "Whether discrimination, hardship (cost of living, non-indigenous status) and mental health evidence were properly considered in assessing the reasonableness prong of the IFA test",
+   "What standard of review applies to a refugee appeal division's factual and mixed fact-law findings on judicial review",
+   "Whether the tribunal's treatment of corroborating evidence (husband's affidavit) and country condition evidence was reasonable"
+  ],
+  "key_facts": [
+   "Client fled a West African country with two young daughters to avoid FGM being imposed by her husband's extended family",
+   "She was accused of witchcraft by the family based on an oracle's pronouncement following a death in the family",
+   "The family reported her to police, who questioned her husband for about two hours about her whereabouts",
+   "No further police contact in the roughly ten months since the interrogation",
+   "Client alleges a husband's uncle with political campaign connections could locate her anywhere via personal influence and a national police computer network",
+   "Refugee Appeal Division found a viable internal flight alternative (IFA) in another major city far from her home region",
+   "Tribunal found her evidence about the uncle's reach thin and inconsistent, and noted the husband's short affidavit did not mention the uncle or the interrogation",
+   "Tribunal found discrimination against non-indigenous residents and high cost of living did not make the IFA unreasonable given her education and family business success",
+   "Tribunal gave little weight to a psychologist's report diagnosing depression and PTSD, based on a single one-hour assessment by a non-treating clinician",
+   "Client seeks judicial review challenging the standard of proof applied, the treatment of her sworn evidence, and treatment of mental health and country condition evidence"
+  ],
+  "causes_of_action": [
+   "Application for judicial review of a Refugee Appeal Division decision to the Federal Court"
+  ],
+  "candidate_statutes": [
+   "Immigration and Refugee Protection Act",
+   "Federal Courts Act",
+   "IRB Chairperson's Guideline 4 (Women Refugee Claimants Fearing Gender-Related Persecution)",
+   "IRB Chairperson's Guideline on Vulnerable Persons"
+  ],
+  "search_terms": [
+   "internal flight alternative test",
+   "IFA reasonableness prong",
+   "presumption of truthfulness refugee claimant Maldonado",
+   "standard of proof well-founded fear of persecution",
+   "weight given to psychological report non-treating clinician",
+   "corroborating evidence refugee credibility",
+   "female genital mutilation refugee claim",
+   "witchcraft accusation persecution claim",
+   "gender-related persecution guidelines",
+   "reasonableness standard of review Vavilov refugee decision",
+   "agent of persecution reach IFA location",
+   "country condition evidence weight RAD"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2533,
+   "output_tokens": 1314,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.019387400000000003,
+   "duration_ms": 12853
+  }
+ }
+}

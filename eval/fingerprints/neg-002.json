@@ -1,0 +1,53 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "d1690c52597c90a2a2cae33c0accf037ba4ab750",
+ "fingerprint": {
+  "jurisdiction": "unknown",
+  "areas_of_law": [
+   "tort law",
+   "negligence",
+   "occupiers' liability / premises liability"
+  ],
+  "issues": [
+   "whether a business owner owes a duty of care to third parties injured as a result of a thief's negligent driving of a stolen vehicle",
+   "whether leaving a vehicle unlocked with keys inside on commercial premises breaches the standard of care owed to third parties",
+   "whether the intervening criminal act of theft breaks the chain of causation between the business's conduct and the passenger's injuries",
+   "whether theft of the vehicle and subsequent negligent driving causing injury was a reasonably foreseeable consequence of leaving keys in an unlocked car",
+   "whether the thief's status as a minor affects the foreseeability or novus actus interveniens analysis",
+   "what standard of care applies to a commercial garage or parking lot operator regarding security of vehicles on its premises"
+  ],
+  "key_facts": [
+   "a teenager stole an unlocked car with the keys left inside from a commercial garage lot",
+   "the thief crashed the stolen car",
+   "a passenger in the stolen car was seriously injured",
+   "the vehicle was located on the premises of a commercial garage business at the time of the theft"
+  ],
+  "causes_of_action": [
+   "negligence against the business owner/operator",
+   "occupiers' liability (if a premises-based duty applies)"
+  ],
+  "candidate_statutes": [],
+  "search_terms": [
+   "duty of care third party criminal acts",
+   "keys left in ignition negligence",
+   "foreseeability novus actus interveniens theft",
+   "stolen vehicle negligence third party injury",
+   "intervening criminal act chain of causation",
+   "occupiers liability duty of care",
+   "reasonable foreseeability of theft leading to accident",
+   "Anns/Cooper test duty of care"
+  ],
+  "needs_clarification": [
+   "In which province or jurisdiction did the theft, crash, and injury occur, since this is a provincial tort/negligence matter?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 14127,
+   "output_tokens": 1566,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0321432,
+   "duration_ms": 15359
+  }
+ }
+}

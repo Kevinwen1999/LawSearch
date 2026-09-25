@@ -1,0 +1,52 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "21cf1f05e5f99d6d881710b1ca2ce63fda4a39ea",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Immigration law",
+   "Humanitarian and compassionate applications",
+   "Administrative law"
+  ],
+  "issues": [
+   "What legal standard governs an immigration officer's obligation to consider the best interests of children affected by a humanitarian and compassionate (H&C) decision",
+   "Whether an H&C officer's failure to meaningfully analyze the best interests of children born in Canada renders the decision unreasonable",
+   "What degree of attentiveness, sensitivity, and responsiveness to a child's best interests is required in H&C decisions",
+   "Whether the decision is reviewable on judicial review for failing to properly consider a relevant factor"
+  ],
+  "key_facts": [
+   "Family applied to remain in Canada on humanitarian and compassionate grounds",
+   "The H&C application was refused by an immigration officer",
+   "The family has two children who were born in Canada",
+   "The officer's decision barely addressed the interests of the Canadian-born children"
+  ],
+  "causes_of_action": [
+   "Judicial review of an H&C decision under the Immigration and Refugee Protection Act",
+   "Failure to consider best interests of the child as a relevant factor rendering decision unreasonable"
+  ],
+  "candidate_statutes": [
+   "Immigration and Refugee Protection Act, section 25(1)",
+   "Federal Courts Act (judicial review provisions)",
+   "Convention on the Rights of the Child (as interpretive aid, not directly enforceable)"
+  ],
+  "search_terms": [
+   "best interests of the child H&C",
+   "humanitarian and compassionate grounds section 25",
+   "Baker v Canada best interests of the child",
+   "attentive and sensitive to the interests of children",
+   "judicial review reasonableness H&C decision",
+   "child born in Canada H&C application",
+   "Kanthasamy v Canada humanitarian and compassionate"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2161,
+   "output_tokens": 755,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.012050400000000001,
+   "duration_ms": 6465
+  }
+ }
+}

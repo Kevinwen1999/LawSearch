@@ -1,0 +1,64 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "209ef56cbe7def69fc6cde82a96b493dce283634",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Administrative law",
+   "Passport law / federal regulatory revocation",
+   "Procedural fairness",
+   "Judicial review"
+  ],
+  "issues": [
+   "Whether the passport program's duty of procedural fairness required disclosure of the full investigative record (facial recognition comparison results, police and investigator emails, internal investigation report, references to uncharged/other criminal allegations) before revoking the passport",
+   "Whether providing only a 'summary' of findings, rather than the underlying material relied upon, satisfies the duty to disclose the case to meet",
+   "Whether reliance on undisclosed facial recognition comparison evidence to find identity misrepresentation breaches procedural fairness",
+   "Whether referencing other criminal charges never put to the affected person in the fairness letters violates the right to know and respond to the case against him",
+   "What remedy follows a breach of procedural fairness in this context — whether the revocation decision and the refusal-of-services period must be quashed or remitted for redetermination",
+   "Whether the decision-maker's conclusion that the response 'did not neutralize the findings' was reasonable given the undisclosed material",
+   "What level/content of procedural fairness applies to passport revocation and denial-of-service decisions",
+   "Whether the Canadian Passport Order and related policy create a right to disclosure of the investigative file prior to decision"
+  ],
+  "key_facts": [
+   "Client held and had renewed a Canadian passport under a name used for years without prior issue",
+   "A provincial ID office flagged him, triggering a federal passport investigation",
+   "Passport Program sent fairness letters alleging false/misleading information and use of an assumed identity, and noting an indictable charge for breach of release condition",
+   "Client responded with a court order for delayed birth registration, resulting birth registration, and a sworn declaration in his current name",
+   "A second letter stated the response did not neutralize the findings",
+   "Director revoked the passport and imposed approximately a five-year refusal of passport services",
+   "On judicial review, the certified/produced record revealed material never disclosed to him: facial recognition comparison results (matching current-name photos but not earlier-name passports), police/provincial investigator emails, an incomplete internal investigation report, and references to other criminal charges never raised in the fairness letters"
+  ],
+  "causes_of_action": [
+   "Application for judicial review of administrative decision (passport revocation and refusal of services) on grounds of breach of procedural fairness",
+   "Alternatively, unreasonableness of the decision under Vavilov standard"
+  ],
+  "candidate_statutes": [
+   "Canadian Passport Order (SI/81-86)",
+   "Department of Foreign Affairs, Trade and Development Act",
+   "Federal Courts Act (judicial review provisions)",
+   "Canadian Charter of Rights and Freedoms (mobility rights, s.6; s.7 possibly engaged)"
+  ],
+  "search_terms": [
+   "passport revocation procedural fairness",
+   "duty to disclose investigative file passport",
+   "fairness letter summary of findings sufficiency",
+   "Canadian Passport Order revocation refusal of services",
+   "facial recognition evidence undisclosed administrative decision",
+   "right to know the case to meet",
+   "Vavilov reasonableness passport decision",
+   "identity fraud passport revocation judicial review",
+   "disclosure of extrinsic evidence administrative tribunal",
+   "passport entitlement refusal of services five years"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2497,
+   "output_tokens": 1266,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.018728400000000003,
+   "duration_ms": 12680
+  }
+ }
+}

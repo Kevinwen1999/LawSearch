@@ -1,0 +1,76 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "d3c980a34793d2204f9d81fe89e76171f221b049",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Income tax law",
+   "Indian Act tax exemption (s.87)",
+   "Aboriginal and treaty rights / constitutional law",
+   "Tax Court of Canada procedure (motions to strike)",
+   "Crown-Indigenous fiduciary duty / duty to consult"
+  ],
+  "issues": [
+   "Whether it is plain and obvious that the pleaded constitutional and inherent-rights arguments disclose no reasonable basis to succeed, warranting striking the appeals/notice of constitutional question",
+   "Whether the Tax Court of Canada has jurisdiction to consider constitutional and Aboriginal/inherent-rights arguments raised in an income tax appeal",
+   "Whether employment income earned off-reserve through a placement agency serving urban Indigenous organizations can be 'situated on a reserve' under the connecting-factors test for the s.87 Indian Act tax exemption",
+   "Whether taxation of status Indians' off-reserve employment income breaches s.35 Aboriginal or treaty rights absent historical consent or a constitutional conference",
+   "Whether the Crown owes a fiduciary duty or duty to consult specifically in relation to the general taxation of status Indians' off-reserve income",
+   "Whether taxing off-reserve earnings of status Indians differently from on-reserve earnings constitutes discrimination under s.15 of the Charter",
+   "Whether taxation of off-reserve income infringes mobility or livelihood rights under s.6 of the Charter",
+   "What pleading and evidentiary standard applies to self-represented litigants on a motion to strike constitutional pleadings in tax litigation"
+  ],
+  "key_facts": [
+   "Both clients are registered status Indians and members of First Nations",
+   "They lived and worked off-reserve in a large city during the years in issue",
+   "Employment was through a placement agency hiring out Indigenous workers to urban social service organizations",
+   "One worked part-time as an Indigenous support worker; the other at an Indigenous legal clinic",
+   "Employment income was not reported to the tax authority",
+   "CRA reassessed on the basis the income was not situated on a reserve, so the s.87 Indian Act exemption did not apply",
+   "Appellants are self-represented and filed appeals plus a notice of constitutional question",
+   "Arguments raised include lack of Indigenous consent to taxation, lack of consultation, absence of a constitutional conference, breach of fiduciary duty/duty to consult, discrimination against off-reserve workers, interference with right to earn a living, and lack of Tax Court jurisdiction over inherent rights",
+   "The Crown has brought a motion to strike the appeals and the constitutional notice as disclosing no reasonable prospect of success"
+  ],
+  "causes_of_action": [
+   "Appeal of tax reassessment under the Income Tax Act",
+   "Claim that employment income is situated on a reserve and exempt under s.87 of the Indian Act",
+   "Constitutional challenge to taxation of off-reserve income under s.35 Aboriginal rights",
+   "Alleged breach of Crown fiduciary duty and duty to consult regarding taxation",
+   "Alleged Charter s.15 discrimination and s.6 mobility/right-to-earn-a-living infringement"
+  ],
+  "candidate_statutes": [
+   "Indian Act, s. 87",
+   "Income Tax Act",
+   "Tax Court of Canada Act",
+   "Tax Court of Canada Rules (General Procedure), Rule 53",
+   "Constitution Act, 1982, s. 35",
+   "Constitution Act, 1867, s. 91(24)",
+   "Canadian Charter of Rights and Freedoms, s. 15",
+   "Canadian Charter of Rights and Freedoms, s. 6"
+  ],
+  "search_terms": [
+   "motion to strike Tax Court plain and obvious",
+   "connecting factors test Williams s.87 Indian Act exemption",
+   "situs of employment income status Indian off-reserve",
+   "Bastien Estate Dubé connecting factors",
+   "purpose of s.87 Indian Act exemption erosion of property",
+   "notice of constitutional question Tax Court jurisdiction",
+   "duty to consult Crown fiduciary duty taxation",
+   "Aboriginal rights s.35 taxation consent",
+   "Charter s.15 discrimination Indigenous off-reserve taxation",
+   "self-represented litigant pleading standard strike constitutional claim",
+   "Tax Court of Canada Rules Rule 53 no reasonable grounds",
+   "inherent jurisdiction Tax Court Aboriginal rights"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 11327,
+   "output_tokens": 1653,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.027213800000000003,
+   "duration_ms": 16094
+  }
+ }
+}

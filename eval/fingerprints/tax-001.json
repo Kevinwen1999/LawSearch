@@ -1,0 +1,53 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "b3d65b415631975173574474a518ca5598bd6482",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Tax law",
+   "Income tax - business/property income deductions"
+  ],
+  "issues": [
+   "What is the legal test for determining whether an activity constitutes a 'source of income' for tax purposes, as opposed to a personal hobby or non-commercial pursuit",
+   "Whether losses from an activity conducted without a reasonable expectation of profit can be deducted from other income",
+   "What factors distinguish a business carried on with a view to profit from a personal endeavour lacking commercial character",
+   "Whether the 'reasonable expectation of profit' test survives as a standalone legal test or has been replaced by an objective 'pursuit of profit' inquiry"
+  ],
+  "key_facts": [
+   "Client operated a small side business",
+   "The business incurred losses for several consecutive years",
+   "Client deducted the business losses against other income",
+   "CRA reassessed the taxpayer on the basis the activity was a hobby, not a source of income"
+  ],
+  "causes_of_action": [
+   "Appeal of CRA reassessment disallowing business loss deductions",
+   "Dispute over characterization of activity as a source of income under the Income Tax Act"
+  ],
+  "candidate_statutes": [
+   "Income Tax Act (Canada), section 3",
+   "Income Tax Act (Canada), section 9",
+   "Income Tax Act (Canada), section 18(1)(a)",
+   "Income Tax Act (Canada), section 67"
+  ],
+  "search_terms": [
+   "source of income test",
+   "reasonable expectation of profit",
+   "Stewart v Canada",
+   "hobby versus business",
+   "personal endeavour commercial activity",
+   "pursuit of profit test",
+   "loss deduction disallowed CRA",
+   "business income vs personal pursuit"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2148,
+   "output_tokens": 714,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0115684,
+   "duration_ms": 6220
+  }
+ }
+}

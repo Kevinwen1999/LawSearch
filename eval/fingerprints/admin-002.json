@@ -1,0 +1,55 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "5363405cc5d324ca5f9b2ae41b278d154380aaec",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Administrative law",
+   "Judicial review",
+   "Licensing/regulatory law"
+  ],
+  "issues": [
+   "What does the common law duty of procedural fairness require of a federal decision-maker cancelling a licence",
+   "Whether failure to provide notice of the allegations and an opportunity to respond breaches the duty of fairness",
+   "Whether failure to give reasons for cancelling a licence breaches the duty of fairness",
+   "What factors determine the content of the duty of fairness owed in a given administrative context (Baker factors)",
+   "What remedy is available on judicial review where a decision was made in breach of procedural fairness",
+   "Whether the enabling statute or regulations impose specific procedural requirements for licence cancellation"
+  ],
+  "key_facts": [
+   "A federal decision-maker cancelled the client's licence",
+   "The client was not given an opportunity to respond to the allegations against him before cancellation",
+   "No reasons were given for the decision"
+  ],
+  "causes_of_action": [
+   "Application for judicial review on grounds of breach of procedural fairness (denial of right to be heard and failure to give reasons)"
+  ],
+  "candidate_statutes": [
+   "Federal Courts Act",
+   "Statutory Powers Procedure Act (if applicable, though likely not federal)",
+   "Enabling federal statute/regulations governing the specific licence (unspecified)"
+  ],
+  "search_terms": [
+   "duty of procedural fairness",
+   "Baker v Canada factors",
+   "right to be heard audi alteram partem",
+   "duty to give reasons administrative decision",
+   "licence cancellation procedural fairness",
+   "content of duty of fairness",
+   "judicial review remedy breach of fairness",
+   "notice and opportunity to respond administrative decision"
+  ],
+  "needs_clarification": [
+   "What specific federal statute or regulatory scheme governs this licence, so the applicable procedural requirements can be identified?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2145,
+   "output_tokens": 760,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0120154,
+   "duration_ms": 8063
+  }
+ }
+}

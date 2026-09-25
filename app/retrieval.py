@@ -140,10 +140,17 @@ class CaseResult:
 
 
 @dataclass
+class IssueGroup:
+    issue: str | None  # None: the combined query, i.e. the best matches for the scenario overall
+    cases: list[CaseResult]
+
+
+@dataclass
 class SearchResult:
     cases: list[CaseResult]
     sections: list[SectionResult]
     timings_ms: dict[str, float]
+    groups: list[IssueGroup] = field(default_factory=list)
 
 
 def fuse(lexical: list[ChunkHit], vector: list[ChunkHit], rrf_k: int = RRF_K) -> list[CaseHit]:
@@ -344,25 +351,37 @@ def search_scenario(
     issue_queries: list[str],
     *,
     k: int = 10,
+    per_issue: int | None = None,
     courts: list[str] | None = None,
     date_from: date | None = None,
     date_to: date | None = None,
     k_sections: int = 8,
     section_scope: SectionScope | None = None,
 ) -> SearchResult:
-    """Search the combined query and each issue separately, then merge (see merge_issue_results)."""
-    results, timings = [], {}
-    for i, q in enumerate([query, *issue_queries]):
-        result = search(
-            conn, q, k=k, courts=courts, date_from=date_from, date_to=date_to,
-            k_sections=k_sections, section_scope=section_scope, rerank_sections=i > 0,
-        )
-        results.append(result)
+    """Search the combined query and each issue separately, then group (see group_issue_results):
+    the combined query's top k, then each issue's own top `per_issue`."""
+    per_issue = ISSUE_CASES if per_issue is None else per_issue
+    results = run_scenario_queries(
+        conn, query, issue_queries, k=max(k, ISSUE_SEARCH_DEPTH), courts=courts, date_from=date_from,
+        date_to=date_to, k_sections=k_sections, section_scope=section_scope,
+    )
+    named = set(section_scope.named_codes) if section_scope else set()
+    groups, cases, sections = group_issue_results(results, issue_queries, k, per_issue, k_sections, named)
+    timings: dict[str, float] = {}
+    for result in results:
         for name, ms in result.timings_ms.items():
             timings[name] = round(timings.get(name, 0.0) + ms, 1)
-    named = set(section_scope.named_codes) if section_scope else set()
-    cases, sections = merge_issue_results(results, k, k_sections, named)
-    return SearchResult(cases=cases, sections=sections, timings_ms=timings)
+    return SearchResult(cases=cases, sections=sections, timings_ms=timings, groups=groups)
+
+
+def run_scenario_queries(
+    conn: psycopg.Connection, query: str, issue_queries: list[str], *, k: int, k_sections: int, **filters
+) -> list[SearchResult]:
+    """One search() per query: the combined query first, then each issue (sections reranked)."""
+    return [
+        search(conn, q, k=k, k_sections=k_sections, rerank_sections=i > 0, **filters)
+        for i, q in enumerate([query, *issue_queries])
+    ]
 
 
 # Cross-encoder logits. An issue query always returns *something*; below these, what it returns
@@ -372,6 +391,10 @@ MIN_ISSUE_SECTION_RERANK = -5.0
 # The combined query's top cases go first. Chosen on the eval tune split (fingerprinted scenarios):
 # the near-tie with combined-only on case nDCG@10 (0.494 vs 0.500) that keeps the section gain.
 COMBINED_LEAD = 3
+# Grouped output: each issue's own top cases, after the combined query's. Depth each issue query
+# is searched to, so the reranker gate still leaves enough to fill its group.
+ISSUE_CASES = 3
+ISSUE_SEARCH_DEPTH = 20
 
 
 def merge_issue_results(
@@ -383,10 +406,43 @@ def merge_issue_results(
     only from a law the scenario already supports — named, found by the combined query, or cited
     by top cases — since nearly every Act has some section mentioning "damages" or "termination"."""
     combined, issues = results[0], results[1:]
-    case_lists = [combined.cases] + [
-        [c for c in r.cases if c.rerank_score is not None and c.rerank_score > MIN_ISSUE_CASE_RERANK]
-        for r in issues
+    case_lists = [combined.cases] + [_relevant_issue_cases(r) for r in issues]
+    head = combined.cases[:min(COMBINED_LEAD, k)]
+    taken = {c.case_id for c in head}
+    cases = head + [c for c in interleave(case_lists, lambda c: c.case_id, k + len(head)) if c.case_id not in taken]
+    return cases[:k], _merge_sections(results, k_sections, named_codes)
+
+
+def group_issue_results(
+    results: list[SearchResult],
+    issues: list[str],
+    k: int,
+    per_issue: int,
+    k_sections: int,
+    named_codes: set[str] = frozenset(),
+) -> tuple[list[IssueGroup], list[CaseResult], list[SectionResult]]:
+    """Best matches overall, then each issue's own best cases. Interleaving everything into k
+    slots alone left each of eight issues about one case, so an issue's second-best authority
+    (Matthews behind another bonus case) never showed. Groups: merge_issue_results' top k (the
+    combined query's lead, then each issue's best), then each issue's top `per_issue` cases that
+    pass the reranker gate; a case may appear in several groups. The flat list is every case
+    once, in that order, so its first k are unchanged from merge_issue_results. (Leading with the
+    combined query's top k instead lowered test-split nDCG@10 from 0.400 to 0.340.)"""
+    head, sections = merge_issue_results(results, k, k_sections, named_codes)
+    groups = [IssueGroup(None, head)] + [
+        IssueGroup(issue, _relevant_issue_cases(r)[:per_issue]) for issue, r in zip(issues, results[1:])
     ]
+    taken = {c.case_id for c in head}
+    rest = interleave([g.cases for g in groups[1:]], lambda c: c.case_id, len(head) + per_issue * len(issues))
+    return groups, head + [c for c in rest if c.case_id not in taken], sections
+
+
+def _relevant_issue_cases(result: SearchResult) -> list[CaseResult]:
+    return [c for c in result.cases if c.rerank_score is not None and c.rerank_score > MIN_ISSUE_CASE_RERANK]
+
+
+def _merge_sections(results: list[SearchResult], k_sections: int, named_codes: set[str]) -> list[SectionResult]:
+    combined, issues = results[0], results[1:]
     supported_laws = (
         set(named_codes)
         | {s.code for s in combined.sections}
@@ -399,10 +455,7 @@ def merge_issue_results(
         ]
         for r in issues
     ]
-    head = combined.cases[:min(COMBINED_LEAD, k)]
-    taken = {c.case_id for c in head}
-    cases = head + [c for c in interleave(case_lists, lambda c: c.case_id, k + len(head)) if c.case_id not in taken]
-    return cases[:k], interleave(section_lists, lambda s: (s.code, s.section_no), k_sections)
+    return interleave(section_lists, lambda s: (s.code, s.section_no), k_sections)
 
 
 def interleave(lists: list[list[T]], key: Callable[[T], Hashable], k: int) -> list[T]:

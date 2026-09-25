@@ -1,0 +1,66 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "ee4022bca157227c89acb1e9dfa8f25020ae76d4",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Crown debt recovery / limitations",
+   "Federal public sector employment",
+   "Statutory interpretation (Crown Liability and Proceedings Act, s. 32)",
+   "Overpayment recovery from employees"
+  ],
+  "issues": [
+   "Whether s. 32 of the Crown Liability and Proceedings Act incorporates the limitation period of the province where the cause of action arose, rather than a separate federal six-year period, for Crown proceedings to recover a debt",
+   "Whether the provincial (e.g. two-year) limitation period applies to bar the employer's recovery of the salary overpayment where the relevant events occurred in that province",
+   "When the limitation period began to run — i.e., when the overpayment/debt was discoverable by the employer or employee, and whether discoverability principles under the applicable provincial limitations statute apply",
+   "Whether the employer's demand and payroll deductions three years after the overpayment, absent earlier acknowledgment or partial payment, restart or otherwise affect the limitation clock",
+   "Whether unilateral payroll deduction to recover an alleged overpayment is itself a legally authorized recovery mechanism for a federal separate employer, independent of the limitation period question",
+   "Whether the source of funds (Consolidated Revenue Fund) or the fact the debt is owed to a federal entity is legally relevant to which limitation period applies, given s. 32 CLPA's choice-of-law approach"
+  ],
+  "key_facts": [
+   "Client is an employee of a federal separate employer (federal public sector)",
+   "She went on sick leave after serious illness; paid sick leave credits were exhausted partway through the leave",
+   "She should have moved to leave without pay but pay system errors caused continued biweekly pay deposits for about two more months",
+   "Resulting overpayment is approximately $7,700",
+   "Employer waited almost three years before notifying her it would recover the overpayment",
+   "Employer began deducting small amounts from each pay cheque to recover the debt",
+   "Employee lived and worked in the same province as the employer's headquarters and its compensation/pay administration function, and the author of the recovery demand was based there",
+   "Employer asserts it is a national organization, that funds came from the federal Consolidated Revenue Fund, and the debt is owed to a federal entity",
+   "Dispute centers on whether a federal six-year limitation period or a shorter provincial limitation period governs the recovery action"
+  ],
+  "causes_of_action": [
+   "Crown/employer claim for recovery of salary overpayment (debt owed to the Crown)",
+   "Employee defence based on expiry of limitation period"
+  ],
+  "candidate_statutes": [
+   "Crown Liability and Proceedings Act, s. 32",
+   "Limitations Act, 2002 (Ontario)",
+   "Financial Administration Act",
+   "Federal Courts Act"
+  ],
+  "search_terms": [
+   "Crown Liability and Proceedings Act section 32",
+   "limitation period Crown debt recovery",
+   "salary overpayment recovery limitation period",
+   "federal separate employer overpayment",
+   "discoverability salary overpayment",
+   "provincial limitation period applies to Crown",
+   "Limitations Act 2002 Ontario s.4",
+   "recovery of pay overpayment federal public service",
+   "Crown proceedings limitation period choice of law",
+   "payroll deduction overpayment recovery authority"
+  ],
+  "needs_clarification": [
+   "Which province is the employee's workplace/employer headquarters located in, since the applicable provincial limitation period (and its discoverability rules) under s. 32 of the Crown Liability and Proceedings Act depends on that province's law?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 11255,
+   "output_tokens": 1327,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.023674800000000003,
+   "duration_ms": 12312
+  }
+ }
+}

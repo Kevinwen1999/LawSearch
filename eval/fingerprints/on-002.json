@@ -1,0 +1,51 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "dcc7064657b9e06de086b346d1c709c92b618111",
+ "fingerprint": {
+  "jurisdiction": "ontario",
+  "areas_of_law": [
+   "Employment law",
+   "Contract law"
+  ],
+  "issues": [
+   "Whether a termination-without-cause clause limiting termination pay to the ESA statutory minimum is enforceable",
+   "Whether an unenforceable for-cause termination clause invalidates a separate without-cause termination clause in the same contract",
+   "Whether a for-cause termination clause providing no notice or pay contravenes the ESA's 'wilful misconduct' standard for denial of statutory entitlements",
+   "Whether termination provisions must be read together as a whole when assessing ESA compliance",
+   "If the termination clause is void, what common law reasonable notice period applies"
+  ],
+  "key_facts": [
+   "Client has an Ontario employment contract",
+   "The contract includes a without-cause termination clause limiting termination pay to the statutory minimum",
+   "The contract includes a separate for-cause termination clause purporting to allow dismissal with nothing paid"
+  ],
+  "causes_of_action": [
+   "Wrongful dismissal",
+   "Breach of employment contract"
+  ],
+  "candidate_statutes": [
+   "Employment Standards Act, 2000 (Ontario)",
+   "O. Reg. 288/01 (ESA Termination and Severance of Employment)"
+  ],
+  "search_terms": [
+   "termination clause enforceability ESA",
+   "for cause clause void ESA minimum",
+   "wilful misconduct disobedience ESA termination",
+   "severable termination provisions employment contract",
+   "Waksdale v Swegon",
+   "reasonable notice common law",
+   "contra proferentem employment contract",
+   "rebuttable presumption reasonable notice"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 13801,
+   "output_tokens": 1270,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0278852,
+   "duration_ms": 15743
+  }
+ }
+}

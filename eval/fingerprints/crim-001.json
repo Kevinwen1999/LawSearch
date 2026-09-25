@@ -1,0 +1,59 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "e934c070244ef3b4ccd6fec3205392d722ba66a4",
+ "fingerprint": {
+  "jurisdiction": "unknown",
+  "areas_of_law": [
+   "Criminal law",
+   "Constitutional law (Charter)"
+  ],
+  "issues": [
+   "Whether the police had reasonable grounds (articulable cause) to detain the individual",
+   "Whether the street stop constituted an arbitrary detention under section 9 of the Charter",
+   "Whether the search of the individual violated section 8 of the Charter (unreasonable search and seizure)",
+   "Whether the evidence (drugs) should be excluded under section 24(2) of the Charter",
+   "Whether the detention and search were incidental to a lawful investigative purpose",
+   "Whether the accused's right to counsel under section 10(b) was engaged and complied with"
+  ],
+  "key_facts": [
+   "Police stopped the client on the street",
+   "Stop occurred with no real (articulated) grounds for suspicion",
+   "Client was questioned during the stop",
+   "Drugs were found on the client during or after the stop"
+  ],
+  "causes_of_action": [
+   "Charter application to exclude evidence (s. 24(2))",
+   "Challenge to arbitrary detention (s. 9)",
+   "Challenge to unreasonable search and seizure (s. 8)"
+  ],
+  "candidate_statutes": [
+   "Canadian Charter of Rights and Freedoms",
+   "Controlled Drugs and Substances Act",
+   "Criminal Code"
+  ],
+  "search_terms": [
+   "arbitrary detention",
+   "reasonable suspicion investigative detention",
+   "R v Mann investigative detention test",
+   "articulable cause",
+   "section 8 Charter unreasonable search",
+   "section 9 Charter arbitrary detention",
+   "section 24(2) Charter exclusion of evidence",
+   "Grant test evidence exclusion",
+   "search incident to investigative detention",
+   "street check carding"
+  ],
+  "needs_clarification": [
+   "Which province/territory did this stop occur in, since this affects which court's precedents and any provincial policing regulations (e.g., street check rules) apply?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2137,
+   "output_tokens": 775,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.012128400000000001,
+   "duration_ms": 7899
+  }
+ }
+}

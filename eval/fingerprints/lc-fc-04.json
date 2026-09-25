@@ -1,0 +1,61 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "0d62a88b1eb51dcf30e19fb12940e7dd048ac31d",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "immigration law",
+   "spousal sponsorship",
+   "judicial review of administrative decisions"
+  ],
+  "issues": [
+   "Whether the officer's finding that the marriage is not genuine and was entered primarily for immigration purposes under s.4(1) of the IRPR was reasonable",
+   "Whether an officer may consider a sponsor's prior marriages, divorces and previous sponsorship history (including a prior refusal on marriage-of-convenience grounds) in assessing genuineness of a subsequent marriage",
+   "Whether reliance on demeanour, body language and an adversarial interview approach ('answer truthfully' warning) renders the decision procedurally unfair or gives rise to a reasonable apprehension of bias",
+   "Whether discrepancies between spouses on collateral details (region of origin, timeline of meeting/cohabitation, honeymoon/vacation destinations, work schedule) can reasonably support a marriage-of-convenience finding",
+   "Whether the birth of a child during the relationship is determinative of, or must be given significant weight in assessing, genuineness of the marriage",
+   "Whether the officer adequately engaged with the evidence and provided sufficient reasons to meet the reasonableness standard under Vavilov",
+   "What weight, if any, should be given to the fact that cohabitation began before the sponsor's divorce from his previous wife was finalized"
+  ],
+  "key_facts": [
+   "Client is a woman in her thirties from South Asia, initially in Canada on a temporary work permit",
+   "Sponsor is a Canadian citizen roughly twenty years older, himself sponsored to Canada decades ago via spousal sponsorship",
+   "Sponsor has since married and filed sponsorship/spousal applications for four other women from the same country, one refused on marriage-of-convenience grounds",
+   "Client began cohabiting with sponsor while he was still legally married to a previous wife; he divorced her and married the client a few weeks later",
+   "Couple now has a baby daughter together",
+   "At an in-person interview, officer questioned them separately then together and found inconsistencies: neither knew the other's region of origin, differing accounts of when they met, when cohabitation began, honeymoon and last vacation destinations, and client did not know husband's work schedule",
+   "Officer refused the application relying heavily on sponsor's marital/sponsorship history and on the couple's demeanour and body language",
+   "Clients allege the officer had prejudged the outcome and treated them adversarially, including a warning to answer truthfully before the interview began"
+  ],
+  "causes_of_action": [
+   "Application for judicial review of a visa/immigration officer's refusal decision",
+   "Refusal of spousal sponsorship application under s.4(1) IRPR (marriage not genuine / entered primarily to acquire status)"
+  ],
+  "candidate_statutes": [
+   "Immigration and Refugee Protection Act, S.C. 2001, c. 27",
+   "Immigration and Refugee Protection Regulations, SOR/2002-227, s. 4(1)",
+   "Federal Courts Act, R.S.C. 1985, c. F-7 (judicial review provisions)"
+  ],
+  "search_terms": [
+   "marriage of convenience section 4(1) IRPR",
+   "genuineness of marriage spousal sponsorship judicial review",
+   "sponsor's prior marital history relevance immigration officer",
+   "credibility findings demeanour judicial review immigration",
+   "reasonable apprehension of bias immigration interview",
+   "sufficiency of reasons spousal sponsorship refusal Vavilov",
+   "birth of child evidence genuine relationship IRPR",
+   "inconsistencies interview spousal sponsorship refusal Federal Court",
+   "primary purpose test marriage immigration"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 14955,
+   "output_tokens": 2375,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0438322,
+   "duration_ms": 23756
+  }
+ }
+}

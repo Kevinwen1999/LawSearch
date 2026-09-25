@@ -1,0 +1,66 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "60414f61618f44026620a85228e7d0545d6445e2",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Immigration and refugee law",
+   "Refugee Appeal Division (RAD) appeals",
+   "Administrative law - standard of review/deference"
+  ],
+  "issues": [
+   "Whether newly obtained corroborating documents (membership card and confirmation letter) satisfy the statutory criteria for new evidence on a RAD appeal under s. 110(4) IRPA, including whether they are new, material, credible, and could not reasonably have been available or presented to the RPD at the time of the hearing",
+   "Whether the RAD should hold an oral hearing under s. 110(6) given that the proposed new evidence raises a serious issue of credibility central to the RPD's rejection of the claim",
+   "What standard of review/deference the RAD owes to the RPD's credibility findings on appeal, and whether correctness or a form of deference applies given the RPD's advantage in observing oral testimony",
+   "Whether the RPD erred in rejecting the applicant's explanation for the absence of corroborating membership evidence at the original hearing",
+   "Whether inconsistencies relied on by the RPD (shifting testimony on timing of political activity, POE statement vs. testimony on the health condition, ignorance of party controversies) reasonably support a negative credibility finding regarding political profile",
+   "Whether the applicant's political opinion and activity establish a well-founded fear of persecution under the Convention refugee/person in need of protection framework",
+   "Whether documents obtained after refusal but corroborating pre-existing facts (rather than new post-hearing events) can qualify as 'new evidence' versus impermissible attempts to bolster credibility findings already made"
+  ],
+  "key_facts": [
+   "Claimant is a national of a former Soviet republic alleging membership and supervisory role in an opposition political party since his teens",
+   "Alleges beating, threats, and pressure by security officials after his party lost a national election, including pressure to inform on a former party official",
+   "Fled via smuggler and claimed refugee protection in Canada",
+   "RPD refused the claim citing lack of credibility as to political profile",
+   "RPD relied on shifting testimony about last date of political activity, an inconsistency between POE statement and testimony regarding timing of a health condition relative to the assault, and ignorance of well-publicized party controversies",
+   "Claimant explained lack of corroborating membership proof by stating his former supervisor and fellow members had left the country; RPD rejected this explanation",
+   "After refusal, claimant obtained a freshly issued party membership card and a letter from a party official confirming nearly a decade of active membership",
+   "Claimant seeks to file these documents on appeal to the RAD and requests an oral hearing",
+   "Claimant was represented by counsel throughout the RPD proceeding",
+   "Approximately ten months elapsed between filing the claim and the RPD refusal"
+  ],
+  "causes_of_action": [
+   "Appeal to the Refugee Appeal Division from a Refugee Protection Division decision",
+   "Application for admission of new evidence under IRPA s. 110(4)",
+   "Request for oral hearing before the RAD under IRPA s. 110(6)"
+  ],
+  "candidate_statutes": [
+   "Immigration and Refugee Protection Act (IRPA), s. 110",
+   "Immigration and Refugee Protection Act, s. 111",
+   "Refugee Appeal Division Rules",
+   "Immigration and Refugee Protection Regulations"
+  ],
+  "search_terms": [
+   "RAD new evidence IRPA 110(4)",
+   "Refugee Appeal Division oral hearing s. 110(6)",
+   "credibility deference RPD RAD standard of review",
+   "Canada (Citizenship and Immigration) v Singh new evidence RAD",
+   "well-founded fear of persecution political opinion",
+   "membership card corroborating evidence refugee credibility",
+   "explanation for lack of corroborating evidence refugee claim",
+   "port of entry statement inconsistency credibility finding",
+   "Huruglica standard of review RAD RPD",
+   "materiality new evidence test refugee appeal"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 11352,
+   "output_tokens": 1472,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.025543800000000002,
+   "duration_ms": 16045
+  }
+ }
+}

@@ -437,7 +437,502 @@ scenarios:
         name: Employment Standards Act, 2000
         kind: statute
         relevance: supporting
-    citations_resolved: false
+    citations_resolved: true  # Waksdale and Machtinger resolve in the corpus (checked 2026-09-24)
+    verified: false
+    split: tune
+
+  # Multi-issue Ontario wrongful dismissal (from search_endpoint_eval_ontario_wrongful_dismissal.txt,
+  # 2026-09-24). Tests per-issue coverage across eight issues in one fact pattern; `issues` on
+  # each authority says which issue it answers. Gold written from memory by the eval's author;
+  # corpus citations resolved 2026-09-24 and the three CanLII-only ones confirmed on CanLII.
+  # Negative: Canada Labour Code ss 240-246 should not come back (provincially regulated employer).
+  - id: on-003
+    phase: 7
+    jurisdiction: ontario
+    area: employment / wrongful dismissal, multi-issue
+    scenario: >
+      My client, Dana Reyes, age 54, worked as an Operations Manager at Northline
+      Logistics Inc. in Mississauga from March 2012 until August 14, 2026, earning
+      $98,000 a year plus benefits and a 10% annual bonus. Northline has about 180
+      employees and an Ontario payroll well above $3 million.
+      In 2019, seven years into her job, HR told her to sign a "new standard
+      contract" or she "wouldn't be eligible for the upcoming restructuring." She
+      got no raise, bonus, or anything else for signing. The contract's
+      termination clause says: "The Company may terminate your employment at any
+      time, in its sole discretion, for any reason, by providing the minimum
+      notice or pay in lieu required by the Employment Standards Act, 2000. The
+      Company may terminate your employment for cause, without notice or pay in
+      lieu, where cause includes any breach of Company policy." The contract says
+      nothing about benefits continuing after termination.
+      From February to June 2026, Dana was on medical leave after spinal surgery.
+      Her doctor recommended a graduated return (four-hour days for six weeks).
+      Her manager emailed her: "We really need someone who can commit to full days
+      in this role." Three weeks after she came back, Northline fired her without
+      cause. The termination letter offered 8 weeks' pay in lieu of notice. It
+      said her benefits and any further payments would continue only if she signed
+      a full and final release within 5 days.
+      Dana hasn't signed. She has applied to about 30 comparable jobs and has no
+      offers. She wants to know what claims she has, how much notice she may be
+      entitled to, whether the termination clause is enforceable, and what
+      deadlines apply.
+    issues:
+      I1: termination clause enforceability (for-cause wording, sole discretion, benefits silence)
+      I2: no fresh consideration for the 2019 contract
+      I3: reasonable notice at common law
+      I4: bonus during the notice period
+      I5: disability discrimination / failure to accommodate
+      I6: conditional release vs ESA statutory entitlements
+      I7: mitigation
+      I8: limitation periods and choice of forum
+    expected_authorities:
+      - citation: "2020 ONCA 391"
+        name: Waksdale v Swegon North America Inc
+        kind: case
+        relevance: primary
+        issues: [I1]
+      - citation: "2017 ONCA 158"
+        name: Wood v Fred Deeley Imports Ltd
+        kind: case
+        relevance: primary
+        issues: [I1]
+      - citation: "[1992] 1 SCR 986"
+        name: Machtinger v HOJ Industries Ltd
+        kind: case
+        relevance: primary
+        issues: [I1, I3]
+      - citation: "C39836"
+        name: Hobbs v TDI Canada Ltd (2004, Ont CA)
+        kind: case
+        relevance: primary
+        issues: [I2]
+        court: ONCA
+        note: pre-neutral-citation ONCA; stored under its docket number
+      - citation: "2008 SCC 39"
+        name: Honda Canada Inc v Keays
+        kind: case
+        relevance: primary
+        issues: [I3, I5]
+      - citation: "2020 SCC 26"
+        name: Matthews v Ocean Nutrition Canada Ltd
+        kind: case
+        relevance: primary
+        issues: [I4]
+      - citation: "2008 SCC 20"
+        name: Evans v Teamsters Local Union No 31
+        kind: case
+        relevance: primary
+        issues: [I7]
+      - citation: "2025 ONCA 379"
+        name: Bertsch v Datastealth Inc
+        kind: case
+        relevance: primary
+        issues: [I1]
+      - citation: "[1997] 3 SCR 701"
+        name: Wallace v United Grain Growers Ltd
+        kind: case
+        relevance: supporting
+        issues: [I3]
+      - citation: "2012 SCC 61"
+        name: Moore v British Columbia (Education)
+        kind: case
+        relevance: supporting
+        issues: [I5]
+      - citation: "[1999] 3 SCR 3"
+        name: British Columbia (PSERC) v BCGSEU (Meiorin)
+        kind: case
+        relevance: supporting
+        issues: [I5]
+      - citation: "2008 SCC 43"
+        name: Hydro-Quebec v Syndicat des employe-e-s de techniques professionnelles et de bureau d'Hydro-Quebec
+        kind: case
+        relevance: supporting
+        issues: [I5]
+      - citation: "[1976] 2 SCR 324"
+        name: Red Deer College v Michaels
+        kind: case
+        relevance: supporting
+        issues: [I7]
+      - citation: "2024 ONCA 915"
+        name: Dufault v Ignace (Township)
+        kind: case
+        relevance: supporting
+        issues: [I1]
+      - citation: "1960 CanLII 294 (ON HCJ)"
+        name: Bardal v Globe & Mail Ltd
+        kind: case
+        relevance: primary
+        issues: [I3]
+        in_corpus: false
+        note: not in the corpus; must be found or explicitly flagged (CanLII onsc/1960canlii294)
+      - citation: "2024 ONSC 1029"
+        name: Dufault v Ignace (Township) (trial)
+        kind: case
+        relevance: supporting
+        issues: [I1]
+        in_corpus: false
+        note: CanLII onsc/2024onsc1029
+      - citation: "2013 ONSC 5799"
+        name: Wilson v Solis Mexican Foods Inc
+        kind: case
+        relevance: supporting
+        issues: [I5]
+        in_corpus: false
+        note: CanLII onsc/2013onsc5799
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 5
+        kind: statute
+        code: SO2000c41
+        section: "5"
+        relevance: primary
+        issues: [I1, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 54
+        kind: statute
+        code: SO2000c41
+        section: "54"
+        relevance: supporting
+        issues: [I3]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 57
+        kind: statute
+        code: SO2000c41
+        section: "57"
+        relevance: supporting
+        issues: [I3]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 60
+        kind: statute
+        code: SO2000c41
+        section: "60"
+        relevance: primary
+        issues: [I1, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 61
+        kind: statute
+        code: SO2000c41
+        section: "61"
+        relevance: supporting
+        issues: [I3, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 64
+        kind: statute
+        code: SO2000c41
+        section: "64"
+        relevance: supporting
+        issues: [I3, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 65
+        kind: statute
+        code: SO2000c41
+        section: "65"
+        relevance: supporting
+        issues: [I3, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 97
+        kind: statute
+        code: SO2000c41
+        section: "97"
+        relevance: primary
+        issues: [I8]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 5
+        kind: statute
+        code: RSO1990cH19
+        section: "5"
+        relevance: primary
+        issues: [I5]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 10
+        kind: statute
+        code: RSO1990cH19
+        section: "10"
+        relevance: supporting
+        issues: [I5]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 11
+        kind: statute
+        code: RSO1990cH19
+        section: "11"
+        relevance: supporting
+        issues: [I5]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 17
+        kind: statute
+        code: RSO1990cH19
+        section: "17"
+        relevance: primary
+        issues: [I5]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 34
+        kind: statute
+        code: RSO1990cH19
+        section: "34"
+        relevance: primary
+        issues: [I8]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 46.1
+        kind: statute
+        code: RSO1990cH19
+        section: "46.1"
+        relevance: supporting
+        issues: [I5, I8]
+      - citation: "SO 2002, c 24, Sch B"
+        name: Limitations Act, 2002, s 4
+        kind: statute
+        code: SO2002c24SchedB
+        section: "4"
+        relevance: primary
+        issues: [I8]
+      - citation: "SO 2002, c 24, Sch B"
+        name: Limitations Act, 2002, s 5
+        kind: statute
+        code: SO2002c24SchedB
+        section: "5"
+        relevance: supporting
+        issues: [I8]
+      - citation: "O Reg 288/01"
+        name: Termination and Severance of Employment, s 2(1) para 3 (wilful misconduct)
+        kind: regulation
+        relevance: supporting
+        issues: [I1]
+        in_corpus: false
+        note: Ontario regulations aren't ingested; should be flagged as relevant-but-not-covered
+    citations_resolved: true
+    verified: false
+    split: tune
+
+  # Same gold, sparse input: does a short query still reach the core authorities?
+  - id: on-004
+    phase: 7
+    jurisdiction: ontario
+    area: employment / wrongful dismissal, multi-issue (short query)
+    scenario: >
+      Ontario employee 14 years terminated after returning from medical leave,
+      termination clause ESA minimum, for cause includes policy breach, release
+      required.
+    issues:
+      I1: termination clause enforceability (for-cause wording, sole discretion, benefits silence)
+      I2: no fresh consideration for the 2019 contract
+      I3: reasonable notice at common law
+      I4: bonus during the notice period
+      I5: disability discrimination / failure to accommodate
+      I6: conditional release vs ESA statutory entitlements
+      I7: mitigation
+      I8: limitation periods and choice of forum
+    expected_authorities:
+      - citation: "2020 ONCA 391"
+        name: Waksdale v Swegon North America Inc
+        kind: case
+        relevance: primary
+        issues: [I1]
+      - citation: "2017 ONCA 158"
+        name: Wood v Fred Deeley Imports Ltd
+        kind: case
+        relevance: primary
+        issues: [I1]
+      - citation: "[1992] 1 SCR 986"
+        name: Machtinger v HOJ Industries Ltd
+        kind: case
+        relevance: primary
+        issues: [I1, I3]
+      - citation: "C39836"
+        name: Hobbs v TDI Canada Ltd (2004, Ont CA)
+        kind: case
+        relevance: primary
+        issues: [I2]
+        court: ONCA
+        note: pre-neutral-citation ONCA; stored under its docket number
+      - citation: "2008 SCC 39"
+        name: Honda Canada Inc v Keays
+        kind: case
+        relevance: primary
+        issues: [I3, I5]
+      - citation: "2020 SCC 26"
+        name: Matthews v Ocean Nutrition Canada Ltd
+        kind: case
+        relevance: primary
+        issues: [I4]
+      - citation: "2008 SCC 20"
+        name: Evans v Teamsters Local Union No 31
+        kind: case
+        relevance: primary
+        issues: [I7]
+      - citation: "2025 ONCA 379"
+        name: Bertsch v Datastealth Inc
+        kind: case
+        relevance: primary
+        issues: [I1]
+      - citation: "[1997] 3 SCR 701"
+        name: Wallace v United Grain Growers Ltd
+        kind: case
+        relevance: supporting
+        issues: [I3]
+      - citation: "2012 SCC 61"
+        name: Moore v British Columbia (Education)
+        kind: case
+        relevance: supporting
+        issues: [I5]
+      - citation: "[1999] 3 SCR 3"
+        name: British Columbia (PSERC) v BCGSEU (Meiorin)
+        kind: case
+        relevance: supporting
+        issues: [I5]
+      - citation: "2008 SCC 43"
+        name: Hydro-Quebec v Syndicat des employe-e-s de techniques professionnelles et de bureau d'Hydro-Quebec
+        kind: case
+        relevance: supporting
+        issues: [I5]
+      - citation: "[1976] 2 SCR 324"
+        name: Red Deer College v Michaels
+        kind: case
+        relevance: supporting
+        issues: [I7]
+      - citation: "2024 ONCA 915"
+        name: Dufault v Ignace (Township)
+        kind: case
+        relevance: supporting
+        issues: [I1]
+      - citation: "1960 CanLII 294 (ON HCJ)"
+        name: Bardal v Globe & Mail Ltd
+        kind: case
+        relevance: primary
+        issues: [I3]
+        in_corpus: false
+        note: not in the corpus; must be found or explicitly flagged (CanLII onsc/1960canlii294)
+      - citation: "2024 ONSC 1029"
+        name: Dufault v Ignace (Township) (trial)
+        kind: case
+        relevance: supporting
+        issues: [I1]
+        in_corpus: false
+        note: CanLII onsc/2024onsc1029
+      - citation: "2013 ONSC 5799"
+        name: Wilson v Solis Mexican Foods Inc
+        kind: case
+        relevance: supporting
+        issues: [I5]
+        in_corpus: false
+        note: CanLII onsc/2013onsc5799
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 5
+        kind: statute
+        code: SO2000c41
+        section: "5"
+        relevance: primary
+        issues: [I1, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 54
+        kind: statute
+        code: SO2000c41
+        section: "54"
+        relevance: supporting
+        issues: [I3]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 57
+        kind: statute
+        code: SO2000c41
+        section: "57"
+        relevance: supporting
+        issues: [I3]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 60
+        kind: statute
+        code: SO2000c41
+        section: "60"
+        relevance: primary
+        issues: [I1, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 61
+        kind: statute
+        code: SO2000c41
+        section: "61"
+        relevance: supporting
+        issues: [I3, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 64
+        kind: statute
+        code: SO2000c41
+        section: "64"
+        relevance: supporting
+        issues: [I3, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 65
+        kind: statute
+        code: SO2000c41
+        section: "65"
+        relevance: supporting
+        issues: [I3, I6]
+      - citation: "SO 2000, c 41"
+        name: Employment Standards Act, 2000, s 97
+        kind: statute
+        code: SO2000c41
+        section: "97"
+        relevance: primary
+        issues: [I8]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 5
+        kind: statute
+        code: RSO1990cH19
+        section: "5"
+        relevance: primary
+        issues: [I5]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 10
+        kind: statute
+        code: RSO1990cH19
+        section: "10"
+        relevance: supporting
+        issues: [I5]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 11
+        kind: statute
+        code: RSO1990cH19
+        section: "11"
+        relevance: supporting
+        issues: [I5]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 17
+        kind: statute
+        code: RSO1990cH19
+        section: "17"
+        relevance: primary
+        issues: [I5]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 34
+        kind: statute
+        code: RSO1990cH19
+        section: "34"
+        relevance: primary
+        issues: [I8]
+      - citation: "RSO 1990, c H.19"
+        name: Human Rights Code, s 46.1
+        kind: statute
+        code: RSO1990cH19
+        section: "46.1"
+        relevance: supporting
+        issues: [I5, I8]
+      - citation: "SO 2002, c 24, Sch B"
+        name: Limitations Act, 2002, s 4
+        kind: statute
+        code: SO2002c24SchedB
+        section: "4"
+        relevance: primary
+        issues: [I8]
+      - citation: "SO 2002, c 24, Sch B"
+        name: Limitations Act, 2002, s 5
+        kind: statute
+        code: SO2002c24SchedB
+        section: "5"
+        relevance: supporting
+        issues: [I8]
+      - citation: "O Reg 288/01"
+        name: Termination and Severance of Employment, s 2(1) para 3 (wilful misconduct)
+        kind: regulation
+        relevance: supporting
+        issues: [I1]
+        in_corpus: false
+        note: Ontario regulations aren't ingested; should be flagged as relevant-but-not-covered
+    citations_resolved: true
     verified: false
     split: tune
 

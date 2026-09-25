@@ -1,0 +1,65 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "0496bf6e98d2bb17a67605723d04ebd7f84dfa80",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Refugee and immigration law",
+   "Administrative law (standard of review/deference)",
+   "Procedural fairness"
+  ],
+  "issues": [
+   "What degree of deference the Refugee Appeal Division (RAD) owes to the Refugee Protection Division's (RPD) credibility findings, particularly where no new evidence is filed and no oral hearing is held",
+   "Whether the RAD must independently assess sur place risk arising from public religious activity (baptism) in Canada regardless of findings on sincerity of religious conversion",
+   "Whether it is an error to rely on a religious-knowledge question (e.g., whether Jesus baptized people) as a proxy for genuineness of conversion",
+   "Whether the weight given to corroborative evidence (baptismal certificate, pastor's letter) was reasonably assessed or improperly discounted",
+   "Whether the minor child's claim can be disposed of as purely derivative or requires independent risk analysis based on the child's own exposure/knowledge of the mother's conversion",
+   "Whether an oral hearing before the RAD was required in the circumstances (credibility-based rejection, new evidence considerations under s.110(6))",
+   "Whether the RPD's treatment of the airport detention and sexual assault as part of the overall credibility/nexus analysis was reasonable"
+  ],
+  "key_facts": [
+   "Client is an Iranian woman who converted toward Christianity while abroad for graduate studies",
+   "She was detained and questioned for days at the Iranian airport on return, and sexually assaulted in custody",
+   "She subsequently attended a house church meeting in a private home in Iran",
+   "She travelled to Canada on a visitor visa to help a sick relative",
+   "Her husband told her security officials searched the home, seized her Bible and laptop, and that house-church members had named her",
+   "She claimed refugee protection in Canada and was later publicly baptized at a Canadian church, with her daughter present",
+   "The RPD rejected both claims on credibility, found she was not a genuine convert, gave little weight to the baptismal certificate and pastor's letter, and relied partly on a question about whether Jesus baptized people",
+   "The RPD treated the daughter's claim as entirely derivative with no separate analysis",
+   "No new evidence was filed on appeal; counsel requested an oral hearing or rehearing before the RAD",
+   "Counsel argues the RAD owes no deference to RPD credibility findings, that sur place risk from public baptism must be assessed independent of sincerity, and that the child's risk from witnessing the conversion needs separate analysis"
+  ],
+  "causes_of_action": [
+   "Application for refugee protection under IRPA s.96 (Convention refugee) and s.97 (person in need of protection)",
+   "Appeal to the Refugee Appeal Division under IRPA s.110",
+   "Judicial review of RAD/RPD decision (Federal Court)"
+  ],
+  "candidate_statutes": [
+   "Immigration and Refugee Protection Act (IRPA), ss. 96, 97, 110, 111",
+   "Refugee Appeal Division Rules",
+   "Refugee Protection Division Rules"
+  ],
+  "search_terms": [
+   "RAD standard of review RPD credibility",
+   "no deference correctness RAD credibility findings",
+   "sur place claim religious conversion",
+   "genuineness of conversion vs risk of perceived apostasy",
+   "religious knowledge test credibility conversion refugee",
+   "derivative claim child independent risk assessment",
+   "public baptism Canada sur place Iran",
+   "oral hearing RAD s.110(6) new evidence",
+   "house church Iran refugee credibility",
+   "Huruglica RAD deference standard"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 23778,
+   "output_tokens": 2284,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.040131599999999996,
+   "duration_ms": 20689
+  }
+ }
+}

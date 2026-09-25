@@ -1,0 +1,53 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "2b4a9ad901b28147618e56348510168b793a3965",
+ "fingerprint": {
+  "jurisdiction": "ontario",
+  "areas_of_law": [
+   "Arbitration law",
+   "Commercial contract law"
+  ],
+  "issues": [
+   "Whether an arbitrator's interpretation of a contract clause constitutes a question of law, question of fact, or question of mixed fact and law for purposes of appeal",
+   "What standard of review applies to an appeal of an arbitral award on contract interpretation",
+   "Whether the parties' arbitration agreement permits appeals on questions of law, and if so what leave requirements or limitations apply",
+   "Whether the arbitration is governed by domestic or international commercial arbitration legislation, which affects appealability"
+  ],
+  "key_facts": [
+   "The parties are in a commercial agreement containing an arbitration clause",
+   "A dispute arose over the interpretation of a clause in the agreement",
+   "An arbitrator has issued an interpretation of the disputed clause",
+   "One party now wishes to appeal that interpretation"
+  ],
+  "causes_of_action": [
+   "Application/appeal from an arbitral award",
+   "Application to set aside or seek leave to appeal an arbitration award"
+  ],
+  "candidate_statutes": [
+   "Arbitration Act, 1991 (Ontario)",
+   "International Commercial Arbitration Act, 2017 (Ontario)",
+   "Commercial Arbitration Act (federal, if applicable)"
+  ],
+  "search_terms": [
+   "question of law vs question of mixed fact and law arbitration",
+   "appeal of arbitral award contract interpretation",
+   "standard of review arbitrator contract interpretation",
+   "Sattva Capital contractual interpretation standard of review",
+   "leave to appeal arbitration award Ontario",
+   "extricable question of law contract interpretation",
+   "arbitration clause appeal rights commercial agreement"
+  ],
+  "needs_clarification": [
+   "Which jurisdiction's arbitration legislation and courts govern this arbitration (e.g., which province, or is it international/federal), and what does the arbitration clause itself say about appeal rights?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2157,
+   "output_tokens": 789,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0123364,
+   "duration_ms": 7306
+  }
+ }
+}

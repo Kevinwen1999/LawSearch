@@ -204,6 +204,28 @@ def render_case(rank: int, case: dict) -> None:
                 st.error(response.json().get("detail", f"Brief failed (HTTP {response.status_code})"))
 
 
+def render_case_groups(results: list[dict], groups: list[dict] | None) -> None:
+    """Best matches overall, then each issue's own best cases. A case already shown gets a
+    one-line pointer instead of a second card."""
+    by_id = {c["case_id"]: c for c in results}
+    groups = groups or [{"issue": None, "case_ids": list(by_id)}]
+    shown: dict[str, int] = {}
+    for n, group in enumerate(groups):
+        if group["issue"] is not None:
+            st.markdown(f"##### Issue {n}: {group['issue']}")
+        elif len(groups) > 1:
+            st.markdown("##### Best matches overall")
+        if not group["case_ids"]:
+            st.caption("No decision in the corpus scored as clearly on point for this issue.")
+        for case_id in group["case_ids"]:
+            case = by_id[case_id]
+            if case_id in shown:
+                st.caption(f"↑ #{shown[case_id]} {case['style_of_cause']} ({case['citation']}), shown above")
+            else:
+                shown[case_id] = len(shown) + 1
+                render_case(shown[case_id], case)
+
+
 CANLII_NOTICES = {
     "partial": "CanLII stopped answering part-way, so some decisions below may lack details.",
     "no_seeds": "None of the top cases could be looked up on CanLII, so there was nothing to trace.",
@@ -275,7 +297,8 @@ with st.sidebar:
         st.stop()
     court_names = {c["court"]: f"{c['court']} ({c['cases']:,})" for c in courts}
     selected_courts = st.multiselect("Courts and tribunals", list(court_names), format_func=court_names.get)
-    k = st.slider("Cases to show", 3, 30, 10)
+    k = st.slider("Best matches overall", 3, 30, 10)
+    issue_k = st.slider("Cases per issue", 0, 5, 3, help="Scenario searches also search each issue found in the scenario separately.")
     st.divider()
     st.caption(
         "Coverage: federal courts and tribunals from A2AJ (Federal Court and FCA decisions start "
@@ -297,7 +320,7 @@ st.caption(
 
 if st.button("Search", type="primary", disabled=not (scenario.strip() or uploaded_file)):
     with st.spinner("Reading the scenario and searching..."):
-        data = {"k": k, "courts": selected_courts or []}
+        data = {"k": k, "issue_k": issue_k, "courts": selected_courts or []}
         if uploaded_file is not None:
             files = {"file": (uploaded_file.name, uploaded_file.getvalue())}
         else:
@@ -313,6 +336,7 @@ if st.button("Search", type="primary", disabled=not (scenario.strip() or uploade
             st.session_state.results = body["results"]["results"]
             st.session_state.sections = body["results"]["sections"]
             st.session_state.search_query = body["results"]["query"]
+            st.session_state.groups = body["results"]["groups"]
         else:
             st.session_state.results, st.session_state.sections = None, None
     else:
@@ -340,7 +364,6 @@ if results is not None:
     st.subheader("Cases")
     if not results:
         st.info("No matching cases.")
-    for rank, case in enumerate(results, 1):
-        render_case(rank, case)
+    render_case_groups(results, st.session_state.get("groups"))
     if results and fingerprint and fingerprint["jurisdiction"] == "ontario":
         render_canlii(st.session_state.search_query, results)

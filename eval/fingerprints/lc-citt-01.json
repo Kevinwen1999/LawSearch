@@ -1,0 +1,63 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "4de10ee764d966e0603a61411ed19286c9490af9",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "customs and trade law",
+   "prohibited weapons regulation",
+   "criminal law (weapons)"
+  ],
+  "issues": [
+   "whether a knife that opens via a flipper/thumb-stud mechanism activated by one-finger pressure, swinging fully open and locking, qualifies as a 'prohibited weapon' under the Criminal Code definition incorporated by tariff item 9898.00.00 (automatic/centrifugal/gravity knife)",
+   "whether the fact that similar knives are commercially sold elsewhere in Canada is relevant to classifying imported goods as prohibited weapons under the Customs Act",
+   "whether absence of domestic criminal charges for possession or sale of similar knives affects the customs classification or admissibility determination",
+   "whether intended personal or gift use rather than resale affects classification of goods as a prohibited weapon under tariff item 9898.00.00",
+   "what test applies to determine whether a knife opens by centrifugal force, gravity, or thrust versus by manual manipulation for purposes of the prohibited weapon definition",
+   "what is the correct procedure and standard of review for appealing a CBSA re-determination under the Customs Act to the Canadian International Trade Tribunal"
+  ],
+  "key_facts": [
+   "approximately ten inexpensive folding knives imported by mail from an overseas seller",
+   "each knife has a flipper/tab near the pivot allowing one-finger opening",
+   "pressing the flipper causes the blade to swing out rapidly and lock open, and cannot be slowed or stopped once started",
+   "CBSA detained the knives on entry and refused entry as prohibited weapons",
+   "client requested a re-determination and the original decision was confirmed",
+   "client intends to appeal to a trade tribunal",
+   "client argues similar knives are sold openly in Canadian retail stores",
+   "knives were purchased for personal/gift use, not resale",
+   "client states no criminal charges have been laid domestically for possession or sale of similar knives"
+  ],
+  "causes_of_action": [
+   "appeal of CBSA re-determination of prohibited-goods classification under the Customs Act",
+   "challenge to classification under tariff item 9898.00.00 (prohibited weapons)"
+  ],
+  "candidate_statutes": [
+   "Customs Act",
+   "Customs Tariff, tariff item 9898.00.00",
+   "Criminal Code (weapons definitions, s. 84)",
+   "Canadian International Trade Tribunal Act"
+  ],
+  "search_terms": [
+   "tariff item 9898.00.00",
+   "prohibited weapon knife CBSA",
+   "centrifugal knife gravity knife definition",
+   "flipper knife automatic opening",
+   "CITT appeal customs classification weapon",
+   "Criminal Code automatic knife section 84",
+   "knife opens by centrifugal force test",
+   "spring-assisted knife prohibited device",
+   "Customs Act section 67 appeal",
+   "detained goods re-determination prohibited weapon"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 14848,
+   "output_tokens": 2162,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0411572,
+   "duration_ms": 17769
+  }
+ }
+}

@@ -1,7 +1,9 @@
 from types import SimpleNamespace
 from uuid import uuid4
 
-from app.retrieval import PASSAGES_PER_CASE, RRF_K, ChunkHit, SearchResult, fuse, interleave, merge_issue_results
+from app.retrieval import (
+    PASSAGES_PER_CASE, RRF_K, ChunkHit, SearchResult, fuse, group_issue_results, interleave, merge_issue_results,
+)
 
 CASE_A, CASE_B, CASE_C = uuid4(), uuid4(), uuid4()
 
@@ -112,3 +114,33 @@ def test_merge_issue_results_keeps_issue_sections_to_laws_the_scenario_supports(
     _, sections = merge_issue_results([combined, issue], k=5, k_sections=5, named_codes={"hrc"})
 
     assert [s.code for s in sections] == ["esa", "hrc", "cited"]
+
+
+def test_group_issue_results_keeps_each_issues_own_best_cases():
+    combined = SearchResult(cases=[_case(n, None) for n in ["wood", "bertsch", "nemeth", "x"]], sections=[], timings_ms={})
+    bonus = SearchResult(cases=[_case("paquette", 1.3), _case("matthews", 0.2), _case("wood", 2.0), _case("y", 0.5)],
+                         sections=[], timings_ms={})
+    rights = SearchResult(cases=[_case("battlefords", 1.7), _case("meiorin", -1.8)], sections=[], timings_ms={})
+
+    groups, cases, _ = group_issue_results(
+        [combined, bonus, rights], ["bonus during notice", "accommodation"], k=3, per_issue=3, k_sections=5
+    )
+
+    assert [(g.issue, [c.case_id for c in g.cases]) for g in groups] == [
+        (None, ["wood", "bertsch", "nemeth"]),
+        # Matthews is the bonus issue's second-best: interleaving into k slots gave it none.
+        ("bonus during notice", ["paquette", "matthews", "wood"]),
+        # Below the reranker gate, as in merge_issue_results.
+        ("accommodation", ["battlefords"]),
+    ]
+    # Flat list: every case once, overall first, then the issues round-robin.
+    assert [c.case_id for c in cases] == ["wood", "bertsch", "nemeth", "paquette", "battlefords", "matthews"]
+
+
+def test_group_issue_results_without_issues_is_the_combined_top_k():
+    combined = SearchResult(cases=[_case(n, None) for n in "abcd"], sections=[], timings_ms={})
+
+    groups, cases, _ = group_issue_results([combined], [], k=2, per_issue=3, k_sections=5)
+
+    assert [c.case_id for c in cases] == ["a", "b"]
+    assert len(groups) == 1 and groups[0].issue is None

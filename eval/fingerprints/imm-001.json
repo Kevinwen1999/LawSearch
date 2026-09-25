@@ -1,0 +1,52 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "a6a981bb12c944780f88705745be92fe4b9a8bf4",
+ "fingerprint": {
+  "jurisdiction": "federal",
+  "areas_of_law": [
+   "Immigration and refugee law",
+   "Administrative law / judicial review"
+  ],
+  "issues": [
+   "What is the correct legal test for an internal flight alternative (IFA) finding by the Refugee Protection Division",
+   "Whether the RPD properly applied the two-pronged IFA test (no serious possibility of persecution in proposed area, and reasonableness of relocation in all circumstances)",
+   "What standard of review applies to the RPD's IFA determination on judicial review",
+   "Whether the RPD erred by failing to adequately assess the reasonableness prong of the IFA analysis given the claimant's personal circumstances",
+   "What evidentiary burden rests on the claimant to show the proposed IFA is unreasonable or unsafe",
+   "Whether the RPD's finding of a viable IFA is reasonable given a finding that the claimant's fear is otherwise genuine/credible"
+  ],
+  "key_facts": [
+   "Client fled persecution in her home country and made a refugee claim",
+   "The RPD found the client's fear of persecution to be genuine/credible",
+   "The RPD refused the claim solely on the basis that the client had a viable internal flight alternative (another city in the same country)",
+   "Client seeks judicial review of the RPD decision"
+  ],
+  "causes_of_action": [
+   "Application for judicial review of a Refugee Protection Division decision"
+  ],
+  "candidate_statutes": [
+   "Immigration and Refugee Protection Act",
+   "Federal Courts Act"
+  ],
+  "search_terms": [
+   "internal flight alternative test",
+   "IFA reasonableness prong",
+   "Rasaratnam test",
+   "Thirunavukkarasu IFA",
+   "standard of review reasonableness RPD",
+   "judicial review Refugee Protection Division decision",
+   "well-founded fear of persecution IFA",
+   "undue hardship relocation refugee claim"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2172,
+   "output_tokens": 765,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0121964,
+   "duration_ms": 7771
+  }
+ }
+}

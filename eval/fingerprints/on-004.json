@@ -1,0 +1,61 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "53ac31567526e77dc146b87ab36967ad07790d22",
+ "fingerprint": {
+  "jurisdiction": "ontario",
+  "areas_of_law": [
+   "Employment law",
+   "Wrongful dismissal",
+   "Human rights (disability accommodation)"
+  ],
+  "issues": [
+   "Whether the termination clause limiting entitlements to ESA minimums is enforceable",
+   "Whether the 'for cause' provision in the termination clause is unenforceable for contracting out of the ESA standard for just cause",
+   "Whether the termination amounts to wrongful dismissal entitling the employee to common law reasonable notice",
+   "Whether termination shortly after return from medical leave gives rise to a claim of discrimination or reprisal based on disability under the Human Rights Code",
+   "Whether requiring execution of a release as a condition of receiving termination entitlements is lawful where statutory minimums are owed regardless",
+   "Whether the alleged policy breach constitutes just cause for dismissal at common law",
+   "What the appropriate common law reasonable notice period is given 14 years of service",
+   "Whether the termination clause is void in its entirety due to an unenforceable component (e.g., the for-cause provision) tainting the whole clause"
+  ],
+  "key_facts": [
+   "Employee worked 14 years before termination",
+   "Employee had recently returned from medical leave prior to termination",
+   "Employment contract contained a termination clause limiting notice/severance to ESA minimums",
+   "Contract's for-cause provision purported to allow dismissal without notice for policy breaches",
+   "Employer required employee to sign a release to receive termination payments"
+  ],
+  "causes_of_action": [
+   "Wrongful dismissal (breach of contract / common law reasonable notice)",
+   "Human rights complaint - discrimination/reprisal on the basis of disability",
+   "Claim for unpaid ESA entitlements (termination and severance pay)"
+  ],
+  "candidate_statutes": [
+   "Employment Standards Act, 2000 (Ontario)",
+   "Human Rights Code (Ontario)",
+   "Occupational Health and Safety Act (Ontario)"
+  ],
+  "search_terms": [
+   "termination clause enforceability ESA minimum",
+   "for cause termination clause void contracting out ESA",
+   "Waksdale unenforceable termination clause",
+   "reasonable notice period 14 years service",
+   "release requirement termination entitlements ESA",
+   "just cause dismissal policy breach",
+   "disability discrimination termination after medical leave",
+   "reprisal Human Rights Code employment",
+   "severance pay Ontario disabled employee",
+   "wrongful dismissal common law notice factors"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2144,
+   "output_tokens": 963,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0140284,
+   "duration_ms": 8418
+  }
+ }
+}

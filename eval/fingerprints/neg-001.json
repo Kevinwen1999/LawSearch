@@ -1,0 +1,60 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "0098188710aec272bbbd395fe772b153da6edb56",
+ "fingerprint": {
+  "jurisdiction": "unknown",
+  "areas_of_law": [
+   "Tort law",
+   "Product liability",
+   "Negligence - psychiatric injury/nervous shock"
+  ],
+  "issues": [
+   "Whether a claimant can recover damages for standalone psychiatric injury (with no accompanying physical injury) caused by a manufacturer's or retailer's negligence",
+   "What legal test governs recognition of a compensable psychiatric injury in negligence (recognizable psychiatric illness vs mere upset)",
+   "Whether a manufacturer/bottler owes a duty of care to a consumer for psychiatric harm caused by discovering a contaminant in a sealed product",
+   "Whether the psychiatric injury was reasonably foreseeable as a consequence of encountering a contaminated product",
+   "Whether the claim falls under product liability/manufacturer's negligence principles (analogous to Donoghue v Stevenson) or general nervous shock doctrine",
+   "What evidence is required to prove causation and the existence of a diagnosable psychiatric condition (as opposed to ordinary distress)"
+  ],
+  "key_facts": [
+   "Client saw something disgusting/contaminating inside a sealed water bottle",
+   "Client suffered no physical injury",
+   "Client subsequently developed depression and anxiety",
+   "The claim concerns psychiatric injury alone (no physical harm), against a presumed manufacturer/seller of the product"
+  ],
+  "causes_of_action": [
+   "Negligence (manufacturer's duty of care / product liability)",
+   "Negligent infliction of psychiatric/nervous shock",
+   "Possibly breach of warranty of fitness/quality under sale of goods legislation"
+  ],
+  "candidate_statutes": [
+   "Sale of Goods Act (Ontario)",
+   "Consumer Protection Act, 2002 (Ontario)",
+   "Food and Drugs Act (federal)"
+  ],
+  "search_terms": [
+   "psychiatric injury negligence",
+   "nervous shock recoverable damages",
+   "recognizable psychiatric illness test",
+   "standalone mental injury tort",
+   "Mustapha v Culligan",
+   "foreseeability of psychiatric harm",
+   "contaminated product negligence",
+   "manufacturer duty of care Donoghue v Stevenson",
+   "pure psychological harm negligence Canada",
+   "de minimis psychological injury threshold"
+  ],
+  "needs_clarification": [
+   "Which province/jurisdiction did the incident occur in and where does the client reside (affects which provincial law applies)?"
+  ],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2160,
+   "output_tokens": 950,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0139614,
+   "duration_ms": 9784
+  }
+ }
+}

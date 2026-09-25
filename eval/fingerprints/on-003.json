@@ -1,0 +1,76 @@
+{
+ "prompt_version": "fingerprint-v3",
+ "scenario_sha1": "8d5e913828a41b3b574b5fa32565c7c62179db97",
+ "fingerprint": {
+  "jurisdiction": "ontario",
+  "areas_of_law": [
+   "Employment law - wrongful dismissal",
+   "Contract law - enforceability of termination clause",
+   "Human rights - disability discrimination/duty to accommodate",
+   "Employment standards - ESA minimum entitlements"
+  ],
+  "issues": [
+   "Whether the termination clause limiting notice to ESA minimums is enforceable, given it purports to allow termination for cause on a lower threshold than the ESA's wilful misconduct standard",
+   "Whether the 2019 contract amendment is void for lack of fresh consideration",
+   "What length of reasonable notice at common law Dana is entitled to given her age, length of service, position, and availability of comparable employment (Bardal factors)",
+   "Whether Dana was terminated shortly after returning from medical leave/graduated return to work constitutes discrimination or failure to accommodate a disability under the Human Rights Code",
+   "Whether requiring execution of a full and final release within 5 days as a condition of receiving benefits/ESA-mandated payments is enforceable or violates the ESA",
+   "Whether Dana is entitled to benefits continuation and bonus for the reasonable notice period",
+   "What limitation periods and statutory deadlines apply to Dana's wrongful dismissal, human rights, and ESA claims"
+  ],
+  "key_facts": [
+   "Dana Reyes, 54 years old, employed as Operations Manager from March 2012 to August 14, 2026 (~14 years, 5 months)",
+   "Salary $98,000/year plus benefits and 10% annual bonus",
+   "Employer Northline Logistics Inc., ~180 employees, Ontario payroll well above $3 million (relevant to ESA severance entitlement)",
+   "In 2019, presented with new contract under threat of exclusion from restructuring; no new consideration given",
+   "Termination clause limits notice to ESA minimums and allows termination for cause for 'any breach of Company policy' without notice",
+   "Contract silent on post-termination benefits continuation",
+   "Dana took medical leave Feb-June 2026 after spinal surgery; doctor recommended graduated return (4-hour days for 6 weeks)",
+   "Manager emailed stating need for someone who can commit to full days shortly before return",
+   "Dana terminated without cause three weeks after returning to work",
+   "Termination letter offered only 8 weeks' pay in lieu of notice",
+   "Benefits and further payments conditioned on signing a full and final release within 5 days",
+   "Dana has not signed the release",
+   "Dana applied to ~30 comparable jobs with no offers, relevant to mitigation and reasonable notice"
+  ],
+  "causes_of_action": [
+   "Wrongful dismissal (common law reasonable notice)",
+   "Breach of contract (unenforceable/void termination clause)",
+   "Discrimination on basis of disability under the Ontario Human Rights Code (failure to accommodate, adverse treatment linked to medical leave/return to work)",
+   "Claim for ESA minimum standards violations (notice, severance, benefits continuation)",
+   "Potential bad faith in manner of dismissal / breach of duty of good faith and fair dealing"
+  ],
+  "candidate_statutes": [
+   "Employment Standards Act, 2000 (Ontario)",
+   "Human Rights Code (Ontario)",
+   "Employment Standards Act, 2000 - O. Reg. 288/01 (severance/termination regulations)"
+  ],
+  "search_terms": [
+   "enforceability of termination clause ESA minimum",
+   "for cause termination clause breach of company policy wilful misconduct",
+   "fresh consideration contract amendment employment",
+   "Bardal factors reasonable notice",
+   "graduated return to work duty to accommodate disability",
+   "termination shortly after return from medical leave discrimination",
+   "release as condition of ESA termination pay",
+   "severability termination clause Waksdale",
+   "constructive dismissal accommodation",
+   "bonus entitlement during reasonable notice period",
+   "benefits continuation wrongful dismissal",
+   "mitigation reasonable notice job search",
+   "ESA severance pay payroll threshold $2.5 million",
+   "limitation period wrongful dismissal Ontario",
+   "Human Rights Tribunal of Ontario application deadline"
+  ],
+  "needs_clarification": [],
+  "model": "claude-sonnet-5",
+  "backend": "claude-cli",
+  "usage": {
+   "input_tokens": 2625,
+   "output_tokens": 1527,
+   "served_by": "claude-sonnet-5",
+   "equivalent_cost_usd": 0.0219694,
+   "duration_ms": 14700
+  }
+ }
+}
