@@ -44,10 +44,17 @@ BEFORE_WINDOW = 160
 # One-to-one character replacements, so offsets in the normalized text match the original.
 _QUOTES = str.maketrans({"\u2019": "'", "\u2018": "'", "\u201c": '"', "\u201d": '"', "\u2011": "-", "\u00a0": " "})
 _TOKEN = re.compile(r"[\w'\-]+|,")
-_KEYWORD = r"(?:ss?|secs?|sections?|subsections?|subss?|paras?|paragraphs?|subparagraphs?|clauses?|arts?|articles?)"
+# rules/r./rr.: the Rules of Civil Procedure (R.R.O. 1990, Reg. 194) are numbered and cited by
+# rule ("rule 20.04", "r. 21.01(1)(b)"). A number only counts when tied to a law in the same phrase,
+# so "R." in "R. v. Smith" (no number after it) can't produce a reference.
+_KEYWORD = r"(?:ss?|secs?|sections?|subsections?|subss?|paras?|paragraphs?|subparagraphs?|clauses?|arts?|articles?|rules?|subrules?|rr?)"
 _NUMBER = r"\d+(?:\.\d+)?(?:\s?\((?:\d+(?:\.\d+)?|[a-z]{1,4}(?:\.\d+)?)\))*"
-_NUMBER_LIST = rf"{_NUMBER}(?:\s*(?:,|and|or|to|&)\s*(?:{_KEYWORD}\.?\s*)?{_NUMBER})*"
+# Only section-level keywords continue a list ("ss. 5 and s. 7"): in "s. 2(1), para. 3" the
+# paragraph is part of s. 2(1), not section 3.
+_SECTION_KEYWORD = r"(?:ss?|secs?|sections?|subsections?|subss?|arts?|articles?|rules?|subrules?|rr?)"
+_NUMBER_LIST = rf"{_NUMBER}(?:\s*(?:,|and|or|to|&)\s*(?:{_SECTION_KEYWORD}\.?\s*)?{_NUMBER})*"
 _REF_LIST = re.compile(rf"\b{_KEYWORD}\.?\s*({_NUMBER_LIST})", re.IGNORECASE)
+_SUB_UNIT = re.compile(r"(?:paras?|paragraphs?|subparagraphs?|clauses?)\b", re.IGNORECASE)
 _SINGLE = re.compile(_NUMBER)
 # A statute citation between the name and the section: ', SC 2001, c 27', ', RSC 1985, c 1 (5th Supp)',
 # ', RSO 1990, c O.2', ', SO 2000, c 3' — [CO] covers both federal (Canada) and Ontario citations.
@@ -189,7 +196,22 @@ class StatuteIndex:
 
     @classmethod
     def from_db(cls, conn) -> "StatuteIndex":
-        rows = conn.execute("SELECT title, code, kind, jurisdiction FROM legislation").fetchall()
+        # Ontario regulations are matched by citation ("O. Reg. 288/01" and "O.Reg. 288/01" tokenize
+        # the same; "Ontario Regulation 288/01" is the long form), and by title only when it's
+        # distinctive (3+ words: "Rules of Civil Procedure", "Statutory Accident Benefits Schedule"):
+        # many e-Laws titles are just "General" or "Definitions", which would match all over.
+        rows = conn.execute(
+            """
+            SELECT title, code, kind, jurisdiction FROM legislation
+            WHERE NOT (jurisdiction = 'ontario' AND kind = 'regulation')
+            UNION ALL
+            SELECT c, code, kind, jurisdiction FROM legislation,
+                   unnest(ARRAY[citation, replace(citation, 'O. Reg.', 'Ontario Regulation')]
+                          || CASE WHEN array_length(regexp_split_to_array(title, '\\s+'), 1) >= 3
+                                  THEN ARRAY[title] ELSE ARRAY[]::text[] END) AS c
+            WHERE jurisdiction = 'ontario' AND kind = 'regulation'
+            """
+        ).fetchall()
         laws, collisions = _laws_from_rows(rows)
         return cls(laws, collisions)
 
@@ -208,7 +230,13 @@ class StatuteIndex:
                     defined[alias.lower()] = mention
 
         refs: list[StatuteRef] = []
+        prev_end = -1
         for m in _REF_LIST.finditer(text):
+            # "s. 2(1), para. 3": a paragraph/clause right after a reference is part of it.
+            follows_ref = prev_end >= 0 and text[prev_end:m.start()].strip() in ("", ",")
+            prev_end = m.end()
+            if follows_ref and _SUB_UNIT.match(m.group(0)):
+                continue
             law = (self._law_after(text, m.end(), by_start, mentions, ends, defined)
                    or self._law_before(text, m.start(), by_end, mentions, ends, defined))
             if law is None:

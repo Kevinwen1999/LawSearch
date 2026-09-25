@@ -6,6 +6,7 @@ Extracted text is never logged — only the content hash and object key are.
 
 import hashlib
 import io
+import logging
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -15,6 +16,8 @@ from minio import Minio
 from minio.error import S3Error
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 # Below this many characters, a PDF page is treated as image-only (a scanned filing, not a
 # text-layer PDF) and sent to OCR instead.
@@ -26,11 +29,25 @@ class ExtractionError(ValueError):
     pass
 
 
+# RapidOCR's bundled recognizer (ch_PP-OCRv4) is trained mostly on Chinese and drops the spaces
+# between English words ("Myclientfledpersecution..."), and its text-direction classifier flips
+# some upright lines 180° into gibberish. On scanned renderings of the eval scenarios
+# (scripts/eval_intake.py) word agreement with the typed text was 0.25; PaddleOCR's English
+# recognizer with the classifier off reads 0.997. Scans are upright, so the classifier isn't needed.
+OCR_REC_MODEL = ("SWHL/RapidOCR", "PP-OCRv3/en_PP-OCRv3_rec_infer.onnx")
+
+
 @lru_cache(maxsize=1)
 def _ocr_engine():
+    from huggingface_hub import hf_hub_download
     from rapidocr_onnxruntime import RapidOCR
 
-    return RapidOCR()
+    try:
+        rec_model = hf_hub_download(*OCR_REC_MODEL)
+    except Exception as exc:  # offline and not cached: the bundled model still reads, just badly
+        logger.warning("English OCR model unavailable (%s); falling back to RapidOCR's default", type(exc).__name__)
+        rec_model = None
+    return RapidOCR(rec_model_path=rec_model, use_cls=False) if rec_model else RapidOCR(use_cls=False)
 
 
 def _ocr_page(page: pdfium.PdfPage) -> str:

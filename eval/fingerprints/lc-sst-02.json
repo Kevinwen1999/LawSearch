@@ -1,69 +1,68 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "e4bf96cda02fb68708bcb937c0dfbd7830611c04",
  "fingerprint": {
-  "jurisdiction": "federal",
+  "jurisdiction": "ontario",
   "areas_of_law": [
-   "Employment insurance law",
-   "Employment law (constructive dismissal / workplace harassment)",
-   "Human rights (workplace harassment/disability accommodation)"
+   "employment law",
+   "human rights",
+   "employment insurance"
   ],
   "issues": [
-   "Whether an unconfirmed, unsettled transfer proposal (with hours/pay terms still 'to be looked at') constitutes a 'reasonable alternative' the claimant was required to pursue before voluntarily leaving under the EI Act's just cause test",
-   "Whether just cause for leaving employment can be established where the claimant reasonably believed harassment would continue or recur at the proposed alternative location",
-   "Whether an employer's failure to investigate or remedy reported workplace harassment, after complaints to HR and ownership, supports a finding of just cause to leave or constructive dismissal",
-   "Whether the employer had an obligation to accommodate the claimant's medical/disability-related restrictions (post-surgery, limited shift capacity) before requiring relocation or a return to work",
-   "Whether comments and conduct targeting the claimant's body odour and weight, including gloving/tissue use by coworkers, amount to harassment or discrimination based on disability once the underlying medical cause (abscess) is considered",
-   "What standard applies in assessing 'reasonable assurance' that a transfer would resolve the harassment for EI just-cause purposes"
+   "Whether a proposed but unconfirmed transfer, on terms the employer had not yet agreed to, constitutes a 'reasonable alternative' the employee was required to pursue before resigning for Employment Insurance purposes",
+   "Whether the employer's failure to address workplace harassment and the proposed transfer to a different site constituted a fundamental change to the employment relationship justifying resignation (constructive dismissal)",
+   "Whether the co-workers' conduct — mocking weight and body odour, using gloves and tissue when handling items — constitutes workplace harassment under the Ontario Human Rights Code",
+   "Whether the employer failed in its duty to accommodate the employee's disability (abscess causing odour) and her recovery from ankle surgery",
+   "Whether a transfer to a different site with a longer, costlier commute, where the employee reasonably believed the same hostile environment would exist, is a reasonable alternative the employee was required to accept",
+   "Whether the employee's resignation was a reasonable response to the employer's conduct, given the employer's failure to address the harassment after being notified",
+   "The standard of review applicable to an EI decision finding that a claimant left employment without just cause"
   ],
   "key_facts": [
-   "Coworkers mocked claimant's weight and body odour and used gloves/tissue when interacting with her",
-   "Odour was later found to be caused by an undiagnosed abscess",
-   "Management spoke to her twice about the odour due to client complaints, before the medical cause was known",
-   "She reported harassment to HR and the owner; no corrective action was taken",
-   "She went on medical leave, during which she also had ankle surgery",
-   "Employer proposed transfer to a second site away from the harassing coworkers",
-   "She objected due to longer/costlier commute and inability to manage full shifts while recovering from surgery",
-   "Employer said it would 'look at' part-time hours and extra pay requests but nothing was finalized before she resigned",
-   "She resigned before the transfer terms were settled, citing distrust of the employer and belief harassment would follow her",
-   "EI claim was denied at initial level and first-level appeal on the basis the transfer was a reasonable alternative to quitting"
+   "Co-workers mocked the employee's weight and body odour and used gloves or tissue when handling items",
+   "The odour was caused by an undiagnosed abscess (a medical condition/disability)",
+   "Management spoke to the employee twice about the smell due to client complaints but did not address the harassment",
+   "The employee raised the harassment with HR and the owner; no action was taken",
+   "The employee went on medical leave during which she had ankle surgery",
+   "The employer proposed a transfer to a second site away from the harassing co-workers",
+   "The proposed transfer involved a longer and costlier commute",
+   "The employer said it would 'look at' requests for part-time hours and extra pay but had not confirmed any terms",
+   "The employee resigned before any terms were settled, believing the employer could not be trusted and the harassment would follow her",
+   "EI claim was refused on the basis that the transfer was a reasonable alternative",
+   "First-level EI appeal upheld the refusal"
   ],
   "causes_of_action": [
-   "Disqualification from EI benefits for voluntarily leaving employment without just cause (s. 29-30 EI Act)",
-   "Whether reasonable alternatives to leaving existed under s. 29(c) EI Act",
-   "Constructive dismissal arising from workplace harassment and failure to address complaints",
-   "Failure to accommodate disability/medical condition"
+   "constructive dismissal",
+   "workplace harassment (human rights)",
+   "failure to accommodate (disability)",
+   "EI just cause for leaving employment"
   ],
   "candidate_statutes": [
-   "Employment Insurance Act",
-   "Employment Insurance Regulations",
-   "Occupational Health and Safety Act (Ontario) - workplace harassment provisions",
-   "Human Rights Code (Ontario)",
-   "Employment Standards Act, 2000 (Ontario)"
+   "Employment Insurance Act, R.S.C. 1985, c. E-9 (s. 34(2))",
+   "Ontario Human Rights Code, S.O. 1990, c. H.19",
+   "Employment Standards Act, 2000, S.O. 2000, c. 41"
   ],
   "search_terms": [
-   "voluntarily leaving without just cause EI",
-   "reasonable alternative to leaving employment EI Act s.29",
-   "just cause EI harassment workplace",
-   "constructive dismissal harassment",
-   "duty to investigate workplace harassment complaint",
-   "disability accommodation return to work",
-   "Employment Insurance Act s.29(c) reasonable assurance",
-   "EI appeal Social Security Tribunal just cause",
-   "toxic work environment quit",
-   "failure to accommodate medical condition transfer"
+   "constructive dismissal fundamental change",
+   "workplace harassment disability",
+   "duty to accommodate medical condition",
+   "just cause for leaving employment EI",
+   "reasonable alternative transfer",
+   "unconfirmed proposal reasonable alternative",
+   "transfer longer commute reasonable",
+   "reasonable belief continued harassment",
+   "employer failure to address harassment resignation",
+   "EI appeal standard of review just cause",
+   "s. 34(2) Employment Insurance Act",
+   "Ontario Human Rights Code harassment",
+   "constructive dismissal resignation reasonable response"
   ],
-  "needs_clarification": [
-   "Which province/territory the workplace and employment relationship are located in (relevant to any parallel human rights, OHSA/workplace harassment, or employment standards claims, as distinct from the federally-governed EI claim)"
-  ],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "needs_clarification": [],
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 11329,
-   "output_tokens": 1396,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0247048,
-   "duration_ms": 12941
+   "input_tokens": 853,
+   "output_tokens": 3063,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

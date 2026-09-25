@@ -1,51 +1,53 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "dcc7064657b9e06de086b346d1c709c92b618111",
  "fingerprint": {
   "jurisdiction": "ontario",
   "areas_of_law": [
-   "Employment law",
-   "Contract law"
+   "employment law",
+   "contract law"
   ],
   "issues": [
-   "Whether a termination-without-cause clause limiting termination pay to the ESA statutory minimum is enforceable",
-   "Whether an unenforceable for-cause termination clause invalidates a separate without-cause termination clause in the same contract",
-   "Whether a for-cause termination clause providing no notice or pay contravenes the ESA's 'wilful misconduct' standard for denial of statutory entitlements",
-   "Whether termination provisions must be read together as a whole when assessing ESA compliance",
-   "If the termination clause is void, what common law reasonable notice period applies"
+   "whether a termination clause that limits termination pay to the ESA statutory minimum is enforceable or void",
+   "whether a separate clause permitting termination for cause without notice or pay is enforceable",
+   "whether a for-cause clause and a termination clause should be read together as a single scheme to circumvent common law notice",
+   "the consequence of a void termination clause — entitlement to common law reasonable notice in lieu of termination without cause",
+   "the standard of proof required for an employer to establish termination for cause",
+   "the test for determining the validity of a termination clause under the ESA and common law"
   ],
   "key_facts": [
-   "Client has an Ontario employment contract",
-   "The contract includes a without-cause termination clause limiting termination pay to the statutory minimum",
-   "The contract includes a separate for-cause termination clause purporting to allow dismissal with nothing paid"
+   "Ontario employment contract",
+   "termination clause limits pay to the statutory minimum",
+   "separate clause permits termination for cause with no notice or pay"
   ],
   "causes_of_action": [
-   "Wrongful dismissal",
-   "Breach of employment contract"
+   "wrongful dismissal (common law reasonable notice)",
+   "breach of contract (if the clause is found void)"
   ],
   "candidate_statutes": [
-   "Employment Standards Act, 2000 (Ontario)",
-   "O. Reg. 288/01 (ESA Termination and Severance of Employment)"
+   "Employment Standards Act, 2000 (Ontario)"
   ],
   "search_terms": [
-   "termination clause enforceability ESA",
-   "for cause clause void ESA minimum",
-   "wilful misconduct disobedience ESA termination",
-   "severable termination provisions employment contract",
-   "Waksdale v Swegon",
-   "reasonable notice common law",
-   "contra proferentem employment contract",
-   "rebuttable presumption reasonable notice"
+   "termination clause enforceability",
+   "ESA minimums common law notice",
+   "for cause termination clause",
+   "reasonable notice",
+   "void termination clause",
+   "Machado test",
+   "Waksman",
+   "termination without cause",
+   "common law notice period",
+   "Employment Standards Act termination pay",
+   "for cause standard of proof",
+   "termination clause void ab initio"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 13801,
-   "output_tokens": 1270,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0278852,
-   "duration_ms": 15743
+   "input_tokens": 610,
+   "output_tokens": 1564,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

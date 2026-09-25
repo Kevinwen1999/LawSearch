@@ -1,57 +1,54 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "e6a92dd9521b488be68d14d7f65453d5c661ab5d",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Human rights law",
-   "Employment law",
-   "Disability discrimination/accommodation"
+   "employment",
+   "human rights"
   ],
   "issues": [
-   "What elements establish a prima facie case of discrimination on the basis of disability in employment",
-   "Whether refusing a modified work schedule without inquiry into the disability constitutes discrimination",
-   "What is the scope and standard of the duty to accommodate a disabled employee to the point of undue hardship",
-   "What procedural obligations (individualized assessment, exploring options) does an employer have when responding to an accommodation request",
-   "What factors are relevant to determining undue hardship in a federally regulated workplace",
-   "What remedies are available for failure to accommodate under federal human rights legislation"
+   "whether an employer's refusal to accommodate a disability without any investigation constitutes discrimination on the basis of disability",
+   "the scope and limits of the duty to accommodate, including the threshold of undue hardship",
+   "the procedural obligation to investigate and engage in the interactive process before refusing a requested accommodation",
+   "the standard of proof and allocation of onus in a disability discrimination claim",
+   "remedies available for failure to accommodate, including compensatory and punitive damages"
   ],
   "key_facts": [
-   "Employee works for a federally regulated bank",
-   "Employee has a disability",
-   "Employee requested a modified work schedule as accommodation",
-   "Employer refused the request",
-   "Employer did not investigate or inquire into the request before refusing"
+   "employee at a federally regulated bank",
+   "employee has a disability",
+   "employee requested a modified schedule as accommodation",
+   "employer refused without investigating the request"
   ],
   "causes_of_action": [
-   "Discrimination in employment on the basis of disability",
-   "Failure to accommodate to the point of undue hardship"
+   "discrimination on the basis of disability",
+   "failure to accommodate"
   ],
   "candidate_statutes": [
    "Canadian Human Rights Act",
    "Canada Labour Code"
   ],
   "search_terms": [
-   "prima facie discrimination disability",
-   "duty to accommodate undue hardship",
-   "individualized assessment accommodation",
-   "Moore v British Columbia test discrimination",
-   "Meiorin test",
+   "duty to accommodate",
+   "disability discrimination",
+   "undue hardship",
+   "modified work schedule",
+   "failure to accommodate",
+   "interactive process",
    "procedural duty to accommodate",
-   "modified work schedule accommodation",
-   "federally regulated employer human rights",
-   "undue hardship factors Canadian Human Rights Act",
-   "failure to inquire accommodation request"
+   "reasonable accommodation",
+   "Canadian Human Rights Act",
+   "accommodation without undue hardship",
+   "prima facie discrimination",
+   "punitive damages human rights"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 2157,
-   "output_tokens": 706,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.011524399999999999,
-   "duration_ms": 6782
+   "input_tokens": 618,
+   "output_tokens": 930,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

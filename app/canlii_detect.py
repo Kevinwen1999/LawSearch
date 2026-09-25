@@ -30,7 +30,9 @@ RANK_DECAY = 0.1       # seed weight falls off gently with its retrieval rank
 # Cross-encoder logit floor, scoring the fingerprint query against CanLII's keywords. Calibrated
 # on the three Ontario eval scenarios (2026-09-24): on-point decisions scored -4.2 and up,
 # off-topic ones sharing a seed (a Charter-evidence ruling citing a slip-and-fall appeal)
-# mostly below. Loose on purpose: these are leads to check, not holdings.
+# mostly below. Re-checked 2026-09-25 on on-002/003/004 with per-issue seeds: everything above
+# the floor was employment/termination-clause case law, the weakest (-2 to -3.3) only loosely on
+# point. Loose on purpose: these are leads to check, not holdings.
 MIN_RERANK = -4.0
 
 _NEUTRAL = re.compile(r"(\d{4}) ([A-Z]+) (\d+)")
@@ -82,6 +84,11 @@ def to_seed(citation: str | None, court: str | None, title: str | None) -> Seed 
     return Seed(citation, title, database_id, f"{year}{code.lower()}{number}")
 
 
+def unique_seeds(seeds: list[Seed]) -> list[Seed]:
+    """First occurrence of each case: a case leading several issue groups is one seed, not three."""
+    return list(dict.fromkeys(seeds))
+
+
 def pool(
     citing_by_seed: list[tuple[Seed, list[dict]]], candidate_databases: set[str], size: int = POOL_SIZE
 ) -> list[Candidate]:
@@ -120,7 +127,7 @@ def detect(
 ) -> Detection:
     if not client.configured:
         return Detection("disabled", "CanLII detection is off: CANLII_API_KEY is not set.", [])
-    seeds = seeds[:MAX_SEEDS]
+    seeds = unique_seeds(seeds)[:MAX_SEEDS]
     if not seeds:
         return Detection(
             "no_seeds",

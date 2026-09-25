@@ -1,63 +1,64 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "4de10ee764d966e0603a61411ed19286c9490af9",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "customs and trade law",
-   "prohibited weapons regulation",
-   "criminal law (weapons)"
+   "customs and importation",
+   "criminal law (prohibited weapons)",
+   "administrative law (judicial review)"
   ],
   "issues": [
-   "whether a knife that opens via a flipper/thumb-stud mechanism activated by one-finger pressure, swinging fully open and locking, qualifies as a 'prohibited weapon' under the Criminal Code definition incorporated by tariff item 9898.00.00 (automatic/centrifugal/gravity knife)",
-   "whether the fact that similar knives are commercially sold elsewhere in Canada is relevant to classifying imported goods as prohibited weapons under the Customs Act",
-   "whether absence of domestic criminal charges for possession or sale of similar knives affects the customs classification or admissibility determination",
-   "whether intended personal or gift use rather than resale affects classification of goods as a prohibited weapon under tariff item 9898.00.00",
-   "what test applies to determine whether a knife opens by centrifugal force, gravity, or thrust versus by manual manipulation for purposes of the prohibited weapon definition",
-   "what is the correct procedure and standard of review for appealing a CBSA re-determination under the Customs Act to the Canadian International Trade Tribunal"
+   "Whether a folding knife whose blade deploys rapidly and locks open via a flipper tab, and whose deployment cannot be slowed or stopped once initiated, falls within the definition of a prohibited weapon under s. 2(3) of the Criminal Code (knife that opens by force of gravity or by centrifugal force)",
+   "Whether a prohibited weapon as defined in the Criminal Code is a prohibited import under the Customs Act, and whether the CBSA is thereby required to refuse entry",
+   "Whether the fact that identical or substantially similar knives are openly sold in Canadian retail stores constitutes a valid ground to set aside a CBSA refusal of entry for a prohibited import",
+   "Whether the stated purpose of importation (personal use or gift, not resale) is a relevant factor or available defence to the importation of a prohibited weapon",
+   "Whether the absence of criminal enforcement (no charges for sale or possession of similar knives) is a relevant consideration in an administrative decision to refuse entry of a prohibited import",
+   "The standard of review applicable to a CBSA decision classifying imported goods as prohibited weapons and refusing entry",
+   "The proper procedural avenue and applicable standard for challenging a CBSA importation refusal after internal reconsideration has been exhausted"
   ],
   "key_facts": [
-   "approximately ten inexpensive folding knives imported by mail from an overseas seller",
-   "each knife has a flipper/tab near the pivot allowing one-finger opening",
-   "pressing the flipper causes the blade to swing out rapidly and lock open, and cannot be slowed or stopped once started",
-   "CBSA detained the knives on entry and refused entry as prohibited weapons",
-   "client requested a re-determination and the original decision was confirmed",
-   "client intends to appeal to a trade tribunal",
-   "client argues similar knives are sold openly in Canadian retail stores",
-   "knives were purchased for personal/gift use, not resale",
-   "client states no criminal charges have been laid domestically for possession or sale of similar knives"
+   "Approximately ten inexpensive folding knives ordered from an overseas seller and shipped by mail",
+   "Each knife has a flipper tab near the pivot; pressing it with one finger causes the blade to swing out rapidly and lock fully open",
+   "Once blade deployment begins, it cannot be slowed or stopped",
+   "Knives were held and refused entry by CBSA as prohibited weapons",
+   "CBSA confirmed the refusal on reconsideration",
+   "Client asserts identical or nearly identical knives are sold in Canadian outdoor and sporting goods retail chains",
+   "Client asserts the knives were purchased as a holiday gift, not for resale",
+   "Client asserts no one has been criminally charged in Canada for selling or carrying such knives"
   ],
   "causes_of_action": [
-   "appeal of CBSA re-determination of prohibited-goods classification under the Customs Act",
-   "challenge to classification under tariff item 9898.00.00 (prohibited weapons)"
+   "Judicial review of CBSA importation refusal decision"
   ],
   "candidate_statutes": [
-   "Customs Act",
-   "Customs Tariff, tariff item 9898.00.00",
-   "Criminal Code (weapons definitions, s. 84)",
-   "Canadian International Trade Tribunal Act"
+   "Criminal Code, R.S.C. 1985, c. C-46, s. 2(3) (definition of prohibited weapon — knife opening by force of gravity or centrifugal force)",
+   "Customs Act, R.S.C. 1985, c. C-49, s. 34 (prohibited imports)",
+   "Customs Act, R.S.C. 1985, c. C-49, s. 100 (seizure and detention of prohibited goods)",
+   "Customs (General) Regulations, SOR/98-172"
   ],
   "search_terms": [
-   "tariff item 9898.00.00",
-   "prohibited weapon knife CBSA",
-   "centrifugal knife gravity knife definition",
-   "flipper knife automatic opening",
-   "CITT appeal customs classification weapon",
-   "Criminal Code automatic knife section 84",
-   "knife opens by centrifugal force test",
-   "spring-assisted knife prohibited device",
-   "Customs Act section 67 appeal",
-   "detained goods re-determination prohibited weapon"
+   "prohibited weapon",
+   "force of gravity",
+   "centrifugal force",
+   "switchblade",
+   "automatic knife",
+   "flipper knife",
+   "prohibited import",
+   "CBSA refusal of entry",
+   "standard of review CBSA classification",
+   "personal use prohibited import",
+   "identical goods domestic sale importation",
+   "selective enforcement administrative decision",
+   "s. 2(3) Criminal Code knife",
+   "s. 34 Customs Act prohibited"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 14848,
-   "output_tokens": 2162,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0411572,
-   "duration_ms": 17769
+   "input_tokens": 759,
+   "output_tokens": 2395,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

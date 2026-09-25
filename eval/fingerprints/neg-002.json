@@ -1,53 +1,60 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "d1690c52597c90a2a2cae33c0accf037ba4ab750",
  "fingerprint": {
   "jurisdiction": "unknown",
   "areas_of_law": [
-   "tort law",
-   "negligence",
-   "occupiers' liability / premises liability"
+   "tort",
+   "negligence"
   ],
   "issues": [
-   "whether a business owner owes a duty of care to third parties injured as a result of a thief's negligent driving of a stolen vehicle",
-   "whether leaving a vehicle unlocked with keys inside on commercial premises breaches the standard of care owed to third parties",
-   "whether the intervening criminal act of theft breaks the chain of causation between the business's conduct and the passenger's injuries",
-   "whether theft of the vehicle and subsequent negligent driving causing injury was a reasonably foreseeable consequence of leaving keys in an unlocked car",
-   "whether the thief's status as a minor affects the foreseeability or novus actus interveniens analysis",
-   "what standard of care applies to a commercial garage or parking lot operator regarding security of vehicles on its premises"
+   "whether a commercial business that leaves a vehicle unlocked with keys in a lot owes a duty of care to a third party injured when the vehicle is stolen and crashed",
+   "the standard of care owed by a commercial business in securing vehicles on its premises",
+   "whether theft of an unlocked vehicle by a young person is a foreseeable risk giving rise to a duty",
+   "whether the criminal act of a third party (theft) constitutes a novus actus interveniens that severs the chain of causation",
+   "whether the passenger's decision to ride in a stolen vehicle amounts to contributory negligence reducing recovery",
+   "whether the passenger's voluntary assumption of risk (volenti non fit injuria) bars or limits recovery",
+   "heads of damages available for personal injury in a negligence action"
   ],
   "key_facts": [
-   "a teenager stole an unlocked car with the keys left inside from a commercial garage lot",
-   "the thief crashed the stolen car",
-   "a passenger in the stolen car was seriously injured",
-   "the vehicle was located on the premises of a commercial garage business at the time of the theft"
+   "vehicle was unlocked with keys in it",
+   "vehicle was in a commercial garage lot",
+   "a teenager stole the vehicle",
+   "the vehicle was crashed",
+   "the passenger was badly injured",
+   "the claim is against the business, not the driver"
   ],
   "causes_of_action": [
-   "negligence against the business owner/operator",
-   "occupiers' liability (if a premises-based duty applies)"
+   "negligence"
   ],
-  "candidate_statutes": [],
+  "candidate_statutes": [
+   "Negligence Act"
+  ],
   "search_terms": [
-   "duty of care third party criminal acts",
-   "keys left in ignition negligence",
-   "foreseeability novus actus interveniens theft",
-   "stolen vehicle negligence third party injury",
-   "intervening criminal act chain of causation",
-   "occupiers liability duty of care",
-   "reasonable foreseeability of theft leading to accident",
-   "Anns/Cooper test duty of care"
+   "duty of care",
+   "standard of care",
+   "foreseeability",
+   "novus actus interveniens",
+   "intervening criminal act",
+   "causation",
+   "contributory negligence",
+   "volenti non fit injuria",
+   "assumption of risk",
+   "commercial premises",
+   "vehicle security",
+   "theft",
+   "personal injury damages",
+   "Negligence Act"
   ],
   "needs_clarification": [
-   "In which province or jurisdiction did the theft, crash, and injury occur, since this is a provincial tort/negligence matter?"
+   "Which province or territory does this scenario arise in? Tort law (duty of care, standard of care, defences, damages) is governed by provincial common law and provincial Negligence Acts, and the applicable authorities will differ by jurisdiction."
   ],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 14127,
-   "output_tokens": 1566,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0321432,
-   "duration_ms": 15359
+   "input_tokens": 612,
+   "output_tokens": 1582,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

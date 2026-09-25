@@ -137,6 +137,16 @@ def test_gate_prefers_unsupported_jurisdiction_over_clarification():
     assert gate.status == "unsupported_jurisdiction"
 
 
+def test_gate_searches_with_a_note_when_the_jurisdiction_is_known():
+    # e.g. an EI appeal where the model also wondered about a parallel provincial claim.
+    fp = make_fp(jurisdiction="federal", needs_clarification=["which province is the workplace in?"])
+
+    gate = check_jurisdiction(fp)
+
+    assert gate.status == "ok"
+    assert gate.message == "which province is the workplace in?"
+
+
 def test_gate_ok_when_jurisdiction_unknown_but_no_clarification_flagged():
     fp = make_fp(jurisdiction="unknown", needs_clarification=[])
 

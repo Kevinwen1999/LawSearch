@@ -52,6 +52,7 @@ class SectionChunkRow:
     url: str | None
     in_force_start: date | None
     cited_by_count: int
+    jurisdiction: str | None = None
 
 
 @dataclass
@@ -86,6 +87,7 @@ class SectionResult:
     vector_rank: int | None = None
     citing_cases: int = 0
     rerank_score: float | None = None
+    jurisdiction: str | None = None
 
 
 def gather_sections(
@@ -178,7 +180,7 @@ def rank_sections(candidates: SectionCandidates, config: SectionConfig = Section
             results[key] = SectionResult(
                 row.chunk_id, row.code, row.kind, row.title, row.citation, row.consolidation_date,
                 row.section_no, row.section_label, row.marginal_note, row.hierarchy_path, row.text,
-                row.url, row.in_force_start, row.cited_by_count, 0.0,
+                row.url, row.in_force_start, row.cited_by_count, 0.0, jurisdiction=row.jurisdiction,
             )
         return results[key]
 
@@ -227,7 +229,7 @@ def _rows(conn, chunk_ids: list[UUID]) -> dict[UUID, SectionChunkRow]:
         """
         SELECT s.id, s.legislation_id, l.code, l.kind, l.title, l.citation, l.consolidation_date,
                s.section_no, s.section_label, s.marginal_note, s.hierarchy_path, s.text,
-               s.url_official, s.in_force_start, s.cited_by_count
+               s.url_official, s.in_force_start, s.cited_by_count, l.jurisdiction
         FROM legislation_sections s JOIN legislation l ON l.id = s.legislation_id
         WHERE s.id = ANY(%s)
         """,

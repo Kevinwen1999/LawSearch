@@ -1,65 +1,62 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "cbfb7161ec89f5f6f56511d24a9435e50e911d6f",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "immigration and refugee law",
-   "administrative law / judicial review"
+   "refugee law",
+   "administrative law (standard of review)"
   ],
   "issues": [
-   "What is the correct legal test and standard of proof for assessing an internal flight alternative (IFA) in a refugee appeal",
-   "Whether the tribunal applied too high a standard of proof in assessing the risk of being located by the agent of persecution in the proposed IFA location",
-   "Whether a claimant's sworn testimony is presumed truthful absent reasons to doubt it, and whether lack of corroboration alone can rebut that presumption",
-   "Whether the tribunal erred by giving little weight to a psychological report because it was based on a single non-treating assessment",
-   "Whether discrimination, hardship (cost of living, non-indigenous status) and mental health evidence were properly considered in assessing the reasonableness prong of the IFA test",
-   "What standard of review applies to a refugee appeal division's factual and mixed fact-law findings on judicial review",
-   "Whether the tribunal's treatment of corroborating evidence (husband's affidavit) and country condition evidence was reasonable"
+   "whether a refugee tribunal applied a standard of proof higher than the 'realistic possibility' of persecution required under the Immigration and Refugee Protection Act",
+   "whether the tribunal properly assessed the reasonableness of an internal relocation alternative, including the claimant's safety, cost of living, discrimination against non-indigenous persons, and ability to integrate in the proposed city",
+   "whether a refugee claimant's sworn testimony must be corroborated by independent evidence or can stand on its own as the basis for a finding of a well-founded fear of persecution",
+   "whether the tribunal erred in discounting expert psychological evidence on the basis that it rested on a single short assessment by a non-treating clinician",
+   "the standard of review applicable to a refugee tribunal's findings of fact and law, and the scope of a court's power to set aside those findings",
+   "whether the tribunal properly considered country condition evidence, including the reach of political connections and the capacity of a national police network to locate a person in any city",
+   "whether the combination of a forced female genital mutilation demand, a witchcraft accusation based on a traditional oracle, and police involvement constitutes a well-founded fear of persecution on a protected ground"
   ],
   "key_facts": [
-   "Client fled a West African country with two young daughters to avoid FGM being imposed by her husband's extended family",
-   "She was accused of witchcraft by the family based on an oracle's pronouncement following a death in the family",
-   "The family reported her to police, who questioned her husband for about two hours about her whereabouts",
-   "No further police contact in the roughly ten months since the interrogation",
-   "Client alleges a husband's uncle with political campaign connections could locate her anywhere via personal influence and a national police computer network",
-   "Refugee Appeal Division found a viable internal flight alternative (IFA) in another major city far from her home region",
-   "Tribunal found her evidence about the uncle's reach thin and inconsistent, and noted the husband's short affidavit did not mention the uncle or the interrogation",
-   "Tribunal found discrimination against non-indigenous residents and high cost of living did not make the IFA unreasonable given her education and family business success",
-   "Tribunal gave little weight to a psychologist's report diagnosing depression and PTSD, based on a single one-hour assessment by a non-treating clinician",
-   "Client seeks judicial review challenging the standard of proof applied, the treatment of her sworn evidence, and treatment of mental health and country condition evidence"
+   "claimant fled a large West African city with two young daughters",
+   "husband's extended family demanded FGM for the girls and accused her of witchcraft on the word of a traditional oracle",
+   "family reported her to police; husband questioned for approximately two hours about her whereabouts",
+   "no further police contact in roughly ten months",
+   "claimant fears a specific uncle with political campaign connections could locate her in any city",
+   "claimant fears the national police computer network would enable officers to find her anywhere",
+   "tribunal found internal relocation to another major city was reasonable",
+   "tribunal discounted evidence of the uncle's reach as thin and inconsistent",
+   "tribunal noted husband's affidavit did not mention the uncle or the interrogation",
+   "tribunal found discrimination against non-indigenous persons and high cost of living did not make relocation unreasonable given her education and the family's successful business",
+   "tribunal gave little weight to a psychologist's report diagnosing depression and PTSD, noting it rested on a single one-hour assessment by a non-treating clinician"
   ],
   "causes_of_action": [
-   "Application for judicial review of a Refugee Appeal Division decision to the Federal Court"
+   "judicial review of a refugee tribunal decision (reasonableness standard)"
   ],
   "candidate_statutes": [
-   "Immigration and Refugee Protection Act",
-   "Federal Courts Act",
-   "IRB Chairperson's Guideline 4 (Women Refugee Claimants Fearing Gender-Related Persecution)",
-   "IRB Chairperson's Guideline on Vulnerable Persons"
+   "Immigration and Refugee Protection Act, S.C. 2001, c. 27",
+   "Federal Courts Act, R.S.C. 1985, c. F-7"
   ],
   "search_terms": [
-   "internal flight alternative test",
-   "IFA reasonableness prong",
-   "presumption of truthfulness refugee claimant Maldonado",
-   "standard of proof well-founded fear of persecution",
-   "weight given to psychological report non-treating clinician",
-   "corroborating evidence refugee credibility",
-   "female genital mutilation refugee claim",
-   "witchcraft accusation persecution claim",
-   "gender-related persecution guidelines",
-   "reasonableness standard of review Vavilov refugee decision",
-   "agent of persecution reach IFA location",
-   "country condition evidence weight RAD"
+   "realistic possibility of persecution",
+   "internal relocation alternative reasonableness",
+   "standard of proof refugee claim",
+   "corroboration claimant testimony refugee",
+   "weight expert psychological evidence refugee",
+   "reasonableness review refugee tribunal",
+   "country condition evidence political connections",
+   "female genital mutilation persecution refugee",
+   "witchcraft accusation persecution",
+   "standard of review Immigration Appeal Division",
+   "internal flight alternative cost of living discrimination",
+   "well-founded fear of persecution protected ground"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 2533,
-   "output_tokens": 1314,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.019387400000000003,
-   "duration_ms": 12853
+   "input_tokens": 879,
+   "output_tokens": 2184,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

@@ -29,22 +29,23 @@ flowchart LR
     api -- "FILAC briefs,<br/>fingerprint fallback" --> claude
     api --> pg[("Postgres 17<br/>pgvector HNSW + pg_textsearch BM25")]
     api --> minio[("MinIO<br/>uploaded files")]
-    api -- "citator + metadata<br/>(Ontario scenarios)" --> canlii["CanLII API<br/>metadata only, ≤2 req/s"]
+    api -- "citator + metadata<br/>(cited authorities: all scenarios;<br/>ONSC/tribunal detection: Ontario)" --> canlii["CanLII API<br/>metadata only, ≤2 req/s"]
 ```
 
 ### Scenario search (`POST /scenarios`)
 
 ```mermaid
 flowchart TD
-    input["Scenario text or file<br/>(PDF / DOCX / TXT)"] --> intake["Intake: extract text, OCR fallback<br/>app/intake.py → file stored in MinIO"]
-    intake --> fp["Fingerprint (LLM, structured JSON)<br/>jurisdiction · issues · key facts ·<br/>candidate statutes · search terms<br/>app/fingerprint.py"]
+    input["Scenario text or file<br/>(PDF / DOCX / TXT)"] --> intake["Intake: extract text, OCR fallback (English model)<br/>app/intake.py → file stored in MinIO"]
+    intake --> fp["Fingerprint (LLM, structured JSON, cached)<br/>jurisdiction · issues incl. remedies/defences ·<br/>key facts · candidate statutes · search terms<br/>app/fingerprint.py"]
     fp --> gate{"Jurisdiction gate"}
     gate -- "other province" --> unsupported["Warn: not covered yet<br/>(no search)"]
-    gate -- "jurisdiction unstated<br/>and it matters" --> clarify["Ask a clarifying question<br/>(no search)"]
+    gate -- "jurisdiction unknown<br/>and it matters" --> clarify["Ask a clarifying question<br/>(no search)"]
     gate -- ok --> scope["Scope the search<br/>Ontario → cases from ONCA + SCC<br/>legislation → scenario's jurisdiction<br/>+ Constitution + named statutes"]
 
+    scope --> rawq["The scenario's own text<br/>(first 4,000 chars)"]
     scope --> combined["Combined query<br/>all fingerprint fields"]
-    scope --> issues["One query per issue<br/>(up to 8)"]
+    scope --> issues["One query per issue<br/>(up to 10)"]
 
     subgraph search["retrieval.search() — run for each query"]
         direction TB
@@ -53,11 +54,13 @@ flowchart TD
         rerank --> sections["Statute sections: BM25 + vector<br/>+ sections cited by top cases"]
     end
 
+    rawq --> search
     combined --> search
     issues --> search
-    search --> merge["Group (retrieval.group_issue_results)<br/>cases: best k overall, then each issue's own best issue_k<br/>(issue cases must pass the reranker);<br/>sections: round-robin, issue sections only from a law<br/>the scenario already supports"]
+    search --> merge["Group (retrieval.group_issue_results)<br/>cases: best k overall (scenario text leads), then the<br/>fingerprint query's and each issue's own best issue_k<br/>(reranker score > -2); sections: round-robin plus 2 per issue,<br/>only from laws the scenario supports and that some decision cites"]
     merge --> results["Cases grouped by issue + relevant legislation"]
     results --> canliid["Ontario only: CanLII link-outs<br/>POST /canlii/candidates — ONSC and tribunal<br/>decisions citing the top cases (no text)"]
+    results --> cited["Frequently cited by the top cases<br/>POST /canlii/cited — incl. authorities not in<br/>the corpus (e.g. Bardal); uncovered regulations"]
     results --> brief["FILAC brief on demand<br/>POST /cases/{id}/filac → Claude<br/>every item anchored to a paragraph and verified"]
 ```
 
@@ -74,21 +77,32 @@ flowchart LR
         a2aj_cases["A2AJ canadian-case-law<br/>federal courts + tribunals, ONCA"]
         jl["Justice Laws XML<br/>+ Constitution Acts"]
         a2aj_laws["A2AJ canadian-laws<br/>Ontario Acts (no regulations)"]
+        elaws["e-Laws JSON API<br/>Ontario regulations"]
     end
 
     a2aj_cases --> ingest_cases["ingest_a2aj<br/>chunk by paragraph, embed"] --> cases[("cases<br/>case_chunks")]
     jl --> ingest_fed["ingest_legislation"] --> leg[("legislation<br/>legislation_sections")]
     a2aj_laws --> ingest_on["ingest_ontario_legislation"] --> leg
+    cases -. "which regulations<br/>decisions cite" .-> ingest_regs
+    elaws --> ingest_regs["ingest_ontario_regulations<br/>those cited by 2+ decisions"] --> leg
 
-    cases --> cite["load_citations<br/>case → case graph,<br/>cited_by_count"] --> edges[("citation_edges")]
+    cases --> cite["load_citations<br/>case → case graph (neutral, SCR and<br/>name-and-year ONCA citations),<br/>cited_by_count"] --> edges[("citation_edges")]
     cases & leg --> link["link_statutes<br/>case → statute section references"] --> edges
     edges --> reverify["filac_cli --reverify-all<br/>re-link cached briefs"]
 ```
 
 `rebuild.ps1` runs the federal steps in order. ONCA
-(`python -m scripts.ingest_a2aj ONCA`) and Ontario legislation
-(`python -m scripts.ingest_ontario_legislation`) are separate commands. Re-run
-`load_citations` and `link_statutes` after either.
+(`python -m scripts.ingest_a2aj ONCA`), Ontario Acts
+(`python -m scripts.ingest_ontario_legislation`) and Ontario regulations
+(`python -m scripts.ingest_ontario_regulations`) are separate commands. Re-run
+`load_citations` and `link_statutes` after any of them.
+
+Ontario regulations aren't in A2AJ, so `ingest_ontario_regulations` loads the ones the corpus
+actually cites: it counts "O. Reg. N/YY" / "R.R.O. 1990, Reg. N" citations across all decisions,
+keeps those cited by 2+ decisions (132; 97 still current on e-Laws, incl. O. Reg. 288/01 and the
+Rules of Civil Procedure), and fetches each from e-Laws' JSON API one request a second. They're
+matched in decision text by citation, and by title only when it's 3+ words ("Rules of Civil
+Procedure"; many regulation titles are just "General"); the Rules are cited by rule ("r. 20.04").
 
 ## Prerequisites
 
@@ -195,10 +209,19 @@ per-issue coverage for scenarios whose gold authorities carry `issues` tags (`on
 ```powershell
 .venv\Scripts\python -m scripts.eval_scenarios -v --out eval/runs/scenarios.json
 .venv\Scripts\python -m scripts.eval_scenarios --reuse     # re-score without searching again
+.venv\Scripts\python -m scripts.eval_scenarios --fingerprints-only   # just fill eval/fingerprints/
+.venv\Scripts\python -m scripts.eval_scenarios --ignore-gate --canlii   # score gated scenarios too; check
+                                                                         # not-in-corpus gold gets flagged
 ```
 
 Fingerprints are cached in `eval/fingerprints/` (keyed by prompt version and scenario text), so
-reruns need no LLM calls. Open gaps it found are tracked in [IMPROVEMENTS.md](IMPROVEMENTS.md).
+reruns need no LLM calls; generate them with LM Studio running so they come from the production
+(local) model. Legislation is scored per strategy too, including how many never-cited sections
+are shown. Open gaps are tracked in [IMPROVEMENTS.md](IMPROVEMENTS.md).
+
+`scripts/eval_intake.py` checks uploads read like typed text: it renders every eval scenario as a
+DOCX and as an image-only PDF, runs both through intake (the PDF through OCR), and scores word
+agreement with the original (DOCX 1.000, scanned PDF 0.998 as of 2026-09-25).
 
 ## Retrieval quality (Phase 4)
 
@@ -356,7 +379,8 @@ likely-relevant ones on CanLII and returns them as link-outs: no text, no FILAC.
 CanLII's API is metadata only, with no text search, so detection works through the citator:
 
 1. **Seeds**: the scenario's top cases with a neutral citation CanLII can look up
-   (`2020 ONCA 391` → `onca/2020onca391`), at most 8. Older SCC/ONCA decisions cited only by
+   (`2020 ONCA 391` → `onca/2020onca391`), at most 8, taken round-robin across the issue groups
+   so one dominant issue doesn't supply them all. Older SCC/ONCA decisions cited only by
    report or docket number can't seed.
 2. **Pool**: Ontario decisions outside the corpus (every Ontario database except `onca`) that
    cite the seeds. Each seed adds `1 / sqrt(its candidate count)` to every candidate citing it,
@@ -366,11 +390,23 @@ CanLII's API is metadata only, with no text search, so detection works through t
    title, topics and keywords; candidates below −4.0 are dropped, and the rest are returned best first.
 
 `app/canlii.py` enforces CanLII's usage plan (5,000 queries/day, 2 req/s, 1 at a time) across
-every process via Postgres: an advisory lock serializes requests, `canlii_usage` holds the
-day's count (capped at `CANLII_DAILY_LIMIT`, default 4,500) and paces requests
+every process via Postgres: an advisory lock serializes requests, `canlii_usage_hourly` holds
+hourly counts (capped at `CANLII_DAILY_LIMIT`, default 4,500, over any rolling 24 hours, since
+CanLII doesn't say when its day starts) and paces requests
 `CANLII_MIN_INTERVAL_SECONDS` apart (default 0.65 s; exactly 0.5 s drew occasional 429s).
 Responses are cached in `canlii_cache` (metadata 30 days, citator 7 days). An uncached
-scenario costs ~21 queries and ~15 s; a cached one under 1 s. `GET /health` shows today's usage.
+scenario costs ~21 queries and ~15 s; a cached one under 1 s. `GET /health` shows usage over
+the last 24 hours, the window the cap is enforced over (CanLII doesn't document when its day starts).
+
+### Frequently cited authorities (`POST /canlii/cited`, every scenario)
+
+Authorities cited by 2+ of the scenario's top cases that the results don't already show, from
+CanLII's citator (~8 queries per uncached scenario). Each is labelled *in LawSearch* (resolved to a
+corpus row by neutral/SCR citation, or name-and-year for pre-2007 ONCA) or *not in LawSearch*
+(link-out only): *Bardal v. Globe & Mail* (1960, Ont. H.C.), named in 66 corpus decisions but not
+in the corpus, now shows up for Ontario wrongful-dismissal scenarios instead of disappearing.
+`/scenarios` also returns `uncovered_regulations`: Ontario regulations 2+ result cases cite that
+aren't loaded, with an e-Laws link.
 
 ## Tests
 
@@ -384,7 +420,7 @@ scenario costs ~21 queries and ~15 s; a cached one under 1 s. `GET /health` show
 .venv\Scripts\python -m uvicorn app.main:app --reload
 ```
 
-`GET /health` reports extension versions, corpus counts and today's CanLII usage;
+`GET /health` reports extension versions, corpus counts and CanLII usage over the last 24 hours;
 `POST /search` runs the retriever; interactive docs at `http://localhost:8000/docs`.
 
 ## Services
@@ -400,15 +436,19 @@ scenario costs ~21 queries and ~15 s; a cached one under 1 s. `GET /health` show
 app/          FastAPI app, settings, DB pool, embeddings, reranker, chunking, citations,
               statute parsing + reference extraction, section search,
               retrieval (gather + rank), FILAC extraction + verification, LLM backends,
-              CanLII client (canlii.py) + ONSC/tribunal detection (canlii_detect.py)
+              CanLII client (canlii.py) + ONSC/tribunal detection (canlii_detect.py) +
+              frequently cited authorities (canlii_cited.py), Ontario regulation citations
+              (ontario_regs.py)
 docker/       custom Postgres image (pgvector + pg_textsearch)
 migrations/   numbered SQL migrations, applied by scripts/migrate.py
 run.ps1       start database + API + UI
 rebuild.ps1   load or refresh all data, steps in dependency order
 scripts/      common.ps1 (shared by run/rebuild), migrate, smoke_test, ingest_a2aj,
-              load_citations, search_cli, eval_retrieval, eval_scenarios, draft_eval_scenarios, filac_cli,
-              ingest_legislation, link_statutes
+              load_citations, search_cli, eval_retrieval, eval_scenarios, eval_intake,
+              draft_eval_scenarios, filac_cli, ingest_legislation, ingest_ontario_legislation,
+              ingest_ontario_regulations, link_statutes
 ui/           Streamlit MVP (talks to the API over HTTP)
 tests/        pytest unit tests
-eval/         eval scenarios (citations resolved, relevance needs human review) and runs/
+eval/         eval scenarios (citations resolved, relevance needs human review), cached
+              fingerprints/ and runs/
 ```

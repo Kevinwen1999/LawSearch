@@ -1,71 +1,79 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "9e8fbc7be4018724d6f0927d0734f5f0a6285a8f",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Federal public sector staffing / employment law",
-   "Administrative law (judicial review)",
-   "Public Service Employment Act complaints",
-   "Statutory interpretation of merit criteria"
+   "federal public service staffing",
+   "administrative law (standard of review)",
+   "procedural fairness"
   ],
   "issues": [
-   "Whether the employer abused its authority by adopting unpublished, undisclosed internal definitions and thresholds (12 months within 5 years) to interpret an ambiguous 'recent experience' qualification in a job poster",
-   "Whether classifying candidates' prior experience as qualifying or non-qualifying based on a chart pre-labelling job classifications (rather than assessing actual duties performed) constitutes an unreasonable or bad-faith application of the merit criteria",
-   "Whether characterizing pre-removal risk assessment officers as exercising quasi-judicial functions while treating front-line/inland enforcement officers' materially similar statutory decision-making (admissibility determinations, ministerial delegate authority) as purely administrative is an unreasonable or arbitrary distinction amounting to abuse of authority",
-   "Whether evidence that screening criteria were shaped to protect a class of employees facing upcoming position elimination supports an inference of improper purpose or bad faith in the design of the qualification standard",
-   "Whether the employer's refusal to reconsider after an informal discussion, including alleged inconsistent treatment of other candidates permitted to continue, gives rise to abuse of authority or a breach of the duty of fairness in the screening process",
-   "What standard of review a court or tribunal applies to a staffing/adjudicative body's acceptance of an employer's explanation for its screening criteria and its assessment of whether abuse of authority occurred",
-   "Whether the Public Service Employment Act's 'abuse of authority' standard permits an internal, unpublished definition of an ambiguous posted qualification, or whether fairness requires disclosure of such thresholds to applicants"
+   "whether the use of unpublished screening criteria and a pre-classifying reference chart that assigns job titles to qualifying or non-qualifying categories constitutes an abuse of authority in a federal public service staffing process",
+   "whether the employer's interpretation of an open-ended qualification requirement (e.g. 'recent' experience, 'quasi-judicial' function) was reasonable in light of the posting language",
+   "whether the Public Service Staffing Tribunal applies a reasonableness standard or a correctness standard when reviewing the employer's interpretation of qualification requirements and the application of screening criteria",
+   "whether the Federal Court will defer to the PSST's acceptance of the employer's explanation on judicial review, or whether it will re-examine the reasonableness of the employer's interpretation",
+   "whether the staffing process was procedurally fair, including the right to be heard, the opportunity to provide further detail about duties, and the adequacy of an informal discussion before a final screening decision",
+   "whether inconsistent application of screening criteria to similarly situated candidates supports a finding of unfairness or abuse of authority",
+   "whether the employer's motive in shaping the criteria (e.g. protecting a group of officers whose positions were to be eliminated by pending legislative reform) is relevant to the abuse of authority analysis",
+   "whether the legal distinction between quasi-judicial and administrative functions is tenable where both roles exercise delegated decision-making authority under the same statute and perform substantially similar work",
+   "what remedies are available for a successful staffing complaint, including re-screening, appointment, or damages for loss of opportunity"
   ],
   "key_facts": [
-   "Complainant was a federal front-line immigration officer for approximately 12 years",
-   "He applied for an adjudicator position at a federal tribunal hearing protection claims",
-   "Poster required 'recent' experience in judicial/quasi-judicial decision-making, or research/inquiries in such settings, or in immigration, without specifying duration or recency threshold",
-   "Employer internally set an unpublished standard of 12 months' experience within the past 5 years",
-   "Screening committees used an internal reference guide and a chart pre-classifying job titles as qualifying or non-qualifying",
-   "The chart characterized pre-removal risk assessment (PRRA) officers as quasi-judicial decision-makers and front-line immigration officers as purely administrative",
-   "Only his 4 months in a PRRA-type role were credited; his 12 years of interviewing, admissibility determinations, criminal-equivalency analysis and database inquiries were not credited",
-   "Both officer types allegedly act as ministerial delegates under the same immigration statute",
-   "Case law reportedly holds PRRA officers are not a quasi-judicial body",
-   "Union-management minutes allegedly suggest the criteria were designed to protect PRRA officer positions facing elimination due to pending legislative reform",
-   "Complainant requested an informal discussion after being screened out and offered further detail on his duties, but employer declined to reconsider",
-   "Some other candidates were reportedly allowed to continue despite similar circumstances"
+   "twelve years as a front-line immigration officer in the federal department administering immigration",
+   "internal competition for adjudicator position at the federal tribunal hearing protection claims",
+   "posting required 'recent' experience in decision-making or research in a judicial or quasi-judicial setting or in immigration, without specifying a time frame",
+   "employer internally fixed 'recent' at twelve months within the past five years, disclosed only after screening",
+   "employer provided screening committees a reference guide and a chart pre-classifying job titles as qualifying or non-qualifying",
+   "chart classified pre-removal risk assessment officers as making quasi-judicial decisions and front-line immigration officers as making purely administrative ones",
+   "only four months in the risk-assessment role was credited; twelve years of front-line work was not",
+   "client argues both roles are ministerial delegates under the same statute and perform essentially the same work",
+   "court decisions held risk-assessment officers are not a quasi-judicial body",
+   "union-management minutes suggest criteria were shaped to protect risk-assessment officers facing elimination by pending legislative reform",
+   "client requested informal discussion and offered further detail about duties; employer refused to reconsider",
+   "some other candidates were allowed to continue past screening"
   ],
   "causes_of_action": [
-   "Complaint of abuse of authority in application of merit criteria under the Public Service Employment Act",
-   "Abuse of authority in choice of assessment method / screening process",
-   "Breach of procedural fairness in the informal discussion and reconsideration process"
+   "abuse of authority in a federal public service staffing process",
+   "unfair or procedurally deficient screening process",
+   "unreasonable interpretation of qualification requirements"
   ],
   "candidate_statutes": [
-   "Public Service Employment Act, S.C. 2003, c. 22",
-   "Immigration and Refugee Protection Act, S.C. 2001, c. 27",
-   "Federal Public Sector Labour Relations and Employment Board Act, S.C. 2013, c. 40",
-   "Federal Courts Act, R.S.C. 1985, c. F-7"
+   "Public Service Employment Act",
+   "Public Service Staffing Regulations (SOR/98-213)",
+   "Public Service Labour Relations Act",
+   "Immigration and Refugee Protection Act",
+   "Federal Courts Act"
   ],
   "search_terms": [
-   "abuse of authority PSEA merit criteria",
-   "unpublished qualification standard screening board",
-   "recent experience requirement staffing complaint",
-   "quasi-judicial decision-making immigration officer",
-   "pre-removal risk assessment quasi-judicial",
-   "ministerial delegate immigration officer",
-   "informal discussion staffing process fairness",
-   "Federal Public Sector Labour Relations and Employment Board abuse of authority",
-   "screening criteria bad faith improper purpose",
-   "standard of review reasonableness FPSLREB decision",
-   "assessment board reliance on job classification chart",
-   "PSEA section 30 merit"
+   "abuse of authority staffing",
+   "unpublished screening criteria",
+   "reference chart job classification",
+   "pre-classifying job titles",
+   "reasonableness standard PSST",
+   "standard of review Federal Court PSST",
+   "procedural fairness staffing process",
+   "right to be heard screening",
+   "consistent application qualification requirements",
+   "motive abuse of authority",
+   "quasi-judicial vs administrative function",
+   "ministerial delegate",
+   "Public Service Staffing Regulations",
+   "Public Service Employment Act",
+   "Public Service Labour Relations Act",
+   "staffing complaint",
+   "screening committee",
+   "qualification requirement interpretation",
+   "remedy re-screening appointment",
+   "loss of opportunity damages staffing"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 11512,
-   "output_tokens": 1701,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0285948,
-   "duration_ms": 17552
+   "input_tokens": 944,
+   "output_tokens": 2078,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

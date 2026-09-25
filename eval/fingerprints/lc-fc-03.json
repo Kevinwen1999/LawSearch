@@ -1,59 +1,58 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "7e5b739c60e9960ab43c50dc06a236fd58b2ecc4",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Refugee and immigration law",
-   "Judicial review of administrative decisions"
+   "refugee protection",
+   "administrative law (standard of review)"
   ],
   "issues": [
-   "Whether the Refugee Appeal Division's implausibility findings meet the standard that such findings be made only in the clearest of cases",
-   "Whether the Board reasonably relied on general country-condition documentation to reject an individualized account of attempted forced recruitment",
-   "Whether discounting a single expert source's reference to 'anecdotal evidence' of forced recruitment, and distinguishing urban from rural incidence, was reasonable given the claimant's specific circumstances",
-   "Whether the Board's finding that supporting documents (medical report, leases, family letters) failed to corroborate the recruitment allegation was reasonable given what those documents could realistically show",
-   "Whether the Board's reasoning was internally inconsistent or illogical in finding it implausible both that the group could not locate the claimant for two years and that armed men would abandon an abduction attempt when confronted",
-   "What weight, if any, recent Federal Court decisions addressing the same country documentation and similar recruitment allegations should have on judicial review of this decision",
-   "What standard of review (reasonableness) applies to the Refugee Appeal Division's plausibility and credibility findings on judicial review"
+   "What does the 'implausibility findings only in the clearest of cases' standard require of the Refugee Appeal Division when assessing a claimant's testimony?",
+   "How must the RAD weigh generalized country condition evidence (national documentation package) against individual testimony of persecution by a specific armed group?",
+   "What is the RAD's duty to engage with and explain away conflicting expert evidence on a material issue such as forced recruitment?",
+   "Can the RAD reject a refugee claim on the basis of insufficient corroboration where the claimant's circumstances (fear, evasion, displacement) make corroboration difficult to obtain?",
+   "What is the standard of review for the RAD's credibility and implausibility findings on judicial review?",
+   "Must the RAD consider individual circumstances (urban versus rural location, specific targeting of the claimant) before applying generalized country condition evidence to defeat a claim?",
+   "Is it unreasonable for the RAD to treat a claimant's successful evasion of a persecutory group as evidence of implausibility rather than as consistent with the threat described?"
   ],
   "key_facts": [
-   "Claimant holds dual citizenship in two Middle Eastern countries and fled the one where he was residing",
-   "An armed political-militia group pressured him by phone for about two years to join fighters in a neighbouring country's war, escalating from appeals/money offers to threats",
-   "Claimant repeatedly changed phone number, job and address in the capital to evade the group",
-   "Masked men with machine guns forced entry into his mother's home and tried to drag him out, injuring his mother when she and his sister resisted; the men left empty-handed",
-   "The Refugee Appeal Division rejected the claim as implausible",
-   "The RAD relied on national documentation package material from academics, embassy staff and NGOs stating the group does not forcibly recruit",
-   "The RAD discounted a single expert's reference to anecdotal evidence of forced recruitment as occurring mainly in rural areas, distinguishing the claimant's urban residence",
-   "The RAD found it implausible that a group with claimed intelligence/military capacity could not locate the claimant for two years yet abandoned an armed abduction attempt when confronted by two women",
-   "The RAD found supporting evidence (medical report, leases, family letters) did not corroborate the recruitment allegation",
-   "Two recent Federal Court decisions involving the same country documentation and similar recruitment allegations found the Board's reasoning unreasonable"
+   "Claimant fled a Middle Eastern country where an armed political-militia group pressured him over two years to join a neighbouring country's war",
+   "Pressure escalated from appeals to duty and monetary offers to threats",
+   "Claimant repeatedly changed phone number, job, and address in the capital to avoid the group",
+   "Final incident: masked armed men forced entry into his mother's home and attempted to drag him out; his mother and sister fought them off; they left empty-handed",
+   "RAD rejected the claim as implausible relying on NDO evidence that the group does not forcibly recruit",
+   "RAD discounted a single expert's reference to anecdotal evidence of forced recruitment in rural areas, noting claimant lived in urban districts",
+   "RAD found internal implausibility: group with intelligence capacity could not find him for two years, then abandoned an armed abduction because two women intervened",
+   "RAD found medical report, leases, and family letters did not corroborate the recruitment allegation",
+   "Two recent Federal Court decisions on the same country evidence and similar recruitment allegation found the Board's reasoning unreasonable"
   ],
   "causes_of_action": [
-   "Application for judicial review of a Refugee Appeal Division decision"
+   "judicial review of a Refugee Appeal Division decision"
   ],
   "candidate_statutes": [
    "Immigration and Refugee Protection Act",
-   "Federal Courts Act"
+   "Refugee Protection Regulations"
   ],
   "search_terms": [
    "implausibility findings clearest of cases",
-   "plausibility findings refugee claim reasonableness",
-   "forced recruitment militia country conditions",
-   "national documentation package weight expert evidence",
-   "reasonableness review Vavilov RAD decision",
-   "corroborating evidence credibility refugee claim",
-   "internal inconsistency implausibility finding judicial review",
-   "anecdotal evidence country condition documents weight"
+   "RAD credibility standard reasonableness",
+   "country condition evidence individual testimony conflict",
+   "NDO conflicting expert evidence forced recruitment",
+   "corroboration refugee claim absence",
+   "internal consistency implausibility RAD",
+   "evasion persecution consistent with threat",
+   "individual circumstances urban rural country evidence",
+   "standard of review RAD credibility findings",
+   "refugee claim armed group forced recruitment"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 14866,
-   "output_tokens": 2032,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0400692,
-   "duration_ms": 18845
+   "input_tokens": 899,
+   "output_tokens": 1588,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

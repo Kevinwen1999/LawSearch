@@ -112,3 +112,36 @@ def test_related_authority_query_empty_when_nothing_stated():
     record = make_record()
 
     assert related_authority_query(record) == ""
+
+
+def test_onca_named_citations_need_an_ontario_court_of_appeal_marker():
+    from app.citations import onca_named_citations, onca_party_key
+
+    text = (
+        "See Hobbs v. TDI Canada Ltd. (2004), 246 D.L.R. (4th) 43 (Ont. C.A.), and Kieran v. Ingram "
+        "Micro Inc., [2004] O.J. No. 3118 (C.A.); R. v. Nichols, 2001 CanLII 5680 (ON CA). But not "
+        "Smith v. Jones (2004), 30 B.C.L.R. 1 (B.C.C.A.) or R. v. Brown (2003), 1 S.C.R. 5."
+    )
+    assert onca_named_citations(text) == [("hobbs", "tdi", 2004), ("kieran", "ingram", 2004), ("r", "nichols", 2001)]
+    assert onca_party_key("Hobbs v. TDI Canada Ltd.", 2004) == ("hobbs", "tdi", 2004)
+    assert onca_party_key("Smith v. The Queen", 2001) == ("smith", "queen", 2001)
+    assert onca_party_key("Re Smith Estate", 2001) is None
+
+
+def test_ontario_regulation_refs_and_citing_threshold():
+    from app.ontario_regs import cited_regulations, regulation_refs
+
+    refs = regulation_refs("O. Reg. 288/01, s. 2(1), para. 3; O.Reg. 34/2010; R.R.O. 1990, Reg. 194, r. 20.04")
+    assert {(r.citation, r.alias) for r in refs} == {
+        ("O. Reg. 288/01", "010288"), ("O. Reg. 34/10", "100034"), ("R.R.O. 1990, Reg. 194", "900194"),
+    }
+    cited = cited_regulations([("A", "O. Reg. 288/01"), ("B", "under O. Reg. 288/01 and O. Reg. 1/99"), ("C", "")])
+    assert [(r.ref.citation, r.cited_by) for r in cited] == [("O. Reg. 288/01", ["A", "B"])]
+    assert cited[0].ref.url == "https://www.ontario.ca/laws/regulation/010288"
+
+
+def test_onca_named_citation_survives_pdf_line_breaks():
+    from app.citations import onca_named_citations
+
+    text = "Hobbs v. TDI Canada Ltd. (2004), 246 D.L.R. (4th) 43 (\nC.A.\n), rev'g [2003] O.J. No. 2646"
+    assert onca_named_citations(text) == [("hobbs", "tdi", 2004)]

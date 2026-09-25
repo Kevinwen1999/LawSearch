@@ -131,7 +131,8 @@ def main() -> None:
     from app.embeddings import embed
 
     with connect(autocommit=True) as conn:
-        conn.execute("DELETE FROM legislation WHERE jurisdiction = 'ontario'")
+        # Acts only: Ontario regulations come from scripts/ingest_ontario_regulations.py.
+        conn.execute("DELETE FROM legislation WHERE jurisdiction = 'ontario' AND kind = 'act'")
         for name in SECTION_INDEXES:
             conn.execute(f"DROP INDEX IF EXISTS {name}")
 

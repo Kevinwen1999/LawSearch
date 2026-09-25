@@ -73,8 +73,9 @@ def _case(name, rerank):
     return SimpleNamespace(case_id=name, rerank_score=rerank)
 
 
-def _section(name, rerank=None, citing_cases=0):
-    return SimpleNamespace(code=name, section_no="1", rerank_score=rerank, citing_cases=citing_cases)
+def _section(name, rerank=None, citing_cases=0, cited_by_count=1):
+    return SimpleNamespace(code=name, section_no="1", rerank_score=rerank, citing_cases=citing_cases,
+                           cited_by_count=cited_by_count)
 
 
 def test_merge_issue_results_only_takes_issue_hits_the_reranker_judges_relevant():
@@ -120,7 +121,8 @@ def test_group_issue_results_keeps_each_issues_own_best_cases():
     combined = SearchResult(cases=[_case(n, None) for n in ["wood", "bertsch", "nemeth", "x"]], sections=[], timings_ms={})
     bonus = SearchResult(cases=[_case("paquette", 1.3), _case("matthews", 0.2), _case("wood", 2.0), _case("y", 0.5)],
                          sections=[], timings_ms={})
-    rights = SearchResult(cases=[_case("battlefords", 1.7), _case("meiorin", -1.8)], sections=[], timings_ms={})
+    rights = SearchResult(cases=[_case("battlefords", 1.7), _case("meiorin", -1.8), _case("noise", -3.0)],
+                          sections=[], timings_ms={})
 
     groups, cases, _ = group_issue_results(
         [combined, bonus, rights], ["bonus during notice", "accommodation"], k=3, per_issue=3, k_sections=5
@@ -130,11 +132,11 @@ def test_group_issue_results_keeps_each_issues_own_best_cases():
         (None, ["wood", "bertsch", "nemeth"]),
         # Matthews is the bonus issue's second-best: interleaving into k slots gave it none.
         ("bonus during notice", ["paquette", "matthews", "wood"]),
-        # Below the reranker gate, as in merge_issue_results.
-        ("accommodation", ["battlefords"]),
+        # Meiorin is phrased unlike the scenario (-1.8) but clears the -2 gate; noise doesn't.
+        ("accommodation", ["battlefords", "meiorin"]),
     ]
     # Flat list: every case once, overall first, then the issues round-robin.
-    assert [c.case_id for c in cases] == ["wood", "bertsch", "nemeth", "paquette", "battlefords", "matthews"]
+    assert [c.case_id for c in cases] == ["wood", "bertsch", "nemeth", "paquette", "battlefords", "matthews", "meiorin"]
 
 
 def test_group_issue_results_without_issues_is_the_combined_top_k():
@@ -144,3 +146,46 @@ def test_group_issue_results_without_issues_is_the_combined_top_k():
 
     assert [c.case_id for c in cases] == ["a", "b"]
     assert len(groups) == 1 and groups[0].issue is None
+
+
+def test_group_issue_results_adds_each_issues_own_sections_after_the_merged_ones():
+    combined = SearchResult(cases=[], sections=[_section("esa")], timings_ms={})
+    rights = SearchResult(
+        cases=[],
+        sections=[_section("hrc", -1.0), _section("esa", -2.0), _section("tenancies", -1.0)],
+        timings_ms={},
+    )
+
+    groups, _, sections = group_issue_results(
+        [combined, rights], ["accommodation"], k=3, per_issue=3, k_sections=1, named_codes={"hrc"}
+    )
+
+    # Merged top 1 (ESA), then the issue's own: HRC (named), ESA (already shown), not tenancies.
+    assert [x.code for x in sections] == ["esa", "hrc"]
+    assert [x.code for x in groups[1].sections] == ["hrc", "esa"]
+    assert groups[1].sections[1] is sections[0]
+
+
+def test_uncited_sections_are_dropped_unless_their_law_is_named():
+    combined = SearchResult(
+        cases=[],
+        sections=[_section("esa", cited_by_count=5), _section("esa-141", cited_by_count=0),
+                  _section("named-act", cited_by_count=0)],
+        timings_ms={},
+    )
+
+    _, sections = merge_issue_results([combined], k=5, k_sections=5, named_codes={"named-act"})
+
+    assert [s.code for s in sections] == ["esa", "named-act"]
+
+
+def test_scenario_text_lead_takes_more_of_the_first_list():
+    scenario_text = SearchResult(cases=[_case(n, None) for n in "abcdefg"], sections=[], timings_ms={})
+    fingerprint_query = SearchResult(cases=[_case("f1", 3.0), _case("a", 2.0)], sections=[], timings_ms={})
+
+    groups, cases, _ = group_issue_results(
+        [scenario_text, fingerprint_query], [None], k=6, per_issue=3, k_sections=5, lead=5
+    )
+
+    assert [c.case_id for c in groups[0].cases] == ["a", "b", "c", "d", "e", "f1"]
+    assert groups[1].issue is None  # the fingerprint query's group isn't an issue

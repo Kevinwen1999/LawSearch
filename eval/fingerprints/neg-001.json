@@ -1,60 +1,58 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "0098188710aec272bbbd395fe772b153da6edb56",
  "fingerprint": {
   "jurisdiction": "unknown",
   "areas_of_law": [
-   "Tort law",
-   "Product liability",
-   "Negligence - psychiatric injury/nervous shock"
+   "tort — negligence",
+   "consumer protection",
+   "product liability"
   ],
   "issues": [
-   "Whether a claimant can recover damages for standalone psychiatric injury (with no accompanying physical injury) caused by a manufacturer's or retailer's negligence",
-   "What legal test governs recognition of a compensable psychiatric injury in negligence (recognizable psychiatric illness vs mere upset)",
-   "Whether a manufacturer/bottler owes a duty of care to a consumer for psychiatric harm caused by discovering a contaminant in a sealed product",
-   "Whether the psychiatric injury was reasonably foreseeable as a consequence of encountering a contaminated product",
-   "Whether the claim falls under product liability/manufacturer's negligence principles (analogous to Donoghue v Stevenson) or general nervous shock doctrine",
-   "What evidence is required to prove causation and the existence of a diagnosable psychiatric condition (as opposed to ordinary distress)"
+   "whether a claimant can recover damages for pure psychiatric injury (nervous shock) without any physical injury in a negligence claim",
+   "the foreseeability test for psychiatric injury — whether the claimant must be a person of ordinary fortitude rather than one of unusual vulnerability",
+   "whether a manufacturer or seller of a consumer product owes a duty of care to avoid causing psychiatric harm to a consumer",
+   "causation of psychiatric injury by the sight of a foreign object in a sealed product",
+   "remoteness of psychiatric injury as a head of recoverable damage",
+   "statutory consumer protection remedies for a contaminated or defective product",
+   "limitation period for a claim based on psychiatric injury"
   ],
   "key_facts": [
-   "Client saw something disgusting/contaminating inside a sealed water bottle",
-   "Client suffered no physical injury",
-   "Client subsequently developed depression and anxiety",
-   "The claim concerns psychiatric injury alone (no physical harm), against a presumed manufacturer/seller of the product"
+   "foreign object found in a sealed water bottle",
+   "claimant suffered serious depression and anxiety",
+   "no physical injury sustained",
+   "claim is for psychiatric injury alone"
   ],
   "causes_of_action": [
-   "Negligence (manufacturer's duty of care / product liability)",
-   "Negligent infliction of psychiatric/nervous shock",
-   "Possibly breach of warranty of fitness/quality under sale of goods legislation"
+   "negligence",
+   "consumer protection (statutory)",
+   "product liability"
   ],
   "candidate_statutes": [
-   "Sale of Goods Act (Ontario)",
-   "Consumer Protection Act, 2002 (Ontario)",
-   "Food and Drugs Act (federal)"
+   "Consumer Protection Act (provincial — jurisdiction-dependent)",
+   "Limitations Act (provincial — jurisdiction-dependent)"
   ],
   "search_terms": [
-   "psychiatric injury negligence",
-   "nervous shock recoverable damages",
-   "recognizable psychiatric illness test",
-   "standalone mental injury tort",
-   "Mustapha v Culligan",
-   "foreseeability of psychiatric harm",
-   "contaminated product negligence",
-   "manufacturer duty of care Donoghue v Stevenson",
-   "pure psychological harm negligence Canada",
-   "de minimis psychological injury threshold"
+   "pure psychiatric injury",
+   "nervous shock",
+   "foreseeable psychiatric harm",
+   "reasonable person test psychiatric injury",
+   "foreign object in food product",
+   "product liability psychiatric damage",
+   "duty of care psychiatric harm",
+   "eggshell skull psychiatric injury",
+   "consumer protection defective product",
+   "limitation period psychiatric injury"
   ],
   "needs_clarification": [
-   "Which province/jurisdiction did the incident occur in and where does the client reside (affects which provincial law applies)?"
+   "Which province or territory does the claim arise in? (Consumer protection and limitation legislation are provincial and will affect available remedies and deadlines.)"
   ],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 2160,
-   "output_tokens": 950,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0139614,
-   "duration_ms": 9784
+   "input_tokens": 608,
+   "output_tokens": 1771,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

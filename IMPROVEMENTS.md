@@ -1,135 +1,103 @@
 # Improvements backlog
 
 Known gaps that aren't fixed yet, with the evidence behind each, so they don't get lost between
-phases. Newest source first within each priority. When an item is done, move it to **Done** with
-the commit, rather than deleting it.
+phases. When an item is done, move it to **Done** with the date and evidence, rather than
+deleting it.
 
 Sources:
 - **WD-eval**: `search_endpoint_eval_ontario_wrongful_dismissal.txt` (external frontend eval,
-  2026-09-24), reproduced and diagnosed the same day; its scenario is `on-003`/`on-004` in
-  `eval/scenarios.yaml`.
+  2026-09-24); its scenario is `on-003`/`on-004` in `eval/scenarios.yaml`.
 - **P6/P8**: follow-ups deferred when Phase 6 / Phase 8 shipped.
+- **B-25**: found while working through this backlog, 2026-09-25.
 
-## High priority
+Measurements below are from `scripts/eval_scenarios.py --ignore-gate` (36 scenarios, Qwen v4
+fingerprints; `eval/runs/scenarios-backlog.json`) unless stated.
 
-### Resolve citations to pre-neutral-citation ONCA decisions (WD-eval)
-6,201 of 24,121 ONCA decisions (1998 to ~2006) have only a docket number as their citation, and
-**every one has `cited_by_count = 0`**: later decisions cite them by name, year and report
-(`Hobbs v. TDI Canada Ltd. (2004), 246 D.L.R. (4th) 43 (Ont. C.A.)`), which nothing resolves.
-So graph expansion and the citation prior never see them. *Hobbs* (the fresh-consideration
-authority, gold for I2) ranked #121 on its own issue query.
-- Fix: in `scripts/load_citations.py`, extract `<style of cause> (<year>), <report> (Ont. C.A.)`
-  citations from decision text and resolve on normalized style of cause + decision year
-  against ONCA rows without a neutral citation (the same pattern as the SCR extraction).
-  Check a hand sample for false matches; common names (`R. v. Smith`) need the year and the
-  report page, or should be skipped.
-- Alternative for stragglers: CanLII case metadata carries `docketNumber`, so a CanLII id
-  (`2004canlii…`) can be mapped to our docket-numbered row (costs one query per case).
+## Open
 
-### Flag frequently cited authorities that aren't in the corpus (WD-eval, eval's Fix 1 + 3)
-*Bardal v. Globe & Mail* (1960, Ont. H.C., the reasonable-notice factors case) is named in 66
-corpus decisions, including 4 of the scenario's top 7, but has no row, so it disappears
-silently. Same for other ONSC/older authorities.
-- Fix: CanLII `caseCitator/.../citedCases` for the scenario's seeds (~8 queries, cached 7 days),
-  aggregate authorities cited by ≥ 2 top cases; those not in the corpus go in a "Frequently
-  cited, not in LawSearch" list with a CanLII link (Bardal is `onsc/1960canlii294`). Those in the
-  corpus but not retrieved could be boosted or listed too.
-- Note: the eval's claim that *Bertsch* cites *Waksdale* is wrong (Bertsch is a 7k-char
-  endorsement); only *Dufault* does among the top results.
+### Needs a person
+- **Lawyer review of the eval gold.** `on-003`/`on-004` gold was written from memory by the
+  WD-eval author and every scenario is `verified: false`; corpus citations resolve, but relevance
+  isn't checked. A wrong gold authority punishes a retriever that was right. (WD-eval)
 
-## Medium priority
+### Coverage limits (no fix planned; recorded so they aren't rediscovered)
+- **ONSC decisions that don't cite the top cases stay invisible.** CanLII has no text search, so
+  ONSC/tribunal detection only finds decisions citing the scenario's top corpus cases. The
+  WD-eval's *Dufault* trial decision (2024 ONSC 1029) and *Wilson v. Solis* (2013 ONSC 5799) aren't
+  found; *Bardal* is (via "frequently cited"). Not-in-corpus gold flagged: 4 of 8. (WD-eval)
+- **35 of the 132 cited Ontario regulations aren't on e-Laws any more** (revoked or renumbered),
+  so decisions citing them can't link to text. (B-25)
+- **Ontario regulations with long e-Laws titles match by citation only**, e.g. the Statutory
+  Accident Benefits Schedule, whose e-Laws title carries an effective date. Courts usually give
+  the citation too. (B-25)
+- **Name-and-year ONCA citations with no court marker stay unresolved** (e.g. "(2004), 246 DLR
+  (4th) 43. There, this court found..."), by design: without the marker, "R. v. Smith (2004)"
+  could be any court. *Hobbs* has 4 of its 5 citing decisions resolved. (B-25)
 
-### Flag cited Ontario regulations that aren't covered (WD-eval, eval's Fix 4)
-O. Reg. 288/01 (ESA termination and severance; "wilful misconduct") decides the for-cause issue,
-and 2 of the top 7 cases cite it, but regulations aren't ingested and the UI only has a generic
-caption.
-- Fix: regex `O\. ?Reg\. ?\d+/\d+` over the top cases' text; list each regulation cited by ≥ 2
-  of them as "cited, not covered" with an e-Laws link (`ontario.ca/laws/regulation/r01288`).
-- Longer term: ingest Ontario regulations from e-Laws (A2AJ `canadian-laws` has Acts only).
-
-### Fingerprint: remedies and defences as issues; more issue slots (WD-eval)
-The fingerprint turned mitigation (30 job applications) into a search term and key fact, not
-an issue, so no per-issue query ran for it; *Evans* (mitigation) only reached #18 via the
-bad-faith issue. `MAX_ISSUE_QUERIES = 8` was exactly full for this scenario.
-- Fix: prompt the fingerprint to state each remedy/defence the facts raise (mitigation,
-  limitation periods, damages heads) as its own issue; raise `MAX_ISSUE_QUERIES` to 10
-  (each extra issue ≈ 1–2 s of search). Bumps `fingerprint.PROMPT_VERSION`, which invalidates
-  `eval/fingerprints/`.
-
-### CanLII detection seeded per issue (WD-eval)
-CanLII candidates are seeded from the top of the flat case list, which a dominant issue fills
-(termination-clause cases here). The human-rights issue gets no seeds, so no Human Rights
-Tribunal of Ontario decisions come back, and the SCC human-rights cases rank low on this
-wording (*Meiorin* #6 on its issue, reranker −1.75, below the issue gate; *Moore* and
-*Hydro-Québec* ~#35–39).
-- Fix: build seeds from each issue group's top 1–2 cases (still ≤ 8–10 seeds per scenario),
-  and label candidates with the issue whose seed found them. Group results are now returned by
-  `/scenarios` (`results.groups`), so this is a UI + request change.
-- Consider whether the issue gate (`MIN_ISSUE_CASE_RERANK = 0`) is too strict for issues where
-  the corpus's best authorities are phrased very differently from the scenario (human rights).
-
-### Legislation ranking noise and per-issue sections (WD-eval, eval's Fix 5)
-- Sections with 0 citations get in on lexical/vector match alone (ESA s. 141, s. 74.11, s. 49
-  across two runs; s. 74.11 is about temporary help agencies). Option: require a citing top case
-  or a strong reranker score for 0-citation sections. The last attempt to rank sections by the
-  reranker lowered recall, so measure on the eval set.
-- Sibling sections that travel together aren't pulled in (ESA 64 with 65, 60 with 61; HRC
-  10/11/17 with 5).
-- Sections still share one list of 8 across all issues (the same structural cap cases had
-  before grouping): group sections by issue like cases.
-- Section recall on `on-003`: see the latest `eval/runs/scenarios-*.json`.
-
-### A third of the eval set is stopped by the clarification gate
-With the Sonnet-fallback fingerprints, 12 of 36 eval scenarios came back `needs_clarification`
-(admin-001/002, neg-001/002, contract-001/002, employ-001, crim-001/002, lc-sst-01/02,
-lc-fpslreb-01), so `/scenarios` wouldn't search them at all. Several are plainly federal
-(SST, FPSLREB, criminal law) or general common-law questions where the province doesn't
-change the answer. The earlier fingerprinted merge eval scored 33 scenarios, so this may be
-Sonnet-vs-Qwen behaviour.
-- Check with LM Studio running; if the local model also over-asks, tighten the prompt's rule
-  for when jurisdiction "matters" (federal subject matter or SCC-level common law shouldn't
-  ask).
-- `scripts/eval_scenarios.py` could score gated scenarios anyway, to keep the eval's coverage
-  independent of the gate.
-
-## Low priority
-
-### "Current to" label on Ontario Acts (WD-eval, eval's Fix 6)
-Not stale data: A2AJ gives one `document_date` per Ontario Act, which is that Act's version
-date (Human Rights Code 2025-07-01, ESA 2026-01-01). The UI's "current to" wording implies a
-consolidation check date. Relabel for Ontario Acts ("version of …") and show the A2AJ snapshot
-date separately.
-
-### Waksdale scores low on its own issue query (WD-eval)
-*Waksdale* was #15 on the termination-clause issue query with reranker 0.89 (vs *Dufault* 6.46),
-despite 7 citing seeds. It's a short decision; check which passage the reranker sees
-(`RERANK_PASSAGES = 2`) and whether short decisions need a different passage choice.
-
-### Eval set hygiene
-- `eval/fingerprints/` was generated by the Sonnet fallback (LM Studio was off, 2026-09-24),
-  not the default local Qwen model; regenerate with LM Studio running for results that match
-  production.
-- `on-003`/`on-004` gold was written from memory by the eval's author; corpus citations resolve
-  and the three CanLII-only ones exist, but relevance isn't lawyer-verified (`verified: false`).
-- Only `on-003`/`on-004` tag gold authorities with `issues`, so per-issue coverage is measured
-  on those two only. Tag other multi-issue scenarios as they're added.
-- The eval can't score "flagged as not in corpus" yet (Bardal, Wilson v. Solis, O. Reg.
-  288/01); add that once the flags above exist.
-
-### Carried over
-- (P8) CanLII rerank floor (−4.0) calibrated on only three Ontario scenarios.
-- (P8) CanLII usage counts per UTC day; CanLII's own day boundary is unknown (the 4,500 cap
-  leaves headroom).
-- (P6) Persistent fingerprint cache table in Postgres; a with/without-fingerprint eval
-  comparison (now possible with `scripts/eval_scenarios.py`); DOCX/image-PDF fixtures in the
-  eval set.
+### Small
+- **Tag gold `issues` on future multi-issue scenarios**, so per-issue coverage is measured beyond
+  `on-003`/`on-004`. (WD-eval)
 
 ## Done
-- 2026-09-24: issue-grouped scenario results (WD-eval, the eval's Fix 2). Per-issue search
-  already existed, but the merge interleaved 9 lists into 10 slots, so each issue got about one
-  case. `/scenarios` now returns the same best `k` overall (default 10) plus each issue's best
-  `issue_k` (default 3), labelled by issue in the UI. Measured with the new
-  `scripts/eval_scenarios.py` (`eval/runs/scenarios-grouping.json`, 24 scoreable scenarios):
-  top 10 unchanged (nDCG@10 tune 0.387, test 0.400); recall@25 tune 0.491 → 0.531, test
-  0.583 → 0.608; issue coverage on on-003/on-004 0.42 → 0.58. Leading with the combined query's
-  top 8 instead was tried and rejected (test nDCG@10 0.400 → 0.340).
+
+- **2026-09-25: citations to pre-2007 ONCA decisions resolved** (WD-eval). All 6,201 docket-cited
+  ONCA decisions had `cited_by_count = 0`. `load_citations` now resolves name-and-year citations
+  with an Ontario Court of Appeal marker; 1,584 now have citations (6,507 edges), *Hobbs* 0 → 4.
+  30-citation hand sample all correct.
+- **2026-09-25: frequently cited authorities, including ones not in the corpus** (WD-eval, the
+  eval's Fix 1 + 3). `POST /canlii/cited` lists authorities cited by 2+ top cases that the results
+  don't show, labelled in LawSearch or not. *Bardal* is listed for on-002/003/004; *Rasaratnam* and
+  *Thirunavukkarasu* (pre-2001 FCA, not in the corpus) for imm-001. Not-in-corpus gold flagged:
+  0 of 8 → 4 of 8.
+- **2026-09-25: Ontario regulations** (WD-eval, the eval's Fix 4). Flag: `/scenarios` returns
+  `uncovered_regulations` (cited by 2+ result cases, not loaded) with e-Laws links. Load:
+  `scripts/ingest_ontario_regulations.py` brought in the 97 current regulations the corpus cites
+  2+ times (12,015 section chunks), incl. O. Reg. 288/01 and the Rules of Civil Procedure; linked
+  by citation, 3+-word title and rule number (r. 21.01: 251 decisions, r. 20.04: 58).
+- **2026-09-25: fingerprint v4** (WD-eval). Remedies and defences (mitigation, limitation periods)
+  become their own issues; up to 10 issues.
+- **2026-09-25: CanLII seeds per issue, candidates labelled by issue** (WD-eval). The UI picks
+  seeds round-robin across the issue groups; duplicate seeds take one slot. The issue gate was
+  loosened from 0.0 to -2.0 (tune nDCG@10 0.410 → 0.420 with issue coverage kept; test 0.370 →
+  0.383), so authorities phrased unlike the scenario (*Meiorin*, -1.75) can take a slot.
+- **2026-09-25: legislation** (WD-eval, the eval's Fix 5). Sections no decision cites are dropped
+  unless the scenario names their law (legislation recall unchanged; uncited sections shown on
+  test 1.36 → 0.73). Each issue now brings its own top 2 sections, listed under the issue in the
+  UI. "Often cited together" siblings were tried and not built: co-citation is too sparse for
+  Ontario sections (ESA s. 65: 5 citing decisions) and the query took 12 s with the Charter.
+- **2026-09-25: clarification gate** (B-24). Blocks only when jurisdiction is `unknown`; other
+  clarifications come back as a note. Sonnet v3 stopped 12 of 36 eval scenarios, Qwen v4 stops 5,
+  each a private-law question with no province.
+- **2026-09-25: "current to" label** (WD-eval, Fix 6). Ontario Acts and regulations show "version
+  of" their version date; the caption explains.
+- **2026-09-25: *Waksdale* on its own issue** (WD-eval). Root cause: the reranker only sees the
+  retrieved passages, which were its facts (0.9) while its ¶3 scores 2.65. Reranking short
+  decisions whole fixed that case but lowered test nDCG@10 0.370 → 0.343; not adopted. With v4
+  fingerprints *Waksdale* ranks #3 on its issue.
+- **2026-09-25: eval hygiene** (WD-eval). Fingerprints regenerated with the production Qwen model
+  (LM Studio needed `reasoning_effort`, see below); `--ignore-gate` keeps coverage independent of
+  the gate; `--canlii` scores whether not-in-corpus gold gets flagged.
+- **2026-09-25: with/without-fingerprint comparison** (P6). On the same 36 scenarios raw-text
+  search beat the fingerprinted pipeline on test nDCG@10 (0.477 vs 0.383). The scenario text is
+  now searched too and its top 7 lead the best-overall list: nDCG@10 tune 0.420 → 0.427, test
+  0.383 → 0.483 (above raw text alone, from ~22 cases shown instead of 30); legislation recall tune
+  0.624 → 0.675, test 0.742 → 0.803. Leading with 3 or 10 of them did worse on both splits.
+- **2026-09-25: "para. N" after a section** (B-25). "O. Reg. 288/01, s. 2(1), para. 3" linked s. 2
+  and s. 3; only section-level words now continue a list, and a paragraph/clause right after a
+  reference is read as part of it. Statute links rebuilt.
+- **2026-09-25: CanLII floor re-checked** (P8) on on-002/003/004 with per-issue seeds: everything
+  above -4.0 was on point or close. Kept.
+- **2026-09-25: CanLII day boundary** (P8). The cap is enforced over any rolling 24 hours in
+  hourly buckets (`canlii_usage_hourly`), which holds whatever CanLII's day is.
+- **2026-09-25: fingerprint cache table** (P6). `fingerprint_cache`, keyed by text hash, prompt
+  version and configured model.
+- **2026-09-25: DOCX/scanned-PDF fixtures, and an OCR fix they exposed** (P6).
+  `scripts/eval_intake.py` renders every scenario as DOCX and image-only PDF. Scanned PDFs read
+  back at 0.25 word agreement: RapidOCR's bundled recognizer dropped all spaces and its direction
+  classifier flipped lines. English recognizer, classifier off: 0.998 (DOCX 1.000).
+- **2026-09-25: LM Studio reasoning budget** (B-25). Qwen ignored no effort hint and reasoned
+  until the 8,000-token budget ran out, so every fingerprint had silently fallen back to Sonnet;
+  `reasoning_effort` is now passed (~35 s per fingerprint).
+- **2026-09-24: issue-grouped scenario results** (WD-eval, Fix 2), `5c767cb`. The merge had
+  interleaved 9 lists into 10 slots; `/scenarios` returns the best `k` overall plus each issue's
+  best `issue_k`, labelled by issue.

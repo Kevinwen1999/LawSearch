@@ -38,7 +38,7 @@ class FakeStore:
 
         yield wait_turn
 
-    def used_today(self):
+    def used_last_24h(self):
         return self.used
 
 
@@ -207,3 +207,72 @@ def test_detect_without_key_or_seeds():
     no_key = client(lambda r: pytest.fail("no request expected"), api_key="")
     assert detect(no_key, "q", [seed(1)], keyword_score).status == "disabled"
     assert detect(client(lambda r: pytest.fail("no request")), "q", [], keyword_score).status == "no_seeds"
+
+
+def cited_api(cited: dict):
+    def handler(request):
+        path = request.url.path
+        if path == "/v1/caseBrowse/en/":
+            return httpx.Response(200, json={"caseDatabases": DATABASES["caseDatabases"] + [
+                {"databaseId": "onhcj", "jurisdiction": "on", "name": "Ontario High Court of Justice"}]})
+        case_id = path.split("/")[-2]
+        if case_id not in cited:
+            return httpx.Response(404, json=[])
+        return httpx.Response(200, json={"citedCases": [
+            {"databaseId": db, "caseId": {"en": cid}, "title": title, "citation": cit,
+             "longUrl": f"https://www.canlii.org/{cid}"}
+            for db, cid, title, cit in cited[case_id]
+        ]})
+    return handler
+
+
+BARDAL = ("onhcj", "1960canlii294", "Bardal v. Globe & Mail Ltd.", "1960 CanLII 294 (ON HCJ)")
+MACHTINGER = ("csc-scc", "1992canlii102", "Machtinger v. HOJ Industries Ltd.", "1992 CanLII 102 (SCC), [1992] 1 SCR 986")
+HOBBS = ("onca", "2004canlii44783", "Hobbs v. TDI Canada Ltd.", "2004 CanLII 44783 (ON CA)")
+ONE_OFF = ("onsc", "2012onsc5508", "Stevens v. Sifton Properties Ltd.", "2012 ONSC 5508 (CanLII)")
+
+
+def test_cited_authority_corpus_lookups():
+    from app.canlii_cited import CitedAuthority
+
+    assert CitedAuthority(*MACHTINGER[:2], MACHTINGER[2], MACHTINGER[3], None).corpus_lookups() == (["[1992] 1 SCR 986"], None)
+    assert CitedAuthority(*HOBBS[:2], HOBBS[2], HOBBS[3], None).corpus_lookups() == ([], ("hobbs", "tdi", 2004))
+    assert CitedAuthority("onca", "2015onca762", "Holland v. Hostopia", "2015 ONCA 762 (CanLII)", None).corpus_lookups() == (
+        ["2015 ONCA 762"], None)
+
+
+def test_find_cited_keeps_authorities_several_top_cases_cite_and_flags_the_uncovered():
+    from uuid import uuid4
+
+    from app.canlii_cited import find_cited
+
+    machtinger_id, shown_id = uuid4(), uuid4()
+    handler = cited_api({
+        "2017onca158": [BARDAL, MACHTINGER, HOBBS, ONE_OFF],
+        "2020onca391": [BARDAL, MACHTINGER, HOBBS],
+        "2024onca915": [BARDAL, ("onca", "2020onca391", "Waksdale", "2020 ONCA 391 (CanLII)")],
+    })
+
+    def resolve(authorities):
+        for a in authorities:
+            a.corpus_case_id = {"1992canlii102": machtinger_id, "2004canlii44783": shown_id}.get(a.case_id)
+
+    seeds = [to_seed(c, "ONCA", n) for c, n in [("2017 ONCA 158", "Wood"), ("2020 ONCA 391", "Waksdale"),
+                                                ("2024 ONCA 915", "Dufault"), ("2025 ONCA 1", "not on CanLII")]]
+    result = find_cited(client(handler), seeds, resolve, exclude={shown_id})
+
+    assert result.status == "ok"
+    assert [(a.title, len(a.cited_by), a.corpus_case_id is not None) for a in result.authorities] == [
+        ("Bardal v. Globe & Mail Ltd.", 3, False),
+        ("Machtinger v. HOJ Industries Ltd.", 2, True),
+        # Hobbs is already shown (excluded); Stevens and Waksdale have one citing seed each.
+    ]
+    assert result.authorities[0].court_name == "Ontario High Court of Justice"
+    assert result.authorities[0].url == "https://www.canlii.org/1960canlii294"
+
+
+def test_duplicate_seeds_take_one_slot():
+    from app.canlii_detect import unique_seeds
+
+    wood, waksdale = to_seed("2017 ONCA 158", "ONCA", "Wood"), to_seed("2020 ONCA 391", "ONCA", "Waksdale")
+    assert unique_seeds([wood, wood, waksdale, wood]) == [wood, waksdale]

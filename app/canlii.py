@@ -3,7 +3,8 @@
 CanLII's usage plan: metadata only (no document text, no text search), 5,000 queries/day,
 2 requests/second, 1 request at a time, and no increases. Every process shares one budget and
 one request slot through Postgres: a session advisory lock serializes requests, and
-`canlii_usage` holds the day's count and the last request time used for pacing.
+`canlii_usage_hourly` holds hourly counts and the last request time used for pacing. The daily
+cap is enforced over any rolling 24 hours, since CanLII doesn't say when its day starts.
 
 Responses are cached per request path (metadata for weeks, citator lists for days) — only
 metadata, since that is all the API returns.
@@ -24,6 +25,11 @@ from psycopg.types.json import Jsonb
 from app.config import settings
 
 BASE_URL = "https://api.canlii.org/v1"
+# The current hour's bucket counts in full, so the window is 24-25 hours: conservative.
+_USED_LAST_24H = (
+    "SELECT coalesce(sum(queries), 0)::int FROM canlii_usage_hourly "
+    "WHERE hour > date_trunc('hour', clock_timestamp()) - interval '24 hours'"
+)
 LOCK_KEY = 0x43414E4C4949  # "CANLII"; one request at a time across every process
 THROTTLE_RETRIES = 2
 THROTTLE_BACKOFF_SECONDS = 1.5
@@ -51,7 +57,7 @@ class Store(Protocol):
     def cached(self, path: str, max_age: timedelta) -> Response | None: ...
     def save(self, path: str, response: Response) -> None: ...
     def request_slot(self) -> AbstractContextManager[Callable[[float, int], None]]: ...
-    def used_today(self) -> int: ...
+    def used_last_24h(self) -> int: ...
 
 
 class PostgresStore:
@@ -91,25 +97,24 @@ class PostgresStore:
 
                 def wait_turn(min_interval: float, daily_limit: int) -> None:
                     used, since_last = conn.execute(
-                        """
-                        SELECT coalesce((SELECT queries FROM canlii_usage
-                                         WHERE day = (now() AT TIME ZONE 'UTC')::date), 0),
+                        f"""
+                        SELECT ({_USED_LAST_24H}),
                                extract(epoch FROM clock_timestamp() - max(last_request_at))
-                        FROM canlii_usage
+                        FROM canlii_usage_hourly
                         """
                     ).fetchone()
                     if used >= daily_limit:
                         raise BudgetExhausted(
-                            f"CanLII daily budget used up ({used}/{daily_limit} queries today, UTC)"
+                            f"CanLII daily budget used up ({used}/{daily_limit} queries in the last 24 hours)"
                         )
                     if since_last is not None and since_last < min_interval:
                         time.sleep(min_interval - float(since_last))
                     conn.execute(
                         """
-                        INSERT INTO canlii_usage (day, queries, last_request_at)
-                        VALUES ((now() AT TIME ZONE 'UTC')::date, 1, clock_timestamp())
-                        ON CONFLICT (day) DO UPDATE
-                        SET queries = canlii_usage.queries + 1, last_request_at = clock_timestamp()
+                        INSERT INTO canlii_usage_hourly (hour, queries, last_request_at)
+                        VALUES (date_trunc('hour', clock_timestamp()), 1, clock_timestamp())
+                        ON CONFLICT (hour) DO UPDATE
+                        SET queries = canlii_usage_hourly.queries + 1, last_request_at = clock_timestamp()
                         """
                     )
 
@@ -117,12 +122,10 @@ class PostgresStore:
             finally:
                 conn.execute("SELECT pg_advisory_unlock(%s)", (LOCK_KEY,))
 
-    def used_today(self) -> int:
+    def used_last_24h(self) -> int:
+        """Queries in the last 24 hours (the window the daily cap is enforced over)."""
         with self._connect() as conn:
-            row = conn.execute(
-                "SELECT queries FROM canlii_usage WHERE day = (now() AT TIME ZONE 'UTC')::date"
-            ).fetchone()
-        return row[0] if row else 0
+            return conn.execute(_USED_LAST_24H).fetchone()[0]
 
 
 class CanLIIClient:
@@ -182,6 +185,25 @@ class CanLIIClient:
                     "citation": c.get("citation"),
                 }
                 for c in body.get("citingCases", [])
+            ],
+        )
+        return response.body if response.status == 200 else None
+
+    def cited_cases(self, database_id: str, case_id: str) -> list[dict] | None:
+        """Decisions a case cites, as {"databaseId", "caseId", "title", "citation", "url"}.
+        None when CanLII doesn't have the case."""
+        response = self._get(
+            f"/caseCitator/en/{database_id}/{case_id}/citedCases",
+            timedelta(days=settings.canlii_citator_ttl_days),
+            lambda body: [
+                {
+                    "databaseId": c["databaseId"],
+                    "caseId": _case_id(c["caseId"]),
+                    "title": c.get("title"),
+                    "citation": c.get("citation"),
+                    "url": c.get("longUrl"),
+                }
+                for c in body.get("citedCases", [])
             ],
         )
         return response.body if response.status == 200 else None

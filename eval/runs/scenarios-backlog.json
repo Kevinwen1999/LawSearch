@@ -1,0 +1,5464 @@
+{
+ "generated": "2026-09-25T02:24:36",
+ "fingerprint_prompt": "fingerprint-v4",
+ "strategies": {
+  "interleave k=10 (before)": {
+   "tune": {
+    "n": 20,
+    "shown": 10.0,
+    "recall@10": 0.48690476190476184,
+    "recall@25": 0.48690476190476184,
+    "recall": 0.48690476190476184,
+    "ndcg@10": 0.4100357206701439,
+    "issues": 0.5
+   },
+   "test": {
+    "n": 16,
+    "shown": 10.0,
+    "recall@10": 0.5052083333333334,
+    "recall@25": 0.5052083333333334,
+    "recall": 0.5052083333333334,
+    "ndcg@10": 0.3701685079291487,
+    "issues": null
+   },
+   "scenarios": [
+    {
+     "id": "imm-001",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 428": null,
+      "2010 FC 263": null,
+      "2016 FC 1142": null
+     },
+     "shown": 10,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "imm-002",
+     "split": "test",
+     "ranks": {
+      "2015 SCC 61": 4,
+      "[1999] 2 SCR 817": null
+     },
+     "shown": 10,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2640681225725909,
+     "issues": null
+    },
+    {
+     "id": "admin-001",
+     "split": "tune",
+     "ranks": {
+      "2019 SCC 65": 9,
+      "2008 SCC 9": null
+     },
+     "shown": 10,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.22883924989280793,
+     "issues": null
+    },
+    {
+     "id": "admin-002",
+     "split": "test",
+     "ranks": {
+      "[1999] 2 SCR 817": null,
+      "[1990] 1 SCR 653": null
+     },
+     "shown": 10,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "2002 SCC 46": 1
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "2005 SCC 54": 4,
+      "2011 SCC 63": null
+     },
+     "shown": 10,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2640681225725909,
+     "issues": null
+    },
+    {
+     "id": "neg-001",
+     "split": "tune",
+     "ranks": {
+      "2008 SCC 27": 1,
+      "2017 SCC 28": 3
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.9197207891481876,
+     "issues": null
+    },
+    {
+     "id": "neg-002",
+     "split": "test",
+     "ranks": {
+      "2018 SCC 19": 3,
+      "2006 SCC 18": null
+     },
+     "shown": 10,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.38009376671593426,
+     "issues": null
+    },
+    {
+     "id": "contract-001",
+     "split": "tune",
+     "ranks": {
+      "2014 SCC 71": 1,
+      "2020 SCC 45": 2
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "contract-002",
+     "split": "test",
+     "ranks": {
+      "2014 SCC 53": 5,
+      "2016 SCC 37": 2
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.5338931479009518,
+     "issues": null
+    },
+    {
+     "id": "employ-001",
+     "split": "tune",
+     "ranks": {
+      "2020 SCC 26": 4
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.43067655807339306,
+     "issues": null
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 29": 1
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "2009 SCC 32": 1
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 27": 7
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.3333333333333333,
+     "issues": null
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "2012 SCC 61": null
+     },
+     "shown": 10,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "on-002",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 5,
+      "[1992] 1 SCR 986": null
+     },
+     "shown": 10,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2940806813328203,
+     "issues": null
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": null,
+      "2017 ONCA 158": 4,
+      "[1992] 1 SCR 986": 6,
+      "C39836": null,
+      "2008 SCC 39": null,
+      "2020 SCC 26": null,
+      "2008 SCC 20": null,
+      "2025 ONCA 379": 2,
+      "[1997] 3 SCR 701": null,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": null,
+      "2024 ONCA 915": null
+     },
+     "shown": 10,
+     "recall@10": 0.21428571428571427,
+     "recall@25": 0.21428571428571427,
+     "recall": 0.21428571428571427,
+     "ndcg@10": 0.33372002317091876,
+     "issues": 0.3333333333333333
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 2,
+      "2017 ONCA 158": 1,
+      "[1992] 1 SCR 986": null,
+      "C39836": null,
+      "2008 SCC 39": 8,
+      "2020 SCC 26": null,
+      "2008 SCC 20": 7,
+      "2025 ONCA 379": null,
+      "[1997] 3 SCR 701": 3,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": null,
+      "2024 ONCA 915": null
+     },
+     "shown": 10,
+     "recall@10": 0.35714285714285715,
+     "recall@25": 0.35714285714285715,
+     "recall": 0.35714285714285715,
+     "ndcg@10": 0.5954385928766436,
+     "issues": 0.6666666666666666
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "2016 FC 526": 1,
+      "2008 FC 338": null,
+      "2012 FC 642": null,
+      "2013 FC 1044": 10
+     },
+     "shown": 10,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.642705741741774,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-02",
+     "split": "test",
+     "ranks": {
+      "2020 FC 799": null,
+      "2017 FC 643": null
+     },
+     "shown": 10,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-03",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 901": 1,
+      "2001 FCT 776": null,
+      "2019 SCC 65": null,
+      "2019 FC 908": null
+     },
+     "shown": 10,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "2018 FC 657": 1,
+      "2018 FC 32": null,
+      "2017 FC 999": null,
+      "2013 FC 1065": null
+     },
+     "shown": 10,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-01",
+     "split": "tune",
+     "ranks": {
+      "2012 FCA 103": null,
+      "2002 SCC 77": null,
+      "2010 FCA 197": null,
+      "2011 FCA 236": null
+     },
+     "shown": 10,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "2018 FCA 97": 2,
+      "2009 FC 684": null,
+      "2008 SCC 9": null,
+      "2011 SCC 62": null
+     },
+     "shown": 10,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.35429505586207044,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-03",
+     "split": "tune",
+     "ranks": {
+      "2023 FCA 219": null,
+      "2002 SCC 33": null,
+      "2020 FC 1181": null
+     },
+     "shown": 10,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "2010 TCC 658": 1
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "2011 TCC 568": 5,
+      "2007 TCC 742": null,
+      "2011 SCC 42": null
+     },
+     "shown": 10,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.24711688711205218,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "2013 TCC 303": null
+     },
+     "shown": 10,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "TB4-03249": null,
+      "2007 FCA 385": 10,
+      "2014 FC 799": null
+     },
+     "shown": 10,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.09232555472959783,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "TB3-07088": 9,
+      "2008 SCC 9": null,
+      "2009 SCC 12": null
+     },
+     "shown": 10,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.1922943146971571,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "2024 SST 1180": null,
+      "2001 FCA 248": null,
+      "2008 FCA 33": 1,
+      "2008 FCA 377": null
+     },
+     "shown": 10,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.2807721888661444,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "2026 SST 411": null,
+      "2011 FCA 190": null,
+      "2007 FCA 320": null,
+      "2006 FCA 376": null
+     },
+     "shown": 10,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "2008 CIRB 406": 8
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.31546487678572877,
+     "issues": null
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "2023 FPSLREB 57": 2,
+      "2003 SCC 9": 1,
+      "2017 FCA 9": null,
+      "2020 FPSLREB 100": 8
+     },
+     "shown": 10,
+     "recall@10": 0.75,
+     "recall@25": 0.75,
+     "recall": 0.75,
+     "ndcg@10": 0.7236410086937325,
+     "issues": null
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "2015 CHRT 13": 8,
+      "2013 CHRT 18": null,
+      "2004 CHRT 34": null,
+      "2004 FCA 204": 10
+     },
+     "shown": 10,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2583088919405205,
+     "issues": null
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "CITT AP-2021-035": 8
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.31546487678572877,
+     "issues": null
+    }
+   ]
+  },
+  "grouped 10+3, old gates": {
+   "tune": {
+    "n": 20,
+    "shown": 18.85,
+    "recall@10": 0.48690476190476184,
+    "recall@25": 0.5226190476190476,
+    "recall": 0.5226190476190476,
+    "ndcg@10": 0.4100357206701439,
+    "issues": 0.5833333333333333
+   },
+   "test": {
+    "n": 16,
+    "shown": 17.5625,
+    "recall@10": 0.5052083333333334,
+    "recall@25": 0.6145833333333334,
+    "recall": 0.6145833333333334,
+    "ndcg@10": 0.3701685079291487,
+    "issues": null
+   },
+   "scenarios": [
+    {
+     "id": "imm-001",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 428": null,
+      "2010 FC 263": null,
+      "2016 FC 1142": null
+     },
+     "shown": 21,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "imm-002",
+     "split": "test",
+     "ranks": {
+      "2015 SCC 61": 4,
+      "[1999] 2 SCR 817": null
+     },
+     "shown": 17,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2640681225725909,
+     "issues": null
+    },
+    {
+     "id": "admin-001",
+     "split": "tune",
+     "ranks": {
+      "2019 SCC 65": 9,
+      "2008 SCC 9": null
+     },
+     "shown": 20,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.22883924989280793,
+     "issues": null
+    },
+    {
+     "id": "admin-002",
+     "split": "test",
+     "ranks": {
+      "[1999] 2 SCR 817": null,
+      "[1990] 1 SCR 653": null
+     },
+     "shown": 21,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "2002 SCC 46": 1
+     },
+     "shown": 13,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "2005 SCC 54": 4,
+      "2011 SCC 63": null
+     },
+     "shown": 11,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2640681225725909,
+     "issues": null
+    },
+    {
+     "id": "neg-001",
+     "split": "tune",
+     "ranks": {
+      "2008 SCC 27": 1,
+      "2017 SCC 28": 3
+     },
+     "shown": 14,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.9197207891481876,
+     "issues": null
+    },
+    {
+     "id": "neg-002",
+     "split": "test",
+     "ranks": {
+      "2018 SCC 19": 3,
+      "2006 SCC 18": null
+     },
+     "shown": 17,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.38009376671593426,
+     "issues": null
+    },
+    {
+     "id": "contract-001",
+     "split": "tune",
+     "ranks": {
+      "2014 SCC 71": 1,
+      "2020 SCC 45": 2
+     },
+     "shown": 17,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "contract-002",
+     "split": "test",
+     "ranks": {
+      "2014 SCC 53": 5,
+      "2016 SCC 37": 2
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.5338931479009518,
+     "issues": null
+    },
+    {
+     "id": "employ-001",
+     "split": "tune",
+     "ranks": {
+      "2020 SCC 26": 4
+     },
+     "shown": 12,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.43067655807339306,
+     "issues": null
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 29": 1
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "2009 SCC 32": 1
+     },
+     "shown": 13,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 27": 7
+     },
+     "shown": 17,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.3333333333333333,
+     "issues": null
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "2012 SCC 61": null
+     },
+     "shown": 17,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "on-002",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 5,
+      "[1992] 1 SCR 986": null
+     },
+     "shown": 12,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2940806813328203,
+     "issues": null
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 11,
+      "2017 ONCA 158": 4,
+      "[1992] 1 SCR 986": 6,
+      "C39836": null,
+      "2008 SCC 39": 19,
+      "2020 SCC 26": null,
+      "2008 SCC 20": null,
+      "2025 ONCA 379": 2,
+      "[1997] 3 SCR 701": null,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": null,
+      "2024 ONCA 915": null
+     },
+     "shown": 21,
+     "recall@10": 0.21428571428571427,
+     "recall@25": 0.35714285714285715,
+     "recall": 0.35714285714285715,
+     "ndcg@10": 0.33372002317091876,
+     "issues": 0.5
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 2,
+      "2017 ONCA 158": 1,
+      "[1992] 1 SCR 986": null,
+      "C39836": null,
+      "2008 SCC 39": 8,
+      "2020 SCC 26": null,
+      "2008 SCC 20": 7,
+      "2025 ONCA 379": null,
+      "[1997] 3 SCR 701": 3,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": 14,
+      "2024 ONCA 915": null
+     },
+     "shown": 21,
+     "recall@10": 0.35714285714285715,
+     "recall@25": 0.42857142857142855,
+     "recall": 0.42857142857142855,
+     "ndcg@10": 0.5954385928766436,
+     "issues": 0.6666666666666666
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "2016 FC 526": 1,
+      "2008 FC 338": null,
+      "2012 FC 642": null,
+      "2013 FC 1044": 10
+     },
+     "shown": 18,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.642705741741774,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-02",
+     "split": "test",
+     "ranks": {
+      "2020 FC 799": 16,
+      "2017 FC 643": null
+     },
+     "shown": 24,
+     "recall@10": 0.0,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-03",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 901": 1,
+      "2001 FCT 776": null,
+      "2019 SCC 65": null,
+      "2019 FC 908": null
+     },
+     "shown": 23,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "2018 FC 657": 1,
+      "2018 FC 32": null,
+      "2017 FC 999": null,
+      "2013 FC 1065": null
+     },
+     "shown": 19,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-01",
+     "split": "tune",
+     "ranks": {
+      "2012 FCA 103": 12,
+      "2002 SCC 77": null,
+      "2010 FCA 197": 16,
+      "2011 FCA 236": null
+     },
+     "shown": 21,
+     "recall@10": 0.0,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "2018 FCA 97": 2,
+      "2009 FC 684": 24,
+      "2008 SCC 9": null,
+      "2011 SCC 62": null
+     },
+     "shown": 27,
+     "recall@10": 0.25,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.35429505586207044,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-03",
+     "split": "tune",
+     "ranks": {
+      "2023 FCA 219": null,
+      "2002 SCC 33": null,
+      "2020 FC 1181": null
+     },
+     "shown": 26,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "2010 TCC 658": 1
+     },
+     "shown": 18,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "2011 TCC 568": 5,
+      "2007 TCC 742": null,
+      "2011 SCC 42": null
+     },
+     "shown": 18,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.24711688711205218,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "2013 TCC 303": 11
+     },
+     "shown": 25,
+     "recall@10": 0.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "TB4-03249": null,
+      "2007 FCA 385": 10,
+      "2014 FC 799": null
+     },
+     "shown": 23,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.09232555472959783,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "TB3-07088": 9,
+      "2008 SCC 9": null,
+      "2009 SCC 12": null
+     },
+     "shown": 19,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.1922943146971571,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "2024 SST 1180": null,
+      "2001 FCA 248": null,
+      "2008 FCA 33": 1,
+      "2008 FCA 377": null
+     },
+     "shown": 20,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.2807721888661444,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "2026 SST 411": null,
+      "2011 FCA 190": null,
+      "2007 FCA 320": null,
+      "2006 FCA 376": null
+     },
+     "shown": 17,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "2008 CIRB 406": 8
+     },
+     "shown": 22,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.31546487678572877,
+     "issues": null
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "2023 FPSLREB 57": 2,
+      "2003 SCC 9": 1,
+      "2017 FCA 9": null,
+      "2020 FPSLREB 100": 8
+     },
+     "shown": 10,
+     "recall@10": 0.75,
+     "recall@25": 0.75,
+     "recall": 0.75,
+     "ndcg@10": 0.7236410086937325,
+     "issues": null
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "2015 CHRT 13": 8,
+      "2013 CHRT 18": null,
+      "2004 CHRT 34": null,
+      "2004 FCA 204": 10
+     },
+     "shown": 25,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2583088919405205,
+     "issues": null
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "CITT AP-2021-035": 8
+     },
+     "shown": 19,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.31546487678572877,
+     "issues": null
+    }
+   ]
+  },
+  "grouped 10+3, no raw text": {
+   "tune": {
+    "n": 20,
+    "shown": 18.45,
+    "recall@10": 0.5029761904761905,
+    "recall@25": 0.5351190476190476,
+    "recall": 0.5351190476190476,
+    "ndcg@10": 0.4197942343503739,
+    "issues": 0.5833333333333333
+   },
+   "test": {
+    "n": 16,
+    "shown": 17.375,
+    "recall@10": 0.578125,
+    "recall@25": 0.65625,
+    "recall": 0.65625,
+    "ndcg@10": 0.3834574974126625,
+    "issues": null
+   },
+   "scenarios": [
+    {
+     "id": "imm-001",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 428": null,
+      "2010 FC 263": null,
+      "2016 FC 1142": null
+     },
+     "shown": 21,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "imm-002",
+     "split": "test",
+     "ranks": {
+      "2015 SCC 61": 4,
+      "[1999] 2 SCR 817": null
+     },
+     "shown": 17,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2640681225725909,
+     "issues": null
+    },
+    {
+     "id": "admin-001",
+     "split": "tune",
+     "ranks": {
+      "2019 SCC 65": 9,
+      "2008 SCC 9": null
+     },
+     "shown": 20,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.22883924989280793,
+     "issues": null
+    },
+    {
+     "id": "admin-002",
+     "split": "test",
+     "ranks": {
+      "[1999] 2 SCR 817": null,
+      "[1990] 1 SCR 653": null
+     },
+     "shown": 21,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "2002 SCC 46": 1
+     },
+     "shown": 15,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "2005 SCC 54": 4,
+      "2011 SCC 63": null
+     },
+     "shown": 11,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2640681225725909,
+     "issues": null
+    },
+    {
+     "id": "neg-001",
+     "split": "tune",
+     "ranks": {
+      "2008 SCC 27": 1,
+      "2017 SCC 28": 3
+     },
+     "shown": 13,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.9197207891481876,
+     "issues": null
+    },
+    {
+     "id": "neg-002",
+     "split": "test",
+     "ranks": {
+      "2018 SCC 19": 3,
+      "2006 SCC 18": 8
+     },
+     "shown": 16,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.5,
+     "issues": null
+    },
+    {
+     "id": "contract-001",
+     "split": "tune",
+     "ranks": {
+      "2014 SCC 71": 1,
+      "2020 SCC 45": 2
+     },
+     "shown": 16,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "contract-002",
+     "split": "test",
+     "ranks": {
+      "2014 SCC 53": 5,
+      "2016 SCC 37": 2
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.5338931479009518,
+     "issues": null
+    },
+    {
+     "id": "employ-001",
+     "split": "tune",
+     "ranks": {
+      "2020 SCC 26": 4
+     },
+     "shown": 11,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.43067655807339306,
+     "issues": null
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 29": 1
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "2009 SCC 32": 1
+     },
+     "shown": 13,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 27": 7
+     },
+     "shown": 17,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.3333333333333333,
+     "issues": null
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "2012 SCC 61": null
+     },
+     "shown": 16,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "on-002",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 5,
+      "[1992] 1 SCR 986": null
+     },
+     "shown": 12,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2940806813328203,
+     "issues": null
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 11,
+      "2017 ONCA 158": 4,
+      "[1992] 1 SCR 986": 6,
+      "C39836": null,
+      "2008 SCC 39": null,
+      "2020 SCC 26": null,
+      "2008 SCC 20": 10,
+      "2025 ONCA 379": 2,
+      "[1997] 3 SCR 701": null,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": null,
+      "2024 ONCA 915": null
+     },
+     "shown": 23,
+     "recall@10": 0.2857142857142857,
+     "recall@25": 0.35714285714285715,
+     "recall": 0.35714285714285715,
+     "ndcg@10": 0.4017590992705303,
+     "issues": 0.5
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 2,
+      "2017 ONCA 158": 1,
+      "[1992] 1 SCR 986": null,
+      "C39836": null,
+      "2008 SCC 39": 4,
+      "2020 SCC 26": null,
+      "2008 SCC 20": 7,
+      "2025 ONCA 379": null,
+      "[1997] 3 SCR 701": 3,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": 12,
+      "2024 ONCA 915": null
+     },
+     "shown": 20,
+     "recall@10": 0.35714285714285715,
+     "recall@25": 0.42857142857142855,
+     "recall": 0.42857142857142855,
+     "ndcg@10": 0.6225567187674603,
+     "issues": 0.6666666666666666
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "2016 FC 526": 1,
+      "2008 FC 338": null,
+      "2012 FC 642": null,
+      "2013 FC 1044": 10
+     },
+     "shown": 18,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.642705741741774,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-02",
+     "split": "test",
+     "ranks": {
+      "2020 FC 799": 16,
+      "2017 FC 643": null
+     },
+     "shown": 24,
+     "recall@10": 0.0,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-03",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 901": 1,
+      "2001 FCT 776": null,
+      "2019 SCC 65": null,
+      "2019 FC 908": 6
+     },
+     "shown": 22,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.6615574493464605,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "2018 FC 657": 1,
+      "2018 FC 32": null,
+      "2017 FC 999": null,
+      "2013 FC 1065": null
+     },
+     "shown": 19,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-01",
+     "split": "tune",
+     "ranks": {
+      "2012 FCA 103": 12,
+      "2002 SCC 77": null,
+      "2010 FCA 197": 15,
+      "2011 FCA 236": null
+     },
+     "shown": 20,
+     "recall@10": 0.0,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "2018 FCA 97": 2,
+      "2009 FC 684": 24,
+      "2008 SCC 9": 15,
+      "2011 SCC 62": 22
+     },
+     "shown": 26,
+     "recall@10": 0.25,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.35429505586207044,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-03",
+     "split": "tune",
+     "ranks": {
+      "2023 FCA 219": null,
+      "2002 SCC 33": null,
+      "2020 FC 1181": null
+     },
+     "shown": 25,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "2010 TCC 658": 1
+     },
+     "shown": 17,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "2011 TCC 568": 5,
+      "2007 TCC 742": null,
+      "2011 SCC 42": null
+     },
+     "shown": 17,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.24711688711205218,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "2013 TCC 303": 10
+     },
+     "shown": 23,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.2890648263178879,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "TB4-03249": null,
+      "2007 FCA 385": 10,
+      "2014 FC 799": null
+     },
+     "shown": 23,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.09232555472959783,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "TB3-07088": null,
+      "2008 SCC 9": null,
+      "2009 SCC 12": null
+     },
+     "shown": 21,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "2024 SST 1180": null,
+      "2001 FCA 248": null,
+      "2008 FCA 33": 1,
+      "2008 FCA 377": null
+     },
+     "shown": 20,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.2807721888661444,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "2026 SST 411": null,
+      "2011 FCA 190": null,
+      "2007 FCA 320": null,
+      "2006 FCA 376": null
+     },
+     "shown": 15,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "2008 CIRB 406": 8
+     },
+     "shown": 20,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.31546487678572877,
+     "issues": null
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "2023 FPSLREB 57": 2,
+      "2003 SCC 9": 1,
+      "2017 FCA 9": null,
+      "2020 FPSLREB 100": 9
+     },
+     "shown": 12,
+     "recall@10": 0.75,
+     "recall@25": 0.75,
+     "recall": 0.75,
+     "ndcg@10": 0.7195880955251568,
+     "issues": null
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "2015 CHRT 13": 8,
+      "2013 CHRT 18": null,
+      "2004 CHRT 34": null,
+      "2004 FCA 204": 10
+     },
+     "shown": 24,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2583088919405205,
+     "issues": null
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "CITT AP-2021-035": 8
+     },
+     "shown": 19,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.31546487678572877,
+     "issues": null
+    }
+   ]
+  },
+  "raw text only": {
+   "tune": {
+    "n": 20,
+    "shown": 30.0,
+    "recall@10": 0.4958333333333333,
+    "recall@25": 0.7309523809523809,
+    "recall": 0.7559523809523809,
+    "ndcg@10": 0.40633978569503737,
+    "issues": 0.5
+   },
+   "test": {
+    "n": 16,
+    "shown": 30.0,
+    "recall@10": 0.5833333333333334,
+    "recall@25": 0.671875,
+    "recall": 0.6875,
+    "ndcg@10": 0.4771592856169655,
+    "issues": null
+   },
+   "scenarios": [
+    {
+     "id": "imm-001",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 428": null,
+      "2010 FC 263": null,
+      "2016 FC 1142": 23
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "imm-002",
+     "split": "test",
+     "ranks": {
+      "2015 SCC 61": null,
+      "[1999] 2 SCR 817": null
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "admin-001",
+     "split": "tune",
+     "ranks": {
+      "2019 SCC 65": null,
+      "2008 SCC 9": 8
+     },
+     "shown": 30,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.11990623328406573,
+     "issues": null
+    },
+    {
+     "id": "admin-002",
+     "split": "test",
+     "ranks": {
+      "[1999] 2 SCR 817": null,
+      "[1990] 1 SCR 653": null
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "2002 SCC 46": 2
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "2005 SCC 54": 6,
+      "2011 SCC 63": 4
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.48247555939075504,
+     "issues": null
+    },
+    {
+     "id": "neg-001",
+     "split": "tune",
+     "ranks": {
+      "2008 SCC 27": 1,
+      "2017 SCC 28": 5
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.8503449055347546,
+     "issues": null
+    },
+    {
+     "id": "neg-002",
+     "split": "test",
+     "ranks": {
+      "2018 SCC 19": 1,
+      "2006 SCC 18": 11
+     },
+     "shown": 30,
+     "recall@10": 0.5,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.7601875334318685,
+     "issues": null
+    },
+    {
+     "id": "contract-001",
+     "split": "tune",
+     "ranks": {
+      "2014 SCC 71": 1,
+      "2020 SCC 45": 2
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "contract-002",
+     "split": "test",
+     "ranks": {
+      "2014 SCC 53": 1,
+      "2016 SCC 37": 3
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.9502344167898356,
+     "issues": null
+    },
+    {
+     "id": "employ-001",
+     "split": "tune",
+     "ranks": {
+      "2020 SCC 26": 1
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 29": 1
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "2009 SCC 32": 24
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 27": 2
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "2012 SCC 61": 23
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "on-002",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 5,
+      "[1992] 1 SCR 986": 4
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.45777815652719006,
+     "issues": null
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 11,
+      "2017 ONCA 158": 2,
+      "[1992] 1 SCR 986": 5,
+      "C39836": null,
+      "2008 SCC 39": null,
+      "2020 SCC 26": 23,
+      "2008 SCC 20": 24,
+      "2025 ONCA 379": 6,
+      "[1997] 3 SCR 701": null,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": null,
+      "2024 ONCA 915": null
+     },
+     "shown": 30,
+     "recall@10": 0.21428571428571427,
+     "recall@25": 0.42857142857142855,
+     "recall": 0.42857142857142855,
+     "ndcg@10": 0.32340494071596804,
+     "issues": 0.6666666666666666
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 17,
+      "2017 ONCA 158": 1,
+      "[1992] 1 SCR 986": 4,
+      "C39836": null,
+      "2008 SCC 39": null,
+      "2020 SCC 26": null,
+      "2008 SCC 20": null,
+      "2025 ONCA 379": 3,
+      "[1997] 3 SCR 701": null,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": null,
+      "2024 ONCA 915": 5
+     },
+     "shown": 30,
+     "recall@10": 0.2857142857142857,
+     "recall@25": 0.35714285714285715,
+     "recall": 0.35714285714285715,
+     "ndcg@10": 0.4999639869533928,
+     "issues": 0.3333333333333333
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "2016 FC 526": 1,
+      "2008 FC 338": null,
+      "2012 FC 642": null,
+      "2013 FC 1044": 15
+     },
+     "shown": 30,
+     "recall@10": 0.25,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-02",
+     "split": "test",
+     "ranks": {
+      "2020 FC 799": null,
+      "2017 FC 643": null
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-03",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 901": 10,
+      "2001 FCT 776": null,
+      "2019 SCC 65": 29,
+      "2019 FC 908": 2
+     },
+     "shown": 30,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.75,
+     "ndcg@10": 0.33947025595000574,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "2018 FC 657": 1,
+      "2018 FC 32": null,
+      "2017 FC 999": null,
+      "2013 FC 1065": null
+     },
+     "shown": 30,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-01",
+     "split": "tune",
+     "ranks": {
+      "2012 FCA 103": 2,
+      "2002 SCC 77": 14,
+      "2010 FCA 197": 30,
+      "2011 FCA 236": 6
+     },
+     "shown": 30,
+     "recall@10": 0.5,
+     "recall@25": 0.75,
+     "recall": 1.0,
+     "ndcg@10": 0.4543081274762421,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "2018 FCA 97": 1,
+      "2009 FC 684": 23,
+      "2008 SCC 9": 9,
+      "2011 SCC 62": 28
+     },
+     "shown": 30,
+     "recall@10": 0.5,
+     "recall@25": 0.75,
+     "recall": 1.0,
+     "ndcg@10": 0.6460652285292308,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-03",
+     "split": "tune",
+     "ranks": {
+      "2023 FCA 219": 20,
+      "2002 SCC 33": 24,
+      "2020 FC 1181": null
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 0.6666666666666666,
+     "recall": 0.6666666666666666,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "2010 TCC 658": 1
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "2011 TCC 568": 4,
+      "2007 TCC 742": null,
+      "2011 SCC 42": 11
+     },
+     "shown": 30,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.6666666666666666,
+     "recall": 0.6666666666666666,
+     "ndcg@10": 0.27511096828801057,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "2013 TCC 303": 4
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.43067655807339306,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "TB4-03249": 7,
+      "2007 FCA 385": 15,
+      "2014 FC 799": null
+     },
+     "shown": 30,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.6666666666666666,
+     "recall": 0.6666666666666666,
+     "ndcg@10": 0.2129292954931993,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "TB3-07088": 7,
+      "2008 SCC 9": 13,
+      "2009 SCC 12": 19
+     },
+     "shown": 30,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.2129292954931993,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "2024 SST 1180": 3,
+      "2001 FCA 248": 5,
+      "2008 FCA 33": 13,
+      "2008 FCA 377": 6
+     },
+     "shown": 30,
+     "recall@10": 0.75,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.48940276993657095,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "2026 SST 411": null,
+      "2011 FCA 190": null,
+      "2007 FCA 320": null,
+      "2006 FCA 376": null
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "2008 CIRB 406": 2
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "2023 FPSLREB 57": 2,
+      "2003 SCC 9": 5,
+      "2017 FCA 9": null,
+      "2020 FPSLREB 100": 3
+     },
+     "shown": 30,
+     "recall@10": 0.75,
+     "recall@25": 0.75,
+     "recall": 0.75,
+     "ndcg@10": 0.6032986597513975,
+     "issues": null
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "2015 CHRT 13": 3,
+      "2013 CHRT 18": null,
+      "2004 CHRT 34": null,
+      "2004 FCA 204": null
+     },
+     "shown": 30,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.2807721888661444,
+     "issues": null
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "CITT AP-2021-035": 6
+     },
+     "shown": 30,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.3562071871080222,
+     "issues": null
+    }
+   ]
+  },
+  "raw leads 3, 10+3": {
+   "tune": {
+    "n": 20,
+    "shown": 20.05,
+    "recall@10": 0.5077380952380952,
+    "recall@25": 0.5511904761904762,
+    "recall": 0.5511904761904762,
+    "ndcg@10": 0.41717668042315303,
+    "issues": 0.5833333333333333
+   },
+   "test": {
+    "n": 16,
+    "shown": 19.0,
+    "recall@10": 0.515625,
+    "recall@25": 0.6614583333333334,
+    "recall": 0.6770833333333334,
+    "ndcg@10": 0.4393164001923819,
+    "issues": null
+   },
+   "scenarios": [
+    {
+     "id": "imm-001",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 428": null,
+      "2010 FC 263": null,
+      "2016 FC 1142": null
+     },
+     "shown": 24,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "imm-002",
+     "split": "test",
+     "ranks": {
+      "2015 SCC 61": 5,
+      "[1999] 2 SCR 817": null
+     },
+     "shown": 20,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.23719771276929622,
+     "issues": null
+    },
+    {
+     "id": "admin-001",
+     "split": "tune",
+     "ranks": {
+      "2019 SCC 65": 9,
+      "2008 SCC 9": null
+     },
+     "shown": 21,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.22883924989280793,
+     "issues": null
+    },
+    {
+     "id": "admin-002",
+     "split": "test",
+     "ranks": {
+      "[1999] 2 SCR 817": null,
+      "[1990] 1 SCR 653": null
+     },
+     "shown": 24,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "2002 SCC 46": 2
+     },
+     "shown": 16,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "2005 SCC 54": 4,
+      "2011 SCC 63": null
+     },
+     "shown": 12,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2640681225725909,
+     "issues": null
+    },
+    {
+     "id": "neg-001",
+     "split": "tune",
+     "ranks": {
+      "2008 SCC 27": 1,
+      "2017 SCC 28": 5
+     },
+     "shown": 14,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.8503449055347546,
+     "issues": null
+    },
+    {
+     "id": "neg-002",
+     "split": "test",
+     "ranks": {
+      "2018 SCC 19": 1,
+      "2006 SCC 18": 9
+     },
+     "shown": 17,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.8746071583782724,
+     "issues": null
+    },
+    {
+     "id": "contract-001",
+     "split": "tune",
+     "ranks": {
+      "2014 SCC 71": 1,
+      "2020 SCC 45": 2
+     },
+     "shown": 17,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "contract-002",
+     "split": "test",
+     "ranks": {
+      "2014 SCC 53": 1,
+      "2016 SCC 37": 3
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.9502344167898356,
+     "issues": null
+    },
+    {
+     "id": "employ-001",
+     "split": "tune",
+     "ranks": {
+      "2020 SCC 26": 1
+     },
+     "shown": 11,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 29": 1
+     },
+     "shown": 10,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "2009 SCC 32": 4
+     },
+     "shown": 16,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.43067655807339306,
+     "issues": null
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 27": 2
+     },
+     "shown": 17,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "2012 SCC 61": null
+     },
+     "shown": 19,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "on-002",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 6,
+      "[1992] 1 SCR 986": null
+     },
+     "shown": 13,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.27078426295835145,
+     "issues": null
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 13,
+      "2017 ONCA 158": 2,
+      "[1992] 1 SCR 986": 7,
+      "C39836": null,
+      "2008 SCC 39": null,
+      "2020 SCC 26": null,
+      "2008 SCC 20": 11,
+      "2025 ONCA 379": 12,
+      "[1997] 3 SCR 701": null,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": null,
+      "2024 ONCA 915": null
+     },
+     "shown": 25,
+     "recall@10": 0.14285714285714285,
+     "recall@25": 0.35714285714285715,
+     "recall": 0.35714285714285715,
+     "ndcg@10": 0.22696490052308188,
+     "issues": 0.5
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 9,
+      "2017 ONCA 158": 1,
+      "[1992] 1 SCR 986": null,
+      "C39836": null,
+      "2008 SCC 39": 5,
+      "2020 SCC 26": null,
+      "2008 SCC 20": 8,
+      "2025 ONCA 379": 3,
+      "[1997] 3 SCR 701": 4,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": 14,
+      "2024 ONCA 915": null
+     },
+     "shown": 21,
+     "recall@10": 0.42857142857142855,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.6399148702822068,
+     "issues": 0.6666666666666666
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "2016 FC 526": 1,
+      "2008 FC 338": null,
+      "2012 FC 642": null,
+      "2013 FC 1044": 10
+     },
+     "shown": 19,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.642705741741774,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-02",
+     "split": "test",
+     "ranks": {
+      "2020 FC 799": 18,
+      "2017 FC 643": null
+     },
+     "shown": 27,
+     "recall@10": 0.0,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-03",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 901": 4,
+      "2001 FCT 776": null,
+      "2019 SCC 65": null,
+      "2019 FC 908": 2
+     },
+     "shown": 24,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.41899152773824266,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "2018 FC 657": 1,
+      "2018 FC 32": null,
+      "2017 FC 999": null,
+      "2013 FC 1065": null
+     },
+     "shown": 21,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-01",
+     "split": "tune",
+     "ranks": {
+      "2012 FCA 103": 2,
+      "2002 SCC 77": null,
+      "2010 FCA 197": 14,
+      "2011 FCA 236": null
+     },
+     "shown": 20,
+     "recall@10": 0.25,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.35429505586207044,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "2018 FCA 97": 1,
+      "2009 FC 684": 26,
+      "2008 SCC 9": 16,
+      "2011 SCC 62": 24
+     },
+     "shown": 28,
+     "recall@10": 0.25,
+     "recall@25": 0.75,
+     "recall": 1.0,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-03",
+     "split": "tune",
+     "ranks": {
+      "2023 FCA 219": null,
+      "2002 SCC 33": null,
+      "2020 FC 1181": null
+     },
+     "shown": 27,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "2010 TCC 658": 1
+     },
+     "shown": 19,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "2011 TCC 568": 5,
+      "2007 TCC 742": null,
+      "2011 SCC 42": null
+     },
+     "shown": 19,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.24711688711205218,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "2013 TCC 303": 11
+     },
+     "shown": 25,
+     "recall@10": 0.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "TB4-03249": null,
+      "2007 FCA 385": 12,
+      "2014 FC 799": null
+     },
+     "shown": 26,
+     "recall@10": 0.0,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "TB3-07088": null,
+      "2008 SCC 9": null,
+      "2009 SCC 12": 18
+     },
+     "shown": 24,
+     "recall@10": 0.0,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "2024 SST 1180": 3,
+      "2001 FCA 248": null,
+      "2008 FCA 33": 4,
+      "2008 FCA 377": null
+     },
+     "shown": 23,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.40169418876974816,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "2026 SST 411": null,
+      "2011 FCA 190": null,
+      "2007 FCA 320": null,
+      "2006 FCA 376": null
+     },
+     "shown": 17,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "2008 CIRB 406": 2
+     },
+     "shown": 22,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "2023 FPSLREB 57": 2,
+      "2003 SCC 9": 4,
+      "2017 FCA 9": null,
+      "2020 FPSLREB 100": 3
+     },
+     "shown": 13,
+     "recall@10": 0.75,
+     "recall@25": 0.75,
+     "recall": 0.75,
+     "ndcg@10": 0.6156031501987463,
+     "issues": null
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "2015 CHRT 13": 3,
+      "2013 CHRT 18": null,
+      "2004 CHRT 34": null,
+      "2004 FCA 204": 8
+     },
+     "shown": 24,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.36934595283166205,
+     "issues": null
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "CITT AP-2021-035": 7
+     },
+     "shown": 20,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.3333333333333333,
+     "issues": null
+    }
+   ]
+  },
+  "current (raw leads 7, 10+3)": {
+   "tune": {
+    "n": 20,
+    "shown": 22.75,
+    "recall@10": 0.5404761904761906,
+    "recall@25": 0.6375,
+    "recall": 0.6375,
+    "ndcg@10": 0.4266867415817834,
+    "issues": 0.5833333333333333
+   },
+   "test": {
+    "n": 16,
+    "shown": 21.8125,
+    "recall@10": 0.5989583333333334,
+    "recall@25": 0.6979166666666666,
+    "recall": 0.7291666666666666,
+    "ndcg@10": 0.48341271349087966,
+    "issues": null
+   },
+   "scenarios": [
+    {
+     "id": "imm-001",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 428": null,
+      "2010 FC 263": null,
+      "2016 FC 1142": null
+     },
+     "shown": 27,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "imm-002",
+     "split": "test",
+     "ranks": {
+      "2015 SCC 61": 9,
+      "[1999] 2 SCR 817": null
+     },
+     "shown": 24,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.18457569677956817,
+     "issues": null
+    },
+    {
+     "id": "admin-001",
+     "split": "tune",
+     "ranks": {
+      "2019 SCC 65": 13,
+      "2008 SCC 9": null
+     },
+     "shown": 25,
+     "recall@10": 0.0,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "admin-002",
+     "split": "test",
+     "ranks": {
+      "[1999] 2 SCR 817": null,
+      "[1990] 1 SCR 653": null
+     },
+     "shown": 28,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "2002 SCC 46": 2
+     },
+     "shown": 19,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "2005 SCC 54": 6,
+      "2011 SCC 63": 4
+     },
+     "shown": 14,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.48247555939075504,
+     "issues": null
+    },
+    {
+     "id": "neg-001",
+     "split": "tune",
+     "ranks": {
+      "2008 SCC 27": 1,
+      "2017 SCC 28": 5
+     },
+     "shown": 15,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.8503449055347546,
+     "issues": null
+    },
+    {
+     "id": "neg-002",
+     "split": "test",
+     "ranks": {
+      "2018 SCC 19": 1,
+      "2006 SCC 18": 13
+     },
+     "shown": 20,
+     "recall@10": 0.5,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.7601875334318685,
+     "issues": null
+    },
+    {
+     "id": "contract-001",
+     "split": "tune",
+     "ranks": {
+      "2014 SCC 71": 1,
+      "2020 SCC 45": 2
+     },
+     "shown": 20,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "contract-002",
+     "split": "test",
+     "ranks": {
+      "2014 SCC 53": 1,
+      "2016 SCC 37": 3
+     },
+     "shown": 12,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.9502344167898356,
+     "issues": null
+    },
+    {
+     "id": "employ-001",
+     "split": "tune",
+     "ranks": {
+      "2020 SCC 26": 1
+     },
+     "shown": 12,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 29": 1
+     },
+     "shown": 13,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "2009 SCC 32": 8
+     },
+     "shown": 19,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.31546487678572877,
+     "issues": null
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "2016 SCC 27": 2
+     },
+     "shown": 18,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "2012 SCC 61": null
+     },
+     "shown": 21,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "on-002",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 5,
+      "[1992] 1 SCR 986": 4
+     },
+     "shown": 14,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.45777815652719006,
+     "issues": null
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 13,
+      "2017 ONCA 158": 2,
+      "[1992] 1 SCR 986": 5,
+      "C39836": null,
+      "2008 SCC 39": null,
+      "2020 SCC 26": null,
+      "2008 SCC 20": 12,
+      "2025 ONCA 379": 6,
+      "[1997] 3 SCR 701": null,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": null,
+      "2024 ONCA 915": null
+     },
+     "shown": 25,
+     "recall@10": 0.21428571428571427,
+     "recall@25": 0.35714285714285715,
+     "recall": 0.35714285714285715,
+     "ndcg@10": 0.32340494071596804,
+     "issues": 0.5
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "2020 ONCA 391": 13,
+      "2017 ONCA 158": 1,
+      "[1992] 1 SCR 986": 4,
+      "C39836": null,
+      "2008 SCC 39": 9,
+      "2020 SCC 26": null,
+      "2008 SCC 20": 12,
+      "2025 ONCA 379": 3,
+      "[1997] 3 SCR 701": 8,
+      "2012 SCC 61": null,
+      "[1999] 3 SCR 3": null,
+      "2008 SCC 43": null,
+      "[1976] 2 SCR 324": 18,
+      "2024 ONCA 915": 5
+     },
+     "shown": 25,
+     "recall@10": 0.42857142857142855,
+     "recall@25": 0.6428571428571429,
+     "recall": 0.6428571428571429,
+     "ndcg@10": 0.6079458973090671,
+     "issues": 0.6666666666666666
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "2016 FC 526": 1,
+      "2008 FC 338": null,
+      "2012 FC 642": null,
+      "2013 FC 1044": 12
+     },
+     "shown": 20,
+     "recall@10": 0.25,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-02",
+     "split": "test",
+     "ranks": {
+      "2020 FC 799": 22,
+      "2017 FC 643": null
+     },
+     "shown": 31,
+     "recall@10": 0.0,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-03",
+     "split": "tune",
+     "ranks": {
+      "2020 FC 901": 8,
+      "2001 FCT 776": null,
+      "2019 SCC 65": null,
+      "2019 FC 908": 2
+     },
+     "shown": 28,
+     "recall@10": 0.5,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.35429505586207044,
+     "issues": null
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "2018 FC 657": 1,
+      "2018 FC 32": null,
+      "2017 FC 999": null,
+      "2013 FC 1065": null
+     },
+     "shown": 25,
+     "recall@10": 0.25,
+     "recall@25": 0.25,
+     "recall": 0.25,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-01",
+     "split": "tune",
+     "ranks": {
+      "2012 FCA 103": 2,
+      "2002 SCC 77": null,
+      "2010 FCA 197": 18,
+      "2011 FCA 236": 6
+     },
+     "shown": 24,
+     "recall@10": 0.5,
+     "recall@25": 0.75,
+     "recall": 0.75,
+     "ndcg@10": 0.4543081274762421,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "2018 FCA 97": 1,
+      "2009 FC 684": 28,
+      "2008 SCC 9": 18,
+      "2011 SCC 62": 26
+     },
+     "shown": 30,
+     "recall@10": 0.25,
+     "recall@25": 0.5,
+     "recall": 1.0,
+     "ndcg@10": 0.5615443777322888,
+     "issues": null
+    },
+    {
+     "id": "lc-fca-03",
+     "split": "tune",
+     "ranks": {
+      "2023 FCA 219": null,
+      "2002 SCC 33": null,
+      "2020 FC 1181": null
+     },
+     "shown": 30,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "2010 TCC 658": 1
+     },
+     "shown": 23,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 1.0,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "2011 TCC 568": 4,
+      "2007 TCC 742": null,
+      "2011 SCC 42": null
+     },
+     "shown": 22,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.3333333333333333,
+     "recall": 0.3333333333333333,
+     "ndcg@10": 0.27511096828801057,
+     "issues": null
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "2013 TCC 303": 4
+     },
+     "shown": 26,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.43067655807339306,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "TB4-03249": 7,
+      "2007 FCA 385": 16,
+      "2014 FC 799": null
+     },
+     "shown": 30,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.6666666666666666,
+     "recall": 0.6666666666666666,
+     "ndcg@10": 0.2129292954931993,
+     "issues": null
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "TB3-07088": 7,
+      "2008 SCC 9": null,
+      "2009 SCC 12": 22
+     },
+     "shown": 28,
+     "recall@10": 0.3333333333333333,
+     "recall@25": 0.6666666666666666,
+     "recall": 0.6666666666666666,
+     "ndcg@10": 0.2129292954931993,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "2024 SST 1180": 3,
+      "2001 FCA 248": 5,
+      "2008 FCA 33": 8,
+      "2008 FCA 377": 6
+     },
+     "shown": 27,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.5779765339020885,
+     "issues": null
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "2026 SST 411": null,
+      "2011 FCA 190": null,
+      "2007 FCA 320": null,
+      "2006 FCA 376": null
+     },
+     "shown": 21,
+     "recall@10": 0.0,
+     "recall@25": 0.0,
+     "recall": 0.0,
+     "ndcg@10": 0.0,
+     "issues": null
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "2008 CIRB 406": 2
+     },
+     "shown": 25,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.6309297535714575,
+     "issues": null
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "2023 FPSLREB 57": 2,
+      "2003 SCC 9": 5,
+      "2017 FCA 9": null,
+      "2020 FPSLREB 100": 3
+     },
+     "shown": 14,
+     "recall@10": 0.75,
+     "recall@25": 0.75,
+     "recall": 0.75,
+     "ndcg@10": 0.6032986597513975,
+     "issues": null
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "2015 CHRT 13": 3,
+      "2013 CHRT 18": null,
+      "2004 CHRT 34": null,
+      "2004 FCA 204": 12
+     },
+     "shown": 27,
+     "recall@10": 0.25,
+     "recall@25": 0.5,
+     "recall": 0.5,
+     "ndcg@10": 0.2807721888661444,
+     "issues": null
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "CITT AP-2021-035": 6
+     },
+     "shown": 22,
+     "recall@10": 1.0,
+     "recall@25": 1.0,
+     "recall": 1.0,
+     "ndcg@10": 0.3562071871080222,
+     "issues": null
+    }
+   ]
+  }
+ },
+ "sections": {
+  "interleave k=10 (before)": {
+   "tune": [
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "CONST-1982 s. 8": 3,
+      "CONST-1982 s. 9": 6,
+      "CONST-1982 s. 24": 1
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 2,
+      "H-6 s. 3": 4,
+      "H-6 s. 15": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": 2,
+      "SO2000c41 s. 54": null,
+      "SO2000c41 s. 57": 3,
+      "SO2000c41 s. 60": 7,
+      "SO2000c41 s. 61": 1,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": null,
+      "RSO1990cH19 s. 5": null,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": null,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.17647058823529413,
+     "recall@10": 0.23529411764705882,
+     "mrr": 1.0,
+     "recall": 0.23529411764705882,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": null,
+      "SO2000c41 s. 54": null,
+      "SO2000c41 s. 57": null,
+      "SO2000c41 s. 60": null,
+      "SO2000c41 s. 61": 8,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": 7,
+      "RSO1990cH19 s. 5": null,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": null,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.11764705882352941,
+     "mrr": 0.14285714285714285,
+     "recall": 0.11764705882352941,
+     "shown": 8,
+     "uncited": 4
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "SI/81-86 s. 10": 1,
+      "C-46 s. 145": null,
+      "SI/81-86 s. 9": 2
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": 2,
+      "I-3.3 s. 9": null
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 0.5,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "I-2.5 s. 110": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "C-8 s. 42": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "L-2 s. 94": 1,
+      "L-2 s. 24": null
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": null,
+      "H-6 s. 50": null,
+      "H-6 s. 14": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 0
+    }
+   ],
+   "test": [
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 245": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 4
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "L-2 s. 240": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "CONST-1982 s. 11": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 6
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 16": null,
+      "SOR/2002-227 s. 4": 1
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "P-33.01 s. 30": 8
+     },
+     "recall@5": 0.0,
+     "recall@10": 1.0,
+     "mrr": 0.125,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 250": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "I-5 s. 87": 1,
+      "CONST-1982 s. 25": 5,
+      "CONST-1982 s. 35": null
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 111": null,
+      "I-2.5 s. 170": null,
+      "I-2.5 s. 3": 7
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.14285714285714285,
+     "recall": 0.3333333333333333,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "E-5.6 s. 29": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "F-7 s. 39": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "C-46 s. 84": 1,
+      "C-52.6 s. 60": null,
+      "C-52.6 s. 67": null
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.3333333333333333,
+     "mrr": 1.0,
+     "recall": 0.3333333333333333,
+     "shown": 8,
+     "uncited": 1
+    }
+   ]
+  },
+  "grouped 10+3, old gates": {
+   "tune": [
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 9,
+     "uncited": 0
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "CONST-1982 s. 8": 3,
+      "CONST-1982 s. 9": 6,
+      "CONST-1982 s. 24": 1
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 9,
+     "uncited": 1
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 2,
+      "H-6 s. 3": 4,
+      "H-6 s. 15": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": 2,
+      "SO2000c41 s. 54": 10,
+      "SO2000c41 s. 57": 3,
+      "SO2000c41 s. 60": 7,
+      "SO2000c41 s. 61": 1,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": null,
+      "RSO1990cH19 s. 5": 11,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": null,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.17647058823529413,
+     "recall@10": 0.29411764705882354,
+     "mrr": 1.0,
+     "recall": 0.35294117647058826,
+     "shown": 13,
+     "uncited": 3
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": null,
+      "SO2000c41 s. 54": null,
+      "SO2000c41 s. 57": null,
+      "SO2000c41 s. 60": null,
+      "SO2000c41 s. 61": 8,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": 7,
+      "RSO1990cH19 s. 5": null,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": 12,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.11764705882352941,
+     "mrr": 0.14285714285714285,
+     "recall": 0.17647058823529413,
+     "shown": 12,
+     "uncited": 6
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "SI/81-86 s. 10": 1,
+      "C-46 s. 145": null,
+      "SI/81-86 s. 9": 2
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": 2,
+      "I-3.3 s. 9": null
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 0.5,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "I-2.5 s. 110": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "C-8 s. 42": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "L-2 s. 94": 1,
+      "L-2 s. 24": null
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 9,
+      "H-6 s. 50": null,
+      "H-6 s. 14": 12
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.1111111111111111,
+     "recall": 0.6666666666666666,
+     "shown": 13,
+     "uncited": 0
+    }
+   ],
+   "test": [
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 245": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 4
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "L-2 s. 240": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "CONST-1982 s. 11": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 6
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 16": null,
+      "SOR/2002-227 s. 4": 1
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "P-33.01 s. 30": 8
+     },
+     "recall@5": 0.0,
+     "recall@10": 1.0,
+     "mrr": 0.125,
+     "recall": 1.0,
+     "shown": 9,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 250": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "I-5 s. 87": 1,
+      "CONST-1982 s. 25": 5,
+      "CONST-1982 s. 35": 10
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 10,
+     "uncited": 1
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 111": null,
+      "I-2.5 s. 170": null,
+      "I-2.5 s. 3": 7
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.14285714285714285,
+     "recall": 0.3333333333333333,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "E-5.6 s. 29": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 12,
+     "uncited": 2
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "F-7 s. 39": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "C-46 s. 84": 1,
+      "C-52.6 s. 60": null,
+      "C-52.6 s. 67": null
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.3333333333333333,
+     "mrr": 1.0,
+     "recall": 0.3333333333333333,
+     "shown": 11,
+     "uncited": 1
+    }
+   ]
+  },
+  "grouped 10+3, no raw text": {
+   "tune": [
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 9,
+     "uncited": 0
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "CONST-1982 s. 8": 3,
+      "CONST-1982 s. 9": 6,
+      "CONST-1982 s. 24": 1
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 9,
+     "uncited": 0
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 2,
+      "H-6 s. 3": 4,
+      "H-6 s. 15": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": 2,
+      "SO2000c41 s. 54": 10,
+      "SO2000c41 s. 57": 3,
+      "SO2000c41 s. 60": 7,
+      "SO2000c41 s. 61": 1,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": null,
+      "RSO1990cH19 s. 5": 11,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": null,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.17647058823529413,
+     "recall@10": 0.29411764705882354,
+     "mrr": 1.0,
+     "recall": 0.35294117647058826,
+     "shown": 13,
+     "uncited": 3
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": null,
+      "SO2000c41 s. 54": null,
+      "SO2000c41 s. 57": null,
+      "SO2000c41 s. 60": null,
+      "SO2000c41 s. 61": 8,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": 7,
+      "RSO1990cH19 s. 5": null,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": 12,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.11764705882352941,
+     "mrr": 0.14285714285714285,
+     "recall": 0.17647058823529413,
+     "shown": 12,
+     "uncited": 6
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "SI/81-86 s. 10": 1,
+      "C-46 s. 145": null,
+      "SI/81-86 s. 9": 2
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": 2,
+      "I-3.3 s. 9": null
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 0.5,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "I-2.5 s. 110": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "C-8 s. 42": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "L-2 s. 94": 1,
+      "L-2 s. 24": null
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 9,
+      "H-6 s. 50": null,
+      "H-6 s. 14": 12
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.1111111111111111,
+     "recall": 0.6666666666666666,
+     "shown": 13,
+     "uncited": 0
+    }
+   ],
+   "test": [
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 245": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 2
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "L-2 s. 240": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "CONST-1982 s. 11": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 5
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 16": null,
+      "SOR/2002-227 s. 4": 1
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "P-33.01 s. 30": 8
+     },
+     "recall@5": 0.0,
+     "recall@10": 1.0,
+     "mrr": 0.125,
+     "recall": 1.0,
+     "shown": 9,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 250": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "I-5 s. 87": 1,
+      "CONST-1982 s. 25": 5,
+      "CONST-1982 s. 35": 10
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 10,
+     "uncited": 1
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 111": null,
+      "I-2.5 s. 170": null,
+      "I-2.5 s. 3": 7
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.14285714285714285,
+     "recall": 0.3333333333333333,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "E-5.6 s. 29": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 12,
+     "uncited": 0
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "F-7 s. 39": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "C-46 s. 84": 1,
+      "C-52.6 s. 60": null,
+      "C-52.6 s. 67": null
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.3333333333333333,
+     "mrr": 1.0,
+     "recall": 0.3333333333333333,
+     "shown": 11,
+     "uncited": 0
+    }
+   ]
+  },
+  "raw text only": {
+   "tune": [
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": 7
+     },
+     "recall@5": 0.0,
+     "recall@10": 1.0,
+     "mrr": 0.14285714285714285,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "CONST-1982 s. 8": null,
+      "CONST-1982 s. 9": null,
+      "CONST-1982 s. 24": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 5
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 1,
+      "H-6 s. 3": null,
+      "H-6 s. 15": 2
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 2
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": null,
+      "SO2000c41 s. 54": null,
+      "SO2000c41 s. 57": 7,
+      "SO2000c41 s. 60": null,
+      "SO2000c41 s. 61": 1,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": 2,
+      "SO2000c41 s. 97": null,
+      "RSO1990cH19 s. 5": null,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": null,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": 5
+     },
+     "recall@5": 0.17647058823529413,
+     "recall@10": 0.23529411764705882,
+     "mrr": 1.0,
+     "recall": 0.23529411764705882,
+     "shown": 8,
+     "uncited": 2
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": null,
+      "SO2000c41 s. 54": null,
+      "SO2000c41 s. 57": 6,
+      "SO2000c41 s. 60": null,
+      "SO2000c41 s. 61": 2,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": null,
+      "RSO1990cH19 s. 5": null,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": null,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.058823529411764705,
+     "recall@10": 0.11764705882352941,
+     "mrr": 0.5,
+     "recall": 0.11764705882352941,
+     "shown": 8,
+     "uncited": 3
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "SI/81-86 s. 10": 1,
+      "C-46 s. 145": null,
+      "SI/81-86 s. 9": 2
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 2
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": 4,
+      "I-3.3 s. 9": 6
+     },
+     "recall@5": 0.5,
+     "recall@10": 1.0,
+     "mrr": 0.25,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 3
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "I-2.5 s. 110": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "C-8 s. 42": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "L-2 s. 94": 2,
+      "L-2 s. 24": 5
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 3
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": null,
+      "H-6 s. 50": null,
+      "H-6 s. 14": 2
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.5,
+     "recall": 0.3333333333333333,
+     "shown": 8,
+     "uncited": 1
+    }
+   ],
+   "test": [
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 245": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 2
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "L-2 s. 240": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "CONST-1982 s. 11": 7
+     },
+     "recall@5": 0.0,
+     "recall@10": 1.0,
+     "mrr": 0.14285714285714285,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 5
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 16": null,
+      "SOR/2002-227 s. 4": 1
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 3
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "P-33.01 s. 30": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 250": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 2
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "I-5 s. 87": 4,
+      "CONST-1982 s. 25": null,
+      "CONST-1982 s. 35": null
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.25,
+     "recall": 0.3333333333333333,
+     "shown": 8,
+     "uncited": 4
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 111": 5,
+      "I-2.5 s. 170": 3,
+      "I-2.5 s. 3": null
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 0.3333333333333333,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "E-5.6 s. 29": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 5
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "F-7 s. 39": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 4
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "C-46 s. 84": 2,
+      "C-52.6 s. 60": 4,
+      "C-52.6 s. 67": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    }
+   ]
+  },
+  "raw leads 3, 10+3": {
+   "tune": [
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "CONST-1982 s. 8": 3,
+      "CONST-1982 s. 9": 7,
+      "CONST-1982 s. 24": 4
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 1.0,
+     "mrr": 0.3333333333333333,
+     "recall": 1.0,
+     "shown": 10,
+     "uncited": 0
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 1,
+      "H-6 s. 3": 4,
+      "H-6 s. 15": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": 2,
+      "SO2000c41 s. 54": 10,
+      "SO2000c41 s. 57": 3,
+      "SO2000c41 s. 60": 7,
+      "SO2000c41 s. 61": 1,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": 8,
+      "SO2000c41 s. 97": null,
+      "RSO1990cH19 s. 5": 11,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": null,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.17647058823529413,
+     "recall@10": 0.35294117647058826,
+     "mrr": 1.0,
+     "recall": 0.4117647058823529,
+     "shown": 13,
+     "uncited": 3
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": null,
+      "SO2000c41 s. 54": null,
+      "SO2000c41 s. 57": null,
+      "SO2000c41 s. 60": null,
+      "SO2000c41 s. 61": 8,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": 9,
+      "RSO1990cH19 s. 5": null,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": 13,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.11764705882352941,
+     "mrr": 0.125,
+     "recall": 0.17647058823529413,
+     "shown": 13,
+     "uncited": 6
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "SI/81-86 s. 10": 1,
+      "C-46 s. 145": null,
+      "SI/81-86 s. 9": 2
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": 2,
+      "I-3.3 s. 9": null
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 0.5,
+     "recall": 0.5,
+     "shown": 9,
+     "uncited": 0
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "I-2.5 s. 110": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "C-8 s. 42": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "L-2 s. 94": 1,
+      "L-2 s. 24": 4
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 9,
+      "H-6 s. 50": null,
+      "H-6 s. 14": 12
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.1111111111111111,
+     "recall": 0.6666666666666666,
+     "shown": 13,
+     "uncited": 0
+    }
+   ],
+   "test": [
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 245": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 3
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "L-2 s. 240": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "CONST-1982 s. 11": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 5
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 16": null,
+      "SOR/2002-227 s. 4": 1
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "P-33.01 s. 30": 9
+     },
+     "recall@5": 0.0,
+     "recall@10": 1.0,
+     "mrr": 0.1111111111111111,
+     "recall": 1.0,
+     "shown": 10,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 250": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "I-5 s. 87": 2,
+      "CONST-1982 s. 25": 6,
+      "CONST-1982 s. 35": 12
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.6666666666666666,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 12,
+     "uncited": 1
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 111": 7,
+      "I-2.5 s. 170": 5,
+      "I-2.5 s. 3": null
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.6666666666666666,
+     "mrr": 0.2,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "E-5.6 s. 29": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 12,
+     "uncited": 0
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "F-7 s. 39": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "C-46 s. 84": 2,
+      "C-52.6 s. 60": null,
+      "C-52.6 s. 67": 1
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 11,
+     "uncited": 0
+    }
+   ]
+  },
+  "current (raw leads 7, 10+3)": {
+   "tune": [
+    {
+     "id": "tax-001",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-001",
+     "split": "tune",
+     "ranks": {
+      "CONST-1982 s. 8": 3,
+      "CONST-1982 s. 9": 7,
+      "CONST-1982 s. 24": 4
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 1.0,
+     "mrr": 0.3333333333333333,
+     "recall": 1.0,
+     "shown": 10,
+     "uncited": 0
+    },
+    {
+     "id": "hr-001",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 1,
+      "H-6 s. 3": 4,
+      "H-6 s. 15": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "on-003",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": 2,
+      "SO2000c41 s. 54": 10,
+      "SO2000c41 s. 57": 3,
+      "SO2000c41 s. 60": 7,
+      "SO2000c41 s. 61": 1,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": 8,
+      "SO2000c41 s. 97": null,
+      "RSO1990cH19 s. 5": 11,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": null,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.17647058823529413,
+     "recall@10": 0.35294117647058826,
+     "mrr": 1.0,
+     "recall": 0.4117647058823529,
+     "shown": 13,
+     "uncited": 3
+    },
+    {
+     "id": "on-004",
+     "split": "tune",
+     "ranks": {
+      "SO2000c41 s. 5": null,
+      "SO2000c41 s. 54": null,
+      "SO2000c41 s. 57": null,
+      "SO2000c41 s. 60": null,
+      "SO2000c41 s. 61": 8,
+      "SO2000c41 s. 64": null,
+      "SO2000c41 s. 65": null,
+      "SO2000c41 s. 97": 9,
+      "RSO1990cH19 s. 5": null,
+      "RSO1990cH19 s. 10": null,
+      "RSO1990cH19 s. 11": null,
+      "RSO1990cH19 s. 17": null,
+      "RSO1990cH19 s. 34": null,
+      "RSO1990cH19 s. 46.1": null,
+      "SO2002c24SchedB s. 4": 13,
+      "SO2002c24SchedB s. 5": null,
+      "O. Reg. 288/01 s. 2": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.11764705882352941,
+     "mrr": 0.125,
+     "recall": 0.17647058823529413,
+     "shown": 13,
+     "uncited": 6
+    },
+    {
+     "id": "lc-fc-01",
+     "split": "tune",
+     "ranks": {
+      "SI/81-86 s. 10": 1,
+      "C-46 s. 145": null,
+      "SI/81-86 s. 9": 2
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-02",
+     "split": "tune",
+     "ranks": {
+      "I-3.3 s. 18": 2,
+      "I-3.3 s. 9": null
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 0.5,
+     "recall": 0.5,
+     "shown": 9,
+     "uncited": 0
+    },
+    {
+     "id": "lc-rad-01",
+     "split": "tune",
+     "ranks": {
+      "I-2.5 s. 110": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-sst-01",
+     "split": "tune",
+     "ranks": {
+      "C-8 s. 42": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-cirb-01",
+     "split": "tune",
+     "ranks": {
+      "L-2 s. 94": 1,
+      "L-2 s. 24": 4
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-chrt-01",
+     "split": "tune",
+     "ranks": {
+      "H-6 s. 7": 9,
+      "H-6 s. 50": null,
+      "H-6 s. 14": 12
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.3333333333333333,
+     "mrr": 0.1111111111111111,
+     "recall": 0.6666666666666666,
+     "shown": 13,
+     "uncited": 0
+    }
+   ],
+   "test": [
+    {
+     "id": "tax-002",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 245": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 3
+    },
+    {
+     "id": "employ-002",
+     "split": "test",
+     "ranks": {
+      "L-2 s. 240": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "crim-002",
+     "split": "test",
+     "ranks": {
+      "CONST-1982 s. 11": 2
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 5
+    },
+    {
+     "id": "lc-fc-04",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 16": null,
+      "SOR/2002-227 s. 4": 1
+     },
+     "recall@5": 0.5,
+     "recall@10": 0.5,
+     "mrr": 1.0,
+     "recall": 0.5,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-fca-02",
+     "split": "test",
+     "ranks": {
+      "P-33.01 s. 30": 9
+     },
+     "recall@5": 0.0,
+     "recall@10": 1.0,
+     "mrr": 0.1111111111111111,
+     "recall": 1.0,
+     "shown": 10,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-01",
+     "split": "test",
+     "ranks": {
+      "I-3.3 s. 250": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-tcc-03",
+     "split": "test",
+     "ranks": {
+      "I-5 s. 87": 2,
+      "CONST-1982 s. 25": 6,
+      "CONST-1982 s. 35": 12
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.6666666666666666,
+     "mrr": 0.5,
+     "recall": 1.0,
+     "shown": 12,
+     "uncited": 1
+    },
+    {
+     "id": "lc-rad-02",
+     "split": "test",
+     "ranks": {
+      "I-2.5 s. 111": 7,
+      "I-2.5 s. 170": 5,
+      "I-2.5 s. 3": null
+     },
+     "recall@5": 0.3333333333333333,
+     "recall@10": 0.6666666666666666,
+     "mrr": 0.2,
+     "recall": 0.6666666666666666,
+     "shown": 8,
+     "uncited": 1
+    },
+    {
+     "id": "lc-sst-02",
+     "split": "test",
+     "ranks": {
+      "E-5.6 s. 29": 1
+     },
+     "recall@5": 1.0,
+     "recall@10": 1.0,
+     "mrr": 1.0,
+     "recall": 1.0,
+     "shown": 12,
+     "uncited": 0
+    },
+    {
+     "id": "lc-fpslreb-01",
+     "split": "test",
+     "ranks": {
+      "F-7 s. 39": null
+     },
+     "recall@5": 0.0,
+     "recall@10": 0.0,
+     "mrr": 0.0,
+     "recall": 0.0,
+     "shown": 8,
+     "uncited": 0
+    },
+    {
+     "id": "lc-citt-01",
+     "split": "test",
+     "ranks": {
+      "C-46 s. 84": 2,
+      "C-52.6 s. 60": null,
+      "C-52.6 s. 67": 1
+     },
+     "recall@5": 0.6666666666666666,
+     "recall@10": 0.6666666666666666,
+     "mrr": 1.0,
+     "recall": 0.6666666666666666,
+     "shown": 11,
+     "uncited": 0
+    }
+   ]
+  }
+ },
+ "skipped": [],
+ "canlii_flagged": [
+  {
+   "id": "imm-001",
+   "flagged": {
+    "[1992] 1 FC 706": true,
+    "[1994] 1 FC 589": true
+   },
+   "rate": 1.0,
+   "queries": 0
+  },
+  {
+   "id": "on-003",
+   "flagged": {
+    "1960 CanLII 294 (ON HCJ)": true,
+    "2024 ONSC 1029": false,
+    "2013 ONSC 5799": false
+   },
+   "rate": 0.3333333333333333,
+   "queries": 0
+  },
+  {
+   "id": "on-004",
+   "flagged": {
+    "1960 CanLII 294 (ON HCJ)": true,
+    "2024 ONSC 1029": false,
+    "2013 ONSC 5799": false
+   },
+   "rate": 0.3333333333333333,
+   "queries": 0
+  }
+ ]
+}

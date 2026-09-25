@@ -2,11 +2,15 @@
 
     python -m scripts.load_citations
 
-Two sources, both resolved to loaded cases:
+Three sources, all resolved to loaded cases:
 - A2AJ `cases_cited` lists: neutral citations, with French court codes mapped to English
   (the EN and FR versions of a decision list the same citations in each language).
 - Supreme Court Reports citations extracted from decision text. A2AJ's lists only track
   neutral citations, so pre-2000 SCC authorities such as Baker are otherwise invisible.
+- Name-and-year citations to pre-2007 Ontario Court of Appeal decisions, which have no neutral
+  citation ("Hobbs v. TDI Canada Ltd. (2004), 246 D.L.R. (4th) 43 (Ont. C.A.)"), resolved on
+  party names + year against ONCA rows stored under a docket number. Without this all 6,201 of
+  them had no in-corpus citations.
 """
 
 import time
@@ -16,7 +20,9 @@ from uuid import UUID
 import pyarrow.parquet as pq
 from huggingface_hub import hf_hub_download
 
-from app.citations import canonical, scr_citations
+from app.citations import (
+    build_onca_name_resolver, canonical, onca_named_citations, resolve_onca_named, scr_citations,
+)
 from app.db import connect
 from scripts.ingest_a2aj import JURISDICTION, REPO
 
@@ -44,6 +50,7 @@ def main() -> None:
 
     with connect() as conn:
         by_citation, by_court = build_resolver(conn)
+        by_onca_name = build_onca_name_resolver(conn)
 
         for court in JURISDICTION:
             path = hf_hub_download(REPO, f"{court}/train.parquet", repo_type="dataset")
@@ -72,7 +79,15 @@ def main() -> None:
                     elif dst_id != src_id and (src_id, dst_id) not in edges:
                         edges[(src_id, dst_id)] = ("text_scr", citation)
                         stats["scr_added"] += 1
+                for key in set(onca_named_citations(text or "")):
+                    dst_id = resolve_onca_named(by_onca_name, key)
+                    if dst_id is None:
+                        stats["onca_named_unresolved"] += 1
+                    elif dst_id != src_id and (src_id, dst_id) not in edges:
+                        edges[(src_id, dst_id)] = ("text_onca", "{} v {} ({})".format(*key))
+                        stats["onca_named_added"] += 1
         print(f"  SCR text extraction added {stats['scr_added']:,} edges", flush=True)
+        print(f"  ONCA name-and-year extraction added {stats['onca_named_added']:,} edges", flush=True)
 
         with conn.transaction():
             conn.execute("DELETE FROM citation_edges WHERE edge_kind = 'case_cites_case'")

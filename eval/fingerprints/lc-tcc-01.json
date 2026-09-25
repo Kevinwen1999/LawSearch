@@ -1,75 +1,66 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "226325fa19982ff235fdadfde427c262f2628893",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Income tax / benefits law",
-   "Residence for tax purposes",
-   "Canada Child Benefit administration",
-   "Tax litigation procedure (Tax Court of Canada)",
-   "Administrative law (procedural fairness at objection stage)"
+   "tax",
+   "administrative law"
   ],
   "issues": [
-   "Whether an individual who has been continuously absent from Canada for an extended period solely to complete a full-time program of studies abroad, while maintaining significant residential ties to Canada and a firm intention to return, remains a factual resident of Canada for income tax and Canada Child Benefit purposes",
-   "Which party bears the onus of proof on the residence issue where the Minister's pleaded assumption was that the taxpayer was resident, and non-residence is raised for the first time at trial rather than at the objection or reply stage",
-   "Whether the Minister can raise a new basis for reassessment/denial (non-residence) at the hearing that was not raised at the objection stage or pleaded as an assumption, and what procedural consequence follows (e.g. shifting onus, need to plead and prove the new basis)",
-   "Whether the taxpayer qualifies as an 'eligible individual' primarily responsible for the care of the children under the Income Tax Act's Canada Child Benefit provisions, and whether the other parent's (non-resident spouse's) declaration affects that status",
-   "What weight, if any, is owed to a prior written confirmation from the tax authority that the taxpayer remained a factual resident while studying, including whether inaccurate/incomplete information in the application for that letter undermines reliance on it or gives rise to estoppel/legitimate expectations arguments",
-   "Whether absence for full-time religious/educational training abroad is properly characterized as a 'sojourn' or temporary absence rather than a change of residence, given the continuity and duration of the ties maintained",
-   "Whether marriage to a foreign national who has never resided in Canada, and establishment of a family home abroad, is determinative of a change in residence status despite retention of Canadian ties"
+   "Whether a person continuously absent from Canada for approximately sixteen years for full-time religious training, while maintaining residential ties (furnished apartment, financial accounts, provincial health coverage, social and civic ties, sole Canadian passport, no foreign tax filings), remains a factual resident of Canada for income tax purposes.",
+   "The weight of secondary residential ties and the intention to return in determining Canadian tax residency during a prolonged absence for full-time studies.",
+   "Whether the purpose of the absence (full-time training available only overseas) and the fixed end-date (completion of the program) distinguish the situation from a permanent departure or severance of residential ties.",
+   "The onus of proof on the question of Canadian tax residency when the issue is raised for the first time at the hearing stage rather than at the objection stage.",
+   "Whether the Crown is precluded from raising a residency argument at the hearing stage when its own pleaded assumption was that the taxpayer was resident and the argument was never raised at the objection stage.",
+   "Whether a prior written confirmation by the revenue agency that the taxpayer remained a factual resident while studying creates a legitimate expectation or estoppel that prevents the agency from taking a contrary position.",
+   "The residency and primary caregiver eligibility requirements for the Canada Child Benefit or its predecessor benefit, and the validity of a primary caregiver designation where the spouse has never resided in Canada."
   ],
   "key_facts": [
-   "Client was born, raised and educated in Canada",
-   "Left Canada in his early twenties to marry a foreign citizen and enrol in a full-time overseas religious training program not available in Canada",
-   "Has been continuously abroad approximately 16 years in that program",
-   "Lives abroad with wife and children in an apartment purchased by in-laws; children attend local schools and see local doctors",
-   "Maintains a furnished, rent-free apartment available to him in his parents' Canadian home",
-   "Left personal books/possessions in Canada",
-   "Maintains Canadian bank and investment accounts and a registered education savings plan (RESP)",
-   "Maintains provincial health coverage",
-   "Maintains synagogue and mentor relationships, political party membership, and votes in Canada",
-   "Holds only a Canadian passport; never filed a foreign tax return",
-   "Has a standing offer of a teaching post in Canada upon completion of the program",
-   "No identifiable moment of changed circumstances since leaving Canada",
-   "CRA/tax authority clawed back two years of Canada Child Benefit payments",
-   "At objection stage, the sole basis was that the non-resident wife could not validly declare him primary caregiver",
-   "At the hearing, the Minister abandoned that argument and instead argued the client himself was not resident in Canada in the relevant base years",
-   "The non-residence argument was never raised at the objection stage",
-   "The Crown's own pleaded assumption in its reply was that the client was a resident of Canada",
-   "The tax authority had previously issued a letter confirming he remained a factual resident while studying",
-   "The client's application for that letter understated the length of his absence"
+   "Continuous absence from Canada for approximately sixteen years solely to complete a full-time religious training program available only overseas.",
+   "Maintenance of a furnished apartment in parents' Canadian home, Canadian bank and investment accounts, a registered education plan, provincial health coverage, synagogue and mentor relationships, party membership and voting, and a sole Canadian passport.",
+   "No foreign tax return ever filed; no change in circumstances at any identifiable point after departure.",
+   "Standing offer of a teaching post in Canada upon completion of the program.",
+   "Revenue agency previously confirmed in writing that the taxpayer remained a factual resident while studying.",
+   "Crown's initial ground for clawback (invalid primary caregiver designation) was abandoned at the hearing; the residency argument was raised for the first time at that stage.",
+   "Crown's own pleaded assumption at the objection stage was that the taxpayer was resident."
   ],
   "causes_of_action": [
-   "Appeal to the Tax Court of Canada from reassessment/redetermination of Canada Child Benefit entitlement",
-   "Challenge to Minister's determination that taxpayer was not an 'eligible individual' / not resident in Canada"
+   "Objection to reassessment (clawback of child benefits) before the Tax Court of Canada"
   ],
   "candidate_statutes": [
-   "Income Tax Act (Canada), definition of 'eligible individual' and Canada Child Benefit provisions (s. 122.6 et seq.)",
-   "Income Tax Act (Canada), residence provisions (s. 250) and common-law factual residence test",
-   "Tax Court of Canada Act and Tax Court of Canada Rules (General Procedure/Informal Procedure), pleading of assumptions"
+   "Income Tax Act, R.S.C. 1985, c. 1 (4th Supp.), ss. 25, 115 (residency definitions)",
+   "Canada Child Benefit Act, S.C. 2016, c. 22 (eligibility, primary caregiver)",
+   "Universal Child Care Benefit Act, S.C. 2006, c. 21 (if relevant base years predate CCB)",
+   "Tax Court Rules, F.C.R., Part XIV (procedure for raising issues at the hearing stage)"
   ],
   "search_terms": [
-   "factual resident Canada absence for studies",
-   "residential ties test Thomson v MNR",
-   "sojourner deemed resident 183 days",
-   "onus of proof pleaded assumptions Minister reply",
-   "new issue raised at trial not at objection stage tax appeal",
-   "eligible individual Canada Child Benefit primarily responsible",
-   "continuing ties intention to return residence determination",
-   "CRA advance ruling letter factual resident reliance estoppel",
-   "change of residence identifiable point in time",
-   "spouse never resided in Canada eligible individual declaration"
+   "factual resident",
+   "residential ties primary secondary",
+   "prolonged absence tax residency",
+   "intention to return residency",
+   "full-time student tax residency Canada",
+   "severance of residential ties",
+   "abandonment of residence",
+   "deemed resident factual resident distinction",
+   "onus of proof residency Tax Court",
+   "new issue raised at hearing stage",
+   "estoppel Crown tax residency",
+   "legitimate expectation CRA letter",
+   "Canada Child Benefit eligibility residency",
+   "primary caregiver designation validity",
+   "Factsheet RC4110",
+   "Interpretation Bulletin IT123",
+   "residential ties secondary ties weight",
+   "fixed end date absence residency"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 11441,
-   "output_tokens": 1777,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.029017800000000003,
-   "duration_ms": 20767
+   "input_tokens": 908,
+   "output_tokens": 2902,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

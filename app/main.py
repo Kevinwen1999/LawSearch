@@ -7,7 +7,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from psycopg.rows import dict_row
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
-from app import canlii, canlii_detect, filac, fingerprint, intake, retrieval
+from app import canlii, canlii_cited, canlii_detect, filac, fingerprint, intake, ontario_regs, retrieval
 from app.config import settings
 from app.db import get_pool
 from app.embeddings import embed
@@ -99,11 +99,14 @@ class SectionOut(BaseModel):
     cited_by_count: int
     score: float = 0.0
     citing_cases: int = 0
+    jurisdiction: str | None = None
 
 
 class IssueGroupOut(BaseModel):
-    issue: str | None  # None: best matches for the scenario overall
+    # None: matches for the scenario as a whole (the best overall first, then the fingerprint query's)
+    issue: str | None
     case_ids: list[UUID]
+    section_ids: list[UUID] = []  # chunk_ids into `sections`
 
 
 class SearchResponse(BaseModel):
@@ -165,7 +168,7 @@ def health() -> dict:
         "filac": {"backend": settings.filac_backend, "model": settings.filac_model},
         "canlii": {
             "configured": bool(settings.canlii_api_key),
-            "queries_today": canlii.default_client().store.used_today(),
+            "queries_last_24h": canlii.default_client().store.used_last_24h(),
             "daily_limit": settings.canlii_daily_limit,
         },
     }
@@ -204,7 +207,7 @@ def search(req: SearchRequest) -> SearchResponse:
 _SECTION_COLUMNS = """
     s.id AS chunk_id, l.code, l.kind, l.title, l.citation, l.consolidation_date, s.section_no,
     s.section_label, s.marginal_note, s.hierarchy_path, s.text, s.url_official AS url,
-    s.in_force_start, s.cited_by_count
+    s.in_force_start, s.cited_by_count, l.jurisdiction
 """
 
 
@@ -298,6 +301,12 @@ class GateOut(BaseModel):
     message: str | None
 
 
+class RegulationOut(BaseModel):
+    citation: str
+    url: str
+    cited_by: list[str]
+
+
 class ScenarioResponse(BaseModel):
     source: Literal["upload", "text"]
     upload_key: str | None
@@ -305,6 +314,8 @@ class ScenarioResponse(BaseModel):
     fingerprint: FingerprintOut
     gate: GateOut
     results: SearchResponse | None
+    # Ontario regulations two or more of the result cases cite that LawSearch doesn't hold.
+    uncovered_regulations: list[RegulationOut] = []
 
 
 UploadKey = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}\.[A-Za-z0-9]{1,10}$")]
@@ -340,13 +351,13 @@ async def create_scenario(
         source = "text"
 
     try:
-        fp = fingerprint.generate(scenario_text)
+        fp = fingerprint.generate_cached(get_pool().connection, scenario_text)
     except LLMError as exc:
         raise HTTPException(502, f"fingerprinting failed: {exc}") from exc
 
     gate = fingerprint.check_jurisdiction(fp)
 
-    results = None
+    results, regulations = None, []
     if gate.status == "ok":
         query = fingerprint.search_query(fp)
         with get_pool().connection() as conn:
@@ -355,14 +366,20 @@ async def create_scenario(
                 courts=courts or fingerprint.case_courts(fp),
                 date_from=date_from, date_to=date_to,
                 section_scope=fingerprint.section_scope(fp, statute_index(conn)),
+                scenario_text=scenario_text,
             )
         results = SearchResponse(
             query=query, mode="hybrid",
             results=[CaseOut.model_validate(c) for c in result.cases],
             sections=[SectionOut.model_validate(s) for s in result.sections],
             timings_ms=result.timings_ms,
-            groups=[IssueGroupOut(issue=g.issue, case_ids=[c.case_id for c in g.cases]) for g in result.groups],
+            groups=[
+                IssueGroupOut(issue=g.issue, case_ids=[c.case_id for c in g.cases],
+                              section_ids=[x.chunk_id for x in g.sections])
+                for g in result.groups
+            ],
         )
+        regulations = _uncovered_regulations([c.case_id for c in result.cases])
 
     return ScenarioResponse(
         source=source,
@@ -371,7 +388,28 @@ async def create_scenario(
         fingerprint=FingerprintOut(**fp.__dict__),
         gate=GateOut(status=gate.status, message=gate.message),
         results=results,
+        uncovered_regulations=regulations,
     )
+
+
+def _uncovered_regulations(case_ids: list[UUID]) -> list[RegulationOut]:
+    if not case_ids:
+        return []
+    with get_pool().connection() as conn:
+        texts = conn.execute(
+            "SELECT citation, full_text FROM cases WHERE id = ANY(%s)", (case_ids,)
+        ).fetchall()
+        cited = ontario_regs.cited_regulations(texts)
+        covered = {
+            code for (code,) in conn.execute(
+                "SELECT code FROM legislation WHERE jurisdiction = 'ontario' AND code = ANY(%s)",
+                ([r.ref.citation for r in cited],),
+            )
+        } if cited else set()
+    return [
+        RegulationOut(citation=r.ref.citation, url=r.ref.url, cited_by=r.cited_by)
+        for r in cited if r.ref.citation not in covered
+    ]
 
 
 @app.delete("/scenarios/uploads/{key}")
@@ -464,7 +502,7 @@ class CanLIIResponse(BaseModel):
     candidates: list[CanLIICandidateOut]
     seeds_checked: list[CanLIISeedOut]
     queries_sent: int
-    queries_today: int
+    queries_last_24h: int
     daily_limit: int
 
 
@@ -473,16 +511,7 @@ def canlii_candidates(req: CanLIIRequest) -> CanLIIResponse:
     """Phase 8: Ontario Superior Court and tribunal decisions on CanLII that cite the scenario's
     top cases, reranked against CanLII's keywords — link-out only, no text and no FILAC. Separate
     from /scenarios because an uncached run spends ~20 CanLII queries at under 2/s (~15 s)."""
-    with get_pool().connection() as conn:
-        rows = conn.execute(
-            "SELECT id, citation, court, style_of_cause FROM cases WHERE id = ANY(%s)",
-            (req.seed_case_ids,),
-        ).fetchall()
-    by_id = {r[0]: r[1:] for r in rows}
-    seeds = [
-        seed for case_id in req.seed_case_ids
-        if case_id in by_id and (seed := canlii_detect.to_seed(*by_id[case_id]))
-    ]
+    seeds = _canlii_seeds(req.seed_case_ids)
     client = canlii.default_client()
     result = canlii_detect.detect(client, req.query, seeds, score_pairs, k=req.k)
     return CanLIIResponse(
@@ -500,6 +529,71 @@ def canlii_candidates(req: CanLIIRequest) -> CanLIIResponse:
         ],
         seeds_checked=[CanLIISeedOut(citation=s.citation, title=s.title) for s in result.seeds],
         queries_sent=result.queries_sent,
-        queries_today=client.store.used_today(),
+        queries_last_24h=client.store.used_last_24h(),
+        daily_limit=client.daily_limit,
+    )
+
+
+def _canlii_seeds(case_ids: list[UUID]) -> list[canlii_detect.Seed]:
+    """The given corpus cases, in order, that CanLII can look up (neutral citation)."""
+    with get_pool().connection() as conn:
+        rows = conn.execute(
+            "SELECT id, citation, court, style_of_cause FROM cases WHERE id = ANY(%s)", (case_ids,)
+        ).fetchall()
+    by_id = {r[0]: r[1:] for r in rows}
+    return [seed for case_id in case_ids if case_id in by_id and (seed := canlii_detect.to_seed(*by_id[case_id]))]
+
+
+class CitedRequest(BaseModel):
+    # The scenario's top cases, best first; and every case already shown, to leave out.
+    seed_case_ids: list[UUID] = Field(min_length=1, max_length=30)
+    exclude_case_ids: list[UUID] = Field(default_factory=list, max_length=200)
+    k: int = Field(8, ge=1, le=20)
+
+
+class CitedAuthorityOut(BaseModel):
+    title: str | None
+    citation: str | None
+    court_name: str | None
+    url: str | None
+    cited_by: list[CanLIISeedOut]
+    in_corpus: bool
+    corpus_case_id: UUID | None
+
+
+class CitedResponse(BaseModel):
+    status: Literal["ok", "partial", "no_seeds", "disabled", "budget_exhausted", "error"]
+    message: str | None
+    authorities: list[CitedAuthorityOut]
+    seeds_checked: list[CanLIISeedOut]
+    queries_sent: int
+    queries_last_24h: int
+    daily_limit: int
+
+
+@app.post("/canlii/cited", response_model=CitedResponse)
+def canlii_cited_authorities(req: CitedRequest) -> CitedResponse:
+    """Authorities cited by at least two of the scenario's top cases that the results don't show,
+    via CanLII's citator (in the corpus or not, e.g. Bardal). ~8 CanLII queries uncached."""
+    client = canlii.default_client()
+    result = canlii_cited.find_cited(
+        client, _canlii_seeds(req.seed_case_ids),
+        lambda authorities: canlii_cited.resolve_in_corpus(get_pool().connection, authorities),
+        exclude=set(req.exclude_case_ids), k=req.k,
+    )
+    return CitedResponse(
+        status=result.status,
+        message=result.message,
+        authorities=[
+            CitedAuthorityOut(
+                title=a.title, citation=a.citation, court_name=a.court_name, url=a.url,
+                cited_by=[CanLIISeedOut(citation=s.citation, title=s.title) for s in a.cited_by],
+                in_corpus=a.corpus_case_id is not None, corpus_case_id=a.corpus_case_id,
+            )
+            for a in result.authorities
+        ],
+        seeds_checked=[CanLIISeedOut(citation=s.citation, title=s.title) for s in result.seeds],
+        queries_sent=result.queries_sent,
+        queries_last_24h=client.store.used_last_24h(),
         daily_limit=client.daily_limit,
     )

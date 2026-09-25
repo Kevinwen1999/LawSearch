@@ -117,8 +117,10 @@ def section_heading(section: dict) -> str:
 def render_sections(sections: list[dict]) -> None:
     st.subheader("Relevant legislation")
     st.caption(
-        "Federal legislation from Justice Laws; Ontario Acts from A2AJ (Ontario regulations aren't "
-        "covered yet). Unofficial text — check each section's \"current to\" date and the official version."
+        "Federal legislation from Justice Laws (\"current to\" = its consolidation date); Ontario Acts "
+        "from A2AJ and the Ontario regulations the case law cites from e-Laws (\"version of\" = the "
+        "date of the version held here, i.e. its last amendment when loaded). Unofficial text: check "
+        "the official version."
     )
     cited_by_section = st.session_state.setdefault("section_citations", {})
     for section in sections:
@@ -126,7 +128,12 @@ def render_sections(sections: list[dict]) -> None:
             st.markdown(f"**{section_heading(section)}**")
             facts = [section["citation"] or section["code"]]
             if section["consolidation_date"]:
-                facts.append(f"current to {section['consolidation_date']}")
+                # A2AJ gives Ontario Acts one date: the version of the Act it holds (its last
+                # amendment), not a date the text was checked as current.
+                if section.get("jurisdiction") == "ontario":
+                    facts.append(f"version of {section['consolidation_date']}")
+                else:
+                    facts.append(f"current to {section['consolidation_date']}")
             if section["in_force_start"]:
                 facts.append(f"in force since {section['in_force_start']}")
             facts.append(f"cited in {section['cited_by_count']:,} decisions")
@@ -145,6 +152,13 @@ def render_sections(sections: list[dict]) -> None:
             elif section["cited_by_count"] and st.button("Decisions citing this section", key=f"citing-{chunk_id}"):
                 cited_by_section[chunk_id] = httpx.get(f"{API}/sections/{chunk_id}", timeout=30).json()["citing_cases"]
                 st.rerun()
+
+
+def render_uncovered_regulations(regulations: list[dict]) -> None:
+    st.markdown("**Cited regulations LawSearch doesn't cover**")
+    st.caption("Ontario regulations that two or more of the cases below cite. Not searchable here: read them on e-Laws.")
+    for r in regulations:
+        st.markdown(f"- [{r['citation']}]({r['url']}) · cited by {len(r['cited_by'])} of the cases: {', '.join(r['cited_by'])}")
 
 
 def render_case_statutes(case_id: str) -> None:
@@ -204,17 +218,32 @@ def render_case(rank: int, case: dict) -> None:
                 st.error(response.json().get("detail", f"Brief failed (HTTP {response.status_code})"))
 
 
-def render_case_groups(results: list[dict], groups: list[dict] | None) -> None:
+def render_case_groups(results: list[dict], groups: list[dict] | None, sections: list[dict] | None = None) -> None:
     """Best matches overall, then each issue's own best cases. A case already shown gets a
-    one-line pointer instead of a second card."""
+    one-line pointer instead of a second card; each issue also lists its own legislation."""
     by_id = {c["case_id"]: c for c in results}
+    section_by_id = {x["chunk_id"]: x for x in sections or []}
     groups = groups or [{"issue": None, "case_ids": list(by_id)}]
     shown: dict[str, int] = {}
+    issue_no = 0
     for n, group in enumerate(groups):
         if group["issue"] is not None:
-            st.markdown(f"##### Issue {n}: {group['issue']}")
-        elif len(groups) > 1:
+            issue_no += 1
+            st.markdown(f"##### Issue {issue_no}: {group['issue']}")
+            links = []
+            for chunk_id in group.get("section_ids", []):
+                x = section_by_id[chunk_id]
+                label = f"{x['title']} s. {x['section_label']}"
+                links.append(f"[{label}]({x['url']})" if x["url"] else label)
+            if links:
+                st.caption("Legislation for this issue: " + "; ".join(links))
+        elif n == 0 and len(groups) > 1:
             st.markdown("##### Best matches overall")
+        elif n > 0:
+            # The fingerprint's combined query, after the scenario text's own best matches.
+            if not group["case_ids"]:
+                continue
+            st.markdown("##### More matches for the scenario as a whole")
         if not group["case_ids"]:
             st.caption("No decision in the corpus scored as clearly on point for this issue.")
         for case_id in group["case_ids"]:
@@ -235,7 +264,72 @@ CANLII_NOTICES = {
 }
 
 
-def render_canlii(query: str, results: list[dict]) -> None:
+def seed_case_ids(results: list[dict], groups: list[dict] | None) -> list[str]:
+    """Cases to trace citations from on CanLII: round-robin across the issue groups (best overall
+    first), so one dominant issue doesn't supply every seed."""
+    lists = [g["case_ids"] for g in groups] if groups else [[c["case_id"] for c in results]]
+    ordered: list[str] = []
+    for rank in range(max((len(ids) for ids in lists), default=0)):
+        for ids in lists:
+            if rank < len(ids) and ids[rank] not in ordered:
+                ordered.append(ids[rank])
+    return ordered
+
+
+def issue_labels(results: list[dict], groups: list[dict] | None) -> dict[str, str]:
+    """citation -> "Issue 2, 5" for cases shown under specific issues."""
+    by_id = {c["case_id"]: c for c in results}
+    labels: dict[str, list[int]] = {}
+    issues = [g for g in groups or [] if g["issue"] is not None]
+    for n, g in enumerate(issues, 1):
+        for case_id in g["case_ids"]:
+            labels.setdefault(by_id[case_id]["citation"], []).append(n)
+    return {c: "Issue " + ", ".join(map(str, ns)) for c, ns in labels.items()}
+
+
+def post_json(path: str, payload: dict, empty: dict) -> dict:
+    try:
+        response = httpx.post(f"{API}{path}", json=payload, timeout=300)
+    except httpx.HTTPError as exc:
+        return {**empty, "status": "error", "message": type(exc).__name__}
+    if response.status_code != 200:
+        return {**empty, "status": "error", "message": f"HTTP {response.status_code}"}
+    return response.json()
+
+
+def render_cited(results: list[dict], groups: list[dict] | None) -> None:
+    st.subheader("Frequently cited by the top cases")
+    st.caption(
+        "Authorities that two or more of the cases above cite but that aren't among the results, from "
+        "CanLII's citator. \"Not in LawSearch\" means the decision isn't in this corpus (e.g. older "
+        "Ontario trial decisions): read it on CanLII."
+    )
+    if st.session_state.get("cited") is None:
+        with st.spinner("Checking what the top cases cite (CanLII)..."):
+            st.session_state.cited = post_json(
+                "/canlii/cited",
+                {"seed_case_ids": seed_case_ids(results, groups),
+                 "exclude_case_ids": [c["case_id"] for c in results], "k": 8},
+                {"authorities": []},
+            )
+    body = st.session_state.cited
+    if body["status"] != "ok":
+        detail = f" ({body['message']})" if body.get("message") else ""
+        st.info(CANLII_NOTICES.get(body["status"], "CanLII lookup failed.") + detail)
+    if not body["authorities"]:
+        if body["status"] in ("ok", "partial"):
+            st.caption("No authority is cited by two or more of the top cases beyond those shown.")
+        return
+    for a in body["authorities"]:
+        title = a["title"] or a["citation"]
+        link = f"[{title}]({a['url']})" if a["url"] else title
+        where = "in LawSearch, not in these results" if a["in_corpus"] else "not in LawSearch"
+        cited_by = "; ".join(s["title"] or s["citation"] for s in a["cited_by"])
+        st.markdown(f"**{link}**, {a['citation']} · *{where}*")
+        st.caption(f"Cited by {len(a['cited_by'])} of the top cases: {cited_by}")
+
+
+def render_canlii(query: str, results: list[dict], groups: list[dict] | None = None) -> None:
     st.subheader("Ontario Superior Court and tribunal decisions (CanLII)")
     st.caption(
         "These decisions aren't in LawSearch's corpus. They were found on CanLII because they cite "
@@ -247,7 +341,7 @@ def render_canlii(query: str, results: list[dict]) -> None:
             try:
                 response = httpx.post(
                     f"{API}/canlii/candidates",
-                    json={"query": query, "seed_case_ids": [c["case_id"] for c in results], "k": 8},
+                    json={"query": query, "seed_case_ids": seed_case_ids(results, groups), "k": 8},
                     timeout=300,
                 )
                 body = response.json() if response.status_code == 200 else {
@@ -257,6 +351,7 @@ def render_canlii(query: str, results: list[dict]) -> None:
                 body = {"status": "error", "message": type(exc).__name__, "candidates": []}
         st.session_state.canlii = body
     body = st.session_state.canlii
+    labels = issue_labels(results, groups)
 
     if body["status"] != "ok":
         notice = CANLII_NOTICES.get(body["status"], "CanLII lookup failed.")
@@ -272,6 +367,9 @@ def render_canlii(query: str, results: list[dict]) -> None:
             st.markdown(f"**[{title}]({cand['url']})**" if cand["url"] else f"**{title}**")
             facts = [f for f in (cand["citation"], cand["court_name"], cand["decision_date"]) if f]
             cites = "; ".join(s["title"] or s["citation"] for s in cand["cites"])
+            issues = sorted({labels[s["citation"]] for s in cand["cites"] if s["citation"] in labels})
+            if issues:
+                cites += f" ({'; '.join(issues)})"
             st.caption(" · ".join(facts) + f" · cites {cites}")
             if cand["topics"]:
                 st.caption(f"Topics: {cand['topics']}")
@@ -279,7 +377,7 @@ def render_canlii(query: str, results: list[dict]) -> None:
                 with st.expander("CanLII keywords"):
                     st.write(cand["keywords"])
     if body.get("queries_sent"):
-        st.caption(f"Used {body['queries_sent']} CanLII queries ({body['queries_today']:,}/{body['daily_limit']:,} today).")
+        st.caption(f"Used {body['queries_sent']} CanLII queries ({body['queries_last_24h']:,}/{body['daily_limit']:,} in the last 24 h).")
 
 
 st.title("LawSearch")
@@ -332,11 +430,13 @@ if st.button("Search", type="primary", disabled=not (scenario.strip() or uploade
         st.session_state.fingerprint = body["fingerprint"]
         st.session_state.gate = body["gate"]
         st.session_state.canlii = None
+        st.session_state.cited = None
         if body["results"]:
             st.session_state.results = body["results"]["results"]
             st.session_state.sections = body["results"]["sections"]
             st.session_state.search_query = body["results"]["query"]
             st.session_state.groups = body["results"]["groups"]
+            st.session_state.regulations = body.get("uncovered_regulations", [])
         else:
             st.session_state.results, st.session_state.sections = None, None
     else:
@@ -356,14 +456,23 @@ if gate and gate["status"] == "unsupported_jurisdiction":
     st.warning(gate["message"])
 elif gate and gate["status"] == "needs_clarification":
     st.info(f"Before searching, it would help to know: {gate['message']}")
+elif gate and gate["message"]:
+    st.caption(f"Worth confirming (the search went ahead without it): {gate['message']}")
 
 results = st.session_state.get("results")
 if results is not None:
     if st.session_state.get("sections"):
-        render_sections(st.session_state.sections)
+        groups = st.session_state.get("groups")
+        overall = set(groups[0].get("section_ids", [])) if groups else None
+        # Issue-specific sections are listed under each issue below, not as cards here.
+        render_sections([x for x in st.session_state.sections if overall is None or x["chunk_id"] in overall])
+    if st.session_state.get("regulations"):
+        render_uncovered_regulations(st.session_state.regulations)
     st.subheader("Cases")
     if not results:
         st.info("No matching cases.")
-    render_case_groups(results, st.session_state.get("groups"))
+    render_case_groups(results, st.session_state.get("groups"), st.session_state.get("sections"))
+    if results:
+        render_cited(results, st.session_state.get("groups"))
     if results and fingerprint and fingerprint["jurisdiction"] == "ontario":
-        render_canlii(st.session_state.search_query, results)
+        render_canlii(st.session_state.search_query, results, st.session_state.get("groups"))

@@ -1,71 +1,66 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "c9acf192c2b0c19f4f270fef43aa0807c2e4c670",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Administrative law / judicial review",
-   "Constitutional law (Charter)",
-   "Appellate standard of review",
-   "Public health emergency law / aviation and rail regulation",
-   "Civil procedure (mootness, discretion to hear moot cases)"
+   "administrative law",
+   "constitutional law",
+   "appellate procedure"
   ],
   "issues": [
-   "What is the appellate standard of review applicable to a first-instance judge's mootness determination and exercise of discretion whether to hear a moot case",
-   "Whether the case remains a live controversy because declaratory relief sought would support a separate damages claim",
-   "Whether the 'evading review' branch of the mootness doctrine applies to repeatedly re-issued short-duration emergency travel orders",
-   "Whether a suspended (not repealed) measure that could be reimposed defeats a mootness finding",
-   "Whether public importance of the issues and resources already expended by the parties should weigh in favour of hearing a moot case",
-   "Whether the Minister's temporary travel orders were intra vires the enabling federal aviation/rail/public health legislation",
-   "Whether the travel restriction orders infringed Charter rights and, if so, were justified under s.1",
-   "What deference an appellate court owes to a lower court's discretionary decision not to exercise its residual discretion to hear a moot appeal"
+   "whether a judicial review application is moot when the impugned emergency order has been lifted or suspended",
+   "whether the capable-of-repetition-yet-evading-review exception applies to short-lived emergency orders that are repeatedly re-issued",
+   "whether a claim for a declaration of invalidity (to support future damages claims) constitutes a live controversy sufficient to defeat mootness",
+   "whether the public interest in reviewing the exercise of emergency powers justifies hearing a case that is otherwise moot",
+   "the standard of review applicable on appeal to a first-instance mootness ruling (question of law versus exercise of discretion)",
+   "whether the substantial record already built (cross-examinations, expert reports, affidavits) is a relevant factor in the discretion to hear a moot case",
+   "whether emergency orders issued under a statutory power exceed the Minister's authority (ultra vires)",
+   "which Charter rights are engaged by mandatory vaccination conditions on domestic travel"
   ],
   "key_facts": [
-   "Temporary federal orders barred unvaccinated persons from domestic flights and passenger trains during a public-health emergency",
-   "Orders were repeatedly re-issued over approximately eight months",
-   "Applicants included a former elected official",
-   "Substantial evidentiary record built pre-hearing: expert reports, many affidavits, weeks of cross-examinations",
-   "Government rescinded the measures and moved to strike/dismiss the applications as moot before the hearing",
-   "Applications judge found the matter moot and declined to exercise discretion to hear it regardless",
-   "Applicants argue live controversy persists to support future damages claims, that measures were only suspended and could be reimposed, and that such short-duration measures will evade review",
-   "Applicants also argue public importance and resources invested favour hearing the case",
-   "Matter is now on appeal from the mootness/discretion ruling"
+   "federal temporary orders barring unvaccinated travellers from domestic flights and trains",
+   "orders repeatedly re-issued over approximately eight months",
+   "judicial review applications challenging statutory authority and Charter rights",
+   "substantial record built before hearing (expert reports, affidavits, cross-examinations)",
+   "government lifted the measures and moved to strike as moot",
+   "applications judge found the cases moot and declined to hear them",
+   "clients argue declarations would support separate damages claims",
+   "clients argue measures were only suspended and could be reimposed",
+   "clients argue public importance and resources invested should tip the discretion"
   ],
   "causes_of_action": [
-   "Application for judicial review of ministerial orders as ultra vires enabling statute",
-   "Charter challenge to travel restriction orders (ss. 2, 6, 7, 15 and s.1 justification)",
-   "Application for declaratory relief",
-   "Motion to strike/dismiss application for review as moot"
+   "judicial review of federal emergency orders",
+   "declaration of invalidity",
+   "Charter challenge"
   ],
   "candidate_statutes": [
-   "Aeronautics Act",
-   "Quarantine Act",
-   "Railway Safety Act",
+   "National Emergency Act",
    "Canadian Charter of Rights and Freedoms",
-   "Federal Courts Act",
-   "Emergencies Act"
+   "Federal Court Act",
+   "Quarantine Act"
   ],
   "search_terms": [
-   "mootness doctrine Borowski test",
-   "appellate standard of review discretionary decision",
-   "issues capable of repetition yet evading review",
-   "collateral consequences damages claim mootness",
-   "judicial discretion to hear moot case",
-   "vires ministerial order Aeronautics Act",
-   "Charter challenge travel ban COVID vaccination status",
-   "declaratory relief moot application",
-   "standard of review Housen v Nikolaisen discretionary ruling",
-   "suspended order likelihood of recurrence mootness"
+   "mootness judicial review",
+   "capable of repetition yet evading review",
+   "public interest exception mootness",
+   "declaration of invalidity mootness live controversy",
+   "standard of review mootness appeal",
+   "discretion to hear moot case",
+   "emergency orders ultra vires",
+   "re-issued orders mootness",
+   "Charter rights travel restrictions vaccination",
+   "Nova Scotia Pharmaceutical Society mootness",
+   "suspended order mootness",
+   "resources invested mootness discretion"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 11282,
-   "output_tokens": 1225,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.022742800000000004,
-   "duration_ms": 12036
+   "input_tokens": 807,
+   "output_tokens": 2141,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

@@ -8,15 +8,22 @@ never assert that a case exists or predict an outcome — it proposes concepts a
 holdings, so downstream retrieval and FILAC remain the only places an authority is ever asserted.
 """
 
+import dataclasses
+import hashlib
 import re
 from dataclasses import dataclass
+
+from psycopg.types.json import Jsonb
 
 from app.config import settings
 from app.llm import extract_with_fallback
 from app.section_search import SectionScope
 from app.statute_refs import StatuteIndex
 
-PROMPT_VERSION = "fingerprint-v3"  # v3: issues are searched one by one, so phrase them to search well
+# v3: issues are searched one by one, so phrase them to search well.
+# v4: remedies/defences as their own issues (up to 10); needs_clarification only for an unstated
+# jurisdiction that matters, never missing facts; criminal/Charter matters are federal.
+PROMPT_VERSION = "fingerprint-v4"
 
 SYSTEM_PROMPT = """\
 You turn a client's legal scenario into a structured fingerprint that drives search over a \
@@ -32,14 +39,21 @@ Jurisdiction
 - The database currently covers federal case law and legislation, and Ontario case law and \
 legislation. No other province's case law or legislation is covered yet. Set jurisdiction to \
 what actually governs the scenario, even when that is a jurisdiction not yet covered.
-- If the province or level of court/government isn't stated and it would change what's relevant \
-(most private-law areas — tenancy, most torts and contracts, family law, provincial regulatory \
-schemes — are provincial), add one short, specific item to needs_clarification asking for it. \
-Leave needs_clarification empty when jurisdiction plainly doesn't matter to finding the right \
-authorities (e.g. immigration, tax, federal criminal procedure, employment insurance, patents).
+- Criminal law (the Criminal Code, Charter rights in criminal proceedings) is federal law: set \
+jurisdiction to federal unless the scenario is about a provincial offence. Use ontario when the \
+scenario places the matter in Ontario, even if some law involved is federal.
+- needs_clarification is only for an unstated province or level of government that would change \
+what's relevant (most private-law areas — tenancy, most torts and contracts, family law, provincial \
+regulatory schemes — are provincial). Then add one short item asking for it and set jurisdiction \
+to unknown. Leave it empty whenever you could set jurisdiction, and when jurisdiction plainly \
+doesn't matter to finding the right authorities (e.g. immigration, tax, criminal law, employment \
+insurance, CPP, patents, federal public service). Never use it to ask for missing facts, dates, \
+documents or side issues: the search proceeds on what the scenario says.
 
 Output
-- issues: each distinct legal question the scenario raises, most important first, at most 8. \
+- issues: each distinct legal question the scenario raises, most important first, at most 10. \
+Include the remedies and defences the facts put in play as their own issues, not only liability \
+(e.g. damages heads, mitigation of damages, limitation periods and deadlines, choice of forum). \
 Each is searched on its own, so phrase each as a general legal question in legal terms (e.g. \
 "whether a termination clause that breaches the ESA is void") — no party names, dates, amounts \
 or one-off evidence details — and merge near-duplicates rather than listing them twice.
@@ -115,6 +129,27 @@ def generate(text: str) -> Fingerprint:
     return Fingerprint.from_result(result.data, model=result.model, backend=result.backend, usage=result.usage)
 
 
+def generate_cached(connection, text: str) -> Fingerprint:
+    """generate(), cached in fingerprint_cache by the text, prompt version and configured model.
+    `connection` is a connection factory (e.g. the pool's), so none is held during the LLM call."""
+    key = (hashlib.sha256(text.encode()).hexdigest(), PROMPT_VERSION, settings.fingerprint_model)
+    with connection() as conn:
+        row = conn.execute(
+            "SELECT fingerprint FROM fingerprint_cache WHERE text_sha256 = %s AND prompt_version = %s AND model = %s",
+            key,
+        ).fetchone()
+    if row:
+        return Fingerprint(**row[0])
+    fp = generate(text)
+    with connection() as conn:
+        conn.execute(
+            "INSERT INTO fingerprint_cache (text_sha256, prompt_version, model, fingerprint) "
+            "VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING",
+            (*key, Jsonb(dataclasses.asdict(fp))),
+        )
+    return fp
+
+
 def search_query(fp: Fingerprint) -> str:
     """One query string for both retrievers: precise terms first (best for lexical/BM25), then
     issues and facts (carry the semantic signal for the embedding side)."""
@@ -123,7 +158,7 @@ def search_query(fp: Fingerprint) -> str:
     return query or "; ".join(fp.areas_of_law)
 
 
-MAX_ISSUE_QUERIES = 8
+MAX_ISSUE_QUERIES = 10
 
 
 def issue_queries(fp: Fingerprint) -> list[str]:
@@ -167,7 +202,11 @@ class Gate:
 
 def check_jurisdiction(fp: Fingerprint) -> Gate:
     """Ask before retrieving when the answer would be unreliable: an unsupported jurisdiction, or
-    one that's unstated and matters (flagged by the model itself via needs_clarification)."""
+    one that's unstated and matters (jurisdiction unknown and flagged by the model itself via
+    needs_clarification). A clarification the model raises while still naming a jurisdiction
+    doesn't block the search: with the v3 prompt, Sonnet stopped 12 of 36 eval scenarios that way,
+    mostly asking for fact details (dates, the enabling statute) or side issues. It comes back as
+    a note on an "ok" gate instead."""
     if fp.jurisdiction in NOT_YET_COVERED:
         return Gate(
             "unsupported_jurisdiction",
@@ -176,6 +215,6 @@ def check_jurisdiction(fp: Fingerprint) -> Gate:
             "other provincial coverage is planned but not yet available, so results would not "
             "be reliable here.",
         )
-    if fp.needs_clarification:
+    if fp.needs_clarification and fp.jurisdiction == "unknown":
         return Gate("needs_clarification", "; ".join(fp.needs_clarification))
-    return Gate("ok")
+    return Gate("ok", "; ".join(fp.needs_clarification) or None)

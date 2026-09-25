@@ -141,8 +141,11 @@ class CaseResult:
 
 @dataclass
 class IssueGroup:
-    issue: str | None  # None: the combined query, i.e. the best matches for the scenario overall
+    # None: matches for the scenario as a whole: the best overall (first group), then, when the
+    # scenario text leads, the fingerprint's combined query.
+    issue: str | None
     cases: list[CaseResult]
+    sections: list[SectionResult] = field(default_factory=list)
 
 
 @dataclass
@@ -357,16 +360,31 @@ def search_scenario(
     date_to: date | None = None,
     k_sections: int = 8,
     section_scope: SectionScope | None = None,
+    scenario_text: str | None = None,
 ) -> SearchResult:
     """Search the combined query and each issue separately, then group (see group_issue_results):
-    the combined query's top k, then each issue's own top `per_issue`."""
+    the best k overall, then each issue's own top `per_issue`.
+
+    With `scenario_text`, the scenario's own words are searched too and lead the best-overall
+    list; the fingerprint's combined query then becomes one more (unlabelled) group. On the
+    fingerprinted eval (2026-09-25) that lifted test nDCG@10 0.383 -> 0.439 and legislation recall
+    on both splits (tune 0.624 -> 0.675, test 0.742 -> 0.803), tune nDCG@10 a near-tie (0.420 ->
+    0.417): the raw-text search alone scored 0.477 on test, the fingerprinted pipeline 0.383."""
     per_issue = ISSUE_CASES if per_issue is None else per_issue
+    filters = dict(courts=courts, date_from=date_from, date_to=date_to, section_scope=section_scope)
     results = run_scenario_queries(
-        conn, query, issue_queries, k=max(k, ISSUE_SEARCH_DEPTH), courts=courts, date_from=date_from,
-        date_to=date_to, k_sections=k_sections, section_scope=section_scope,
+        conn, query, issue_queries, k=max(k, ISSUE_SEARCH_DEPTH), k_sections=k_sections, **filters
     )
+    labels: list[str | None] = list(issue_queries)
+    lead = None
+    if scenario_text:
+        raw = search(
+            conn, scenario_text[:SCENARIO_QUERY_CHARS], k=max(k, ISSUE_SEARCH_DEPTH), k_sections=k_sections,
+            rerank_sections=True, **filters,
+        )
+        results, labels, lead = [raw, *results], [None, *labels], SCENARIO_TEXT_LEAD
     named = set(section_scope.named_codes) if section_scope else set()
-    groups, cases, sections = group_issue_results(results, issue_queries, k, per_issue, k_sections, named)
+    groups, cases, sections = group_issue_results(results, labels, k, per_issue, k_sections, named, lead)
     timings: dict[str, float] = {}
     for result in results:
         for name, ms in result.timings_ms.items():
@@ -386,19 +404,36 @@ def run_scenario_queries(
 
 # Cross-encoder logits. An issue query always returns *something*; below these, what it returns
 # is noise (e.g. an issue with no real counterpart in the corpus) and shouldn't take a slot.
-MIN_ISSUE_CASE_RERANK = 0.0
+# Cases: -2.0 since 2026-09-25 (was 0.0). On the fingerprinted eval (scripts/eval_scenarios.py,
+# Qwen v4 fingerprints, all 36 scenarios) it was best on the tune split (nDCG@10 0.410 -> 0.420,
+# issue coverage kept at 0.583; -1.0 lowered coverage to 0.500) and held on test (0.370 -> 0.383,
+# recall@25 0.615 -> 0.656). At 0.0, authorities phrased unlike the scenario (Meiorin, -1.75 on
+# the accommodation issue) never got a slot.
+MIN_ISSUE_CASE_RERANK = -2.0
 MIN_ISSUE_SECTION_RERANK = -5.0
 # The combined query's top cases go first. Chosen on the eval tune split (fingerprinted scenarios):
 # the near-tie with combined-only on case nDCG@10 (0.494 vs 0.500) that keeps the section gain.
 COMBINED_LEAD = 3
+# When the scenario's own text leads instead (search_scenario(scenario_text=...)), its top 7: on the
+# fingerprinted eval (2026-09-25) best on tune (nDCG@10 0.417 at 3 -> 0.427; recall@10 0.508 -> 0.540)
+# and on test (0.439 -> 0.483, above raw-text search alone at 0.477), legislation unchanged.
+SCENARIO_TEXT_LEAD = 7
 # Grouped output: each issue's own top cases, after the combined query's. Depth each issue query
 # is searched to, so the reranker gate still leaves enough to fill its group.
 ISSUE_CASES = 3
+ISSUE_SECTIONS = 2
+SCENARIO_QUERY_CHARS = 4000  # the scenario's own text as a query; /search's limit
+# Drop statute sections no decision in the corpus cites (unless the scenario names their law):
+# ESA s. 141 and s. 74.11 (temporary help agencies) got in on text match alone. On the eval
+# (scripts/eval_scenarios.py, 2026-09-25) legislation recall was unchanged on both splits while
+# uncited sections shown fell from 1.27 to 1.00 (tune) and 1.36 to 0.73 (test) per scenario.
+DROP_UNCITED_SECTIONS = True
 ISSUE_SEARCH_DEPTH = 20
 
 
 def merge_issue_results(
-    results: list[SearchResult], k: int, k_sections: int, named_codes: set[str] = frozenset()
+    results: list[SearchResult], k: int, k_sections: int, named_codes: set[str] = frozenset(),
+    lead: int | None = None,
 ) -> tuple[list[CaseResult], list[SectionResult]]:
     """Interleave the combined query's results (results[0]) with each issue query's, so every issue
     gets its best authorities in rather than only the issue with the most matching text. Issue
@@ -407,7 +442,7 @@ def merge_issue_results(
     by top cases — since nearly every Act has some section mentioning "damages" or "termination"."""
     combined, issues = results[0], results[1:]
     case_lists = [combined.cases] + [_relevant_issue_cases(r) for r in issues]
-    head = combined.cases[:min(COMBINED_LEAD, k)]
+    head = combined.cases[:min(COMBINED_LEAD if lead is None else lead, k)]
     taken = {c.case_id for c in head}
     cases = head + [c for c in interleave(case_lists, lambda c: c.case_id, k + len(head)) if c.case_id not in taken]
     return cases[:k], _merge_sections(results, k_sections, named_codes)
@@ -415,11 +450,12 @@ def merge_issue_results(
 
 def group_issue_results(
     results: list[SearchResult],
-    issues: list[str],
+    issues: list[str | None],
     k: int,
     per_issue: int,
     k_sections: int,
     named_codes: set[str] = frozenset(),
+    lead: int | None = None,
 ) -> tuple[list[IssueGroup], list[CaseResult], list[SectionResult]]:
     """Best matches overall, then each issue's own best cases. Interleaving everything into k
     slots alone left each of eight issues about one case, so an issue's second-best authority
@@ -428,12 +464,24 @@ def group_issue_results(
     pass the reranker gate; a case may appear in several groups. The flat list is every case
     once, in that order, so its first k are unchanged from merge_issue_results. (Leading with the
     combined query's top k instead lowered test-split nDCG@10 from 0.400 to 0.340.)"""
-    head, sections = merge_issue_results(results, k, k_sections, named_codes)
-    groups = [IssueGroup(None, head)] + [
-        IssueGroup(issue, _relevant_issue_cases(r)[:per_issue]) for issue, r in zip(issues, results[1:])
+    head, head_sections = merge_issue_results(results, k, k_sections, named_codes, lead)
+    issue_sections = _issue_section_lists(results, named_codes)[1:]
+    groups = [IssueGroup(None, head, head_sections)] + [
+        IssueGroup(issue, _relevant_issue_cases(r)[:per_issue], found[:ISSUE_SECTIONS])
+        for issue, r, found in zip(issues, results[1:], issue_sections)
     ]
     taken = {c.case_id for c in head}
     rest = interleave([g.cases for g in groups[1:]], lambda c: c.case_id, len(head) + per_issue * len(issues))
+    # Sections likewise: the merged top k_sections, then each issue's own best not already there
+    # (eight issues shared those k_sections slots, the same cap cases had).
+    section_key = lambda x: (x.code, x.section_no)  # noqa: E731
+    shown = {section_key(x) for x in head_sections}
+    extra = interleave([g.sections for g in groups[1:]], section_key, ISSUE_SECTIONS * len(issues) + len(shown))
+    sections = head_sections + [x for x in extra if section_key(x) not in shown]
+    # A group may hold another chunk of a section the flat list already has; point it at that one.
+    by_key = {section_key(x): x for x in sections}
+    for g in groups:
+        g.sections = [by_key[section_key(x)] for x in g.sections]
     return groups, head + [c for c in rest if c.case_id not in taken], sections
 
 
@@ -441,21 +489,31 @@ def _relevant_issue_cases(result: SearchResult) -> list[CaseResult]:
     return [c for c in result.cases if c.rerank_score is not None and c.rerank_score > MIN_ISSUE_CASE_RERANK]
 
 
-def _merge_sections(results: list[SearchResult], k_sections: int, named_codes: set[str]) -> list[SectionResult]:
+def _issue_section_lists(results: list[SearchResult], named_codes: set[str]) -> list[list[SectionResult]]:
+    """The combined query's sections, then each issue's: only from a law the scenario already
+    supports and above the reranker floor."""
+    if DROP_UNCITED_SECTIONS:
+        results = [
+            replace(r, sections=[s for s in r.sections if s.cited_by_count or s.code in named_codes])
+            for r in results
+        ]
     combined, issues = results[0], results[1:]
     supported_laws = (
         set(named_codes)
         | {s.code for s in combined.sections}
         | {s.code for r in results for s in r.sections if s.citing_cases}
     )
-    section_lists = [combined.sections] + [
+    return [combined.sections] + [
         [
             s for s in r.sections
             if s.code in supported_laws and s.rerank_score is not None and s.rerank_score > MIN_ISSUE_SECTION_RERANK
         ]
         for r in issues
     ]
-    return interleave(section_lists, lambda s: (s.code, s.section_no), k_sections)
+
+
+def _merge_sections(results: list[SearchResult], k_sections: int, named_codes: set[str]) -> list[SectionResult]:
+    return interleave(_issue_section_lists(results, named_codes), lambda s: (s.code, s.section_no), k_sections)
 
 
 def interleave(lists: list[list[T]], key: Callable[[T], Hashable], k: int) -> list[T]:

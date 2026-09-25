@@ -1,55 +1,55 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "5363405cc5d324ca5f9b2ae41b278d154380aaec",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Administrative law",
-   "Judicial review",
-   "Licensing/regulatory law"
+   "administrative law",
+   "procedural fairness",
+   "judicial review"
   ],
   "issues": [
-   "What does the common law duty of procedural fairness require of a federal decision-maker cancelling a licence",
-   "Whether failure to provide notice of the allegations and an opportunity to respond breaches the duty of fairness",
-   "Whether failure to give reasons for cancelling a licence breaches the duty of fairness",
-   "What factors determine the content of the duty of fairness owed in a given administrative context (Baker factors)",
-   "What remedy is available on judicial review where a decision was made in breach of procedural fairness",
-   "Whether the enabling statute or regulations impose specific procedural requirements for licence cancellation"
+   "What level of procedural fairness is required when a federal decision-maker cancels or revokes a licence?",
+   "Whether the decision-maker was required to provide the licensee an opportunity to respond to the allegations before making the decision",
+   "Whether the decision-maker was required to provide reasons for the decision to cancel the licence",
+   "The standard of review applicable to a determination of whether procedural fairness was observed",
+   "Whether the absence of a hearing and reasons can be cured after the fact or renders the decision a nullity",
+   "The appropriate remedy on judicial review where procedural fairness has been breached (setting aside, remand, or other relief)"
   ],
   "key_facts": [
-   "A federal decision-maker cancelled the client's licence",
-   "The client was not given an opportunity to respond to the allegations against him before cancellation",
-   "No reasons were given for the decision"
+   "federal decision-maker",
+   "licence cancelled",
+   "no opportunity to respond to allegations",
+   "no reasons provided"
   ],
   "causes_of_action": [
-   "Application for judicial review on grounds of breach of procedural fairness (denial of right to be heard and failure to give reasons)"
+   "judicial review of a federal administrative decision for breach of procedural fairness"
   ],
   "candidate_statutes": [
-   "Federal Courts Act",
-   "Statutory Powers Procedure Act (if applicable, though likely not federal)",
-   "Enabling federal statute/regulations governing the specific licence (unspecified)"
+   "Federal Court Act",
+   "Interpretation Act"
   ],
   "search_terms": [
-   "duty of procedural fairness",
-   "Baker v Canada factors",
-   "right to be heard audi alteram partem",
-   "duty to give reasons administrative decision",
-   "licence cancellation procedural fairness",
-   "content of duty of fairness",
-   "judicial review remedy breach of fairness",
-   "notice and opportunity to respond administrative decision"
+   "procedural fairness",
+   "duty of fairness",
+   "right to be heard",
+   "duty to give reasons",
+   "licence revocation",
+   "audi alteram partem",
+   "natural justice",
+   "Vavilov",
+   "standard of review reasonableness",
+   "judicial review administrative decision",
+   "procedural fairness spectrum",
+   "remedy setting aside remand"
   ],
-  "needs_clarification": [
-   "What specific federal statute or regulatory scheme governs this licence, so the applicable procedural requirements can be identified?"
-  ],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "needs_clarification": [],
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 2145,
-   "output_tokens": 760,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0120154,
-   "duration_ms": 8063
+   "input_tokens": 606,
+   "output_tokens": 1001,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

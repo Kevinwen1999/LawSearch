@@ -693,10 +693,11 @@ scenarios:
       - citation: "O Reg 288/01"
         name: Termination and Severance of Employment, s 2(1) para 3 (wilful misconduct)
         kind: regulation
+        code: O. Reg. 288/01
+        section: "2"
         relevance: supporting
         issues: [I1]
-        in_corpus: false
-        note: Ontario regulations aren't ingested; should be flagged as relevant-but-not-covered
+        note: loaded from e-Laws since 2026-09-25 (scripts/ingest_ontario_regulations.py)
     citations_resolved: true
     verified: false
     split: tune
@@ -928,10 +929,11 @@ scenarios:
       - citation: "O Reg 288/01"
         name: Termination and Severance of Employment, s 2(1) para 3 (wilful misconduct)
         kind: regulation
+        code: O. Reg. 288/01
+        section: "2"
         relevance: supporting
         issues: [I1]
-        in_corpus: false
-        note: Ontario regulations aren't ingested; should be flagged as relevant-but-not-covered
+        note: loaded from e-Laws since 2026-09-25 (scripts/ingest_ontario_regulations.py)
     citations_resolved: true
     verified: false
     split: tune

@@ -1,63 +1,65 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "6d3010fcd92e1a052168d126faad62160c595717",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Federal labour relations",
-   "Unjust/unfair dismissal or discipline of dependent contractor/employee",
-   "Anti-union discrimination / unfair labour practice"
+   "labour relations",
+   "unfair labour practices"
   ],
   "issues": [
-   "Whether the reverse onus/statutory presumption under s. 98(4) of the Canada Labour Code applies, shifting the burden to the employer to prove the decision to stop dispatching the driver was in no way related to his union/representative activity",
-   "What the employer must establish to discharge that burden - i.e., that the decision was based on a legitimate, non-discriminatory business reason wholly unconnected to anti-union animus, on a balance of probabilities",
-   "Whether the timing of the decision (during the pendency of the certification application, shortly after objections were withdrawn) supports an inference of anti-union animus",
-   "Whether the employer's failure to call the dispatcher or any witness with first-hand knowledge, and reliance on unnamed informants, old warning letters and hearsay, is sufficient to meet its burden or instead undermines its case",
-   "Whether the worker is properly characterized as a dependent contractor/employee for the purposes of Canada Labour Code protections, given he is an 'owner-operator'",
-   "Whether the employer's stated reason (working elsewhere while on medical leave, missed Mondays) constitutes a credible, sufficient, non-pretextual justification",
-   "What weight/adverse inference should be drawn from a party's failure to call an available witness with material first-hand knowledge (dispatcher)",
-   "Whether the employer's assertion of ignorance of the union/certification is credible or rebuttable given the known certification proceedings and counsel's involvement"
+   "Whether ceasing to dispatch an owner-operator constitutes a dismissal or adverse action under Part II of the Canada Labour Code",
+   "Whether an employer's adverse action is an unfair labour practice where the employee's union activity was a factor in the decision, even if other reasons are also cited",
+   "The allocation of the burden of proof in an unfair labour practice proceeding and the prima facie case the complainant must establish",
+   "What an employer must demonstrate to establish a legitimate, non-discriminatory reason for an adverse action taken while a certification application is pending",
+   "The evidentiary significance of the temporal proximity between the employer's withdrawal of certification objections and the adverse action against the employee",
+   "The weight to be given to an employer's evidence that relies on unnamed informants, hearsay, and old disciplinary records where the employer fails to call witnesses with first-hand knowledge of the events relied upon",
+   "Whether an employer's stated reasons for an adverse action are credible where the employee provided a medical note and regularly contacted the dispatcher, and the employer's owner testified to having no knowledge of the employee's union involvement"
   ],
   "key_facts": [
-   "Client is an owner-operator hauling marine containers for a federally regulated trucking company",
-   "He was elected drivers' representative during a port dispute and remained active in the union seeking to certify the employer's drivers",
-   "Certification application filed roughly a year before the cut-off; employer opposed via counsel; objections dropped shortly before client was cut off",
-   "Client was off work with a non-work-related sprained ankle, provided a medical note, and called dispatch regularly once able to wear a safety boot, being told work was slow",
-   "He was then told he would no longer be dispatched because someone allegedly saw him working elsewhere",
-   "At the hearing, only the employer's owner testified, claiming no knowledge of the union or the client's involvement",
-   "Employer relied on unnamed informants, old warning letters, and a list of missed Mondays",
-   "Employer did not call the dispatcher or anyone with first-hand knowledge of the events",
-   "All complained-of conduct occurred while the certification application was pending"
+   "owner-operator hauling marine containers for a federally regulated trucking company",
+   "employee was the elected drivers' representative during an industry-wide port dispute",
+   "employee was active in the union that applied for certification of the employer's drivers",
+   "certification application was pending at the time of the adverse action",
+   "employer hired counsel to oppose certification and dropped objections shortly before the adverse action",
+   "employee was off work with a non-work-related sprained ankle and provided a medical note",
+   "employee called the dispatcher several times a week and was told work was slow",
+   "employee was told he would no longer be dispatched because someone had seen him working elsewhere",
+   "employer's owner was the sole witness at the hearing",
+   "employer relied on unnamed informants, old warning letters, and a list of missed Mondays",
+   "employer did not call the dispatcher or any person with first-hand knowledge"
   ],
   "causes_of_action": [
-   "Unfair labour practice complaint under s. 94(3) Canada Labour Code (interference with/discrimination against employee for union activity)",
-   "Reverse-onus statutory presumption under s. 98(4) CLC that anti-union animus was a reason for the decision once complainant shows union activity and adverse treatment during pendency of certification",
-   "Possible unjust dismissal complaint under s. 240 CLC if worker found to be a dependent contractor/employee, not a true independent contractor"
+   "unfair labour practice under s. 94(1)(b) of the Canada Labour Code (discrimination against an employee because of union membership or activity)"
   ],
   "candidate_statutes": [
-   "Canada Labour Code, Part I (Industrial Relations) - ss. 94-98 (unfair labour practices), s. 97 (reverse onus complaint), s. 98(4) presumption",
-   "Canada Labour Code, Part III - s. 240 (unjust dismissal, if worker qualifies as employee/dependent contractor)",
-   "Canada Industrial Relations Board Regulations"
+   "Canada Labour Code, R.S.C. 1985, c. L-2, Part II, s. 94",
+   "Canada Labour Code, R.S.C. 1985, c. L-2, Part II, s. 95"
   ],
   "search_terms": [
-   "Canada Labour Code section 98(4) reverse onus",
-   "unfair labour practice anti-union animus",
-   "burden of proof employer discriminatory discipline union activity",
-   "dependent contractor owner-operator certification",
-   "adverse inference failure to call witness",
-   "timing of dismissal during certification proceedings",
-   "hearsay reliance unnamed informants labour board",
-   "CIRB unjust dismissal union activity nexus"
+   "unfair labour practice",
+   "union activity as a factor",
+   "burden of proof",
+   "legitimate non-discriminatory reason",
+   "owner-operator",
+   "ceasing to dispatch",
+   "adverse action",
+   "certification pending",
+   "temporal proximity",
+   "hearsay evidence",
+   "failure to call witnesses",
+   "credibility of employer's reasons",
+   "s. 94(1)(b) Canada Labour Code",
+   "motivating factor test",
+   "prima facie case unfair labour practice"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 11323,
-   "output_tokens": 1504,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0257698,
-   "duration_ms": 13774
+   "input_tokens": 853,
+   "output_tokens": 1921,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

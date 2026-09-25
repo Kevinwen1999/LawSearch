@@ -1,55 +1,57 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "b822a6f55aa1091e071fe1f05c5d63bbcb3dd210",
  "fingerprint": {
   "jurisdiction": "unknown",
   "areas_of_law": [
    "employment law",
-   "wrongful dismissal",
-   "contract interpretation"
+   "contract law"
   ],
   "issues": [
-   "whether an employee terminated without cause is entitled to damages representing bonus/LTIP payments that would have vested during the reasonable notice period",
-   "whether an 'actively employed' eligibility clause in an incentive plan is sufficiently clear and unambiguous to rebut the presumptive entitlement to damages for lost incentive compensation during the notice period",
-   "whether such a clause was brought to the employee's attention so as to be enforceable",
-   "how reasonable notice period is calculated for the purposes of assessing damages that would include the incentive plan payout",
-   "whether the incentive plan is a 'wage' or otherwise governed by employment standards legislation restricting termination-related exclusions"
+   "Whether incentive plan or bonus payments that would have vested during the notice period are recoverable as part of damages for wrongful dismissal",
+   "Whether an 'actively employed' condition in an incentive plan constitutes a valid forfeiture clause that precludes recovery of the payment as part of common law damages",
+   "Whether a court will read down or deem satisfied an 'actively employed' condition for the purpose of calculating the damages period",
+   "The distinction between a contractual entitlement to a bonus and a claim for the bonus as part of the damages package for wrongful dismissal",
+   "Mitigation of damages: whether the employee's duty to mitigate includes seeking new employment with a comparable incentive plan"
   ],
   "key_facts": [
-   "client was terminated without cause",
-   "client participated in a long-term incentive plan (LTIP)",
-   "the LTIP would have paid out during what should have been the reasonable notice period",
-   "the plan contains an 'actively employed' eligibility requirement to qualify for payout"
+   "termination without cause",
+   "long-term incentive plan with a payout date falling within the notice period",
+   "plan requires 'actively employed' status to qualify",
+   "employee seeks the LTIP payout as part of his damages"
   ],
   "causes_of_action": [
-   "wrongful dismissal",
-   "breach of contract (failure to pay damages in lieu of reasonable notice, including lost incentive compensation)"
+   "wrongful dismissal (common law)",
+   "breach of contract (implied duty to provide reasonable notice)"
   ],
   "candidate_statutes": [
-   "Employment Standards Act, 2000 (Ontario)",
-   "Canada Labour Code"
+   "Employment Standards Act (provincial — sets the statutory floor for notice; the common law claim is the operative one here)"
   ],
   "search_terms": [
-   "actively employed clause bonus notice period",
-   "Matthews v Ocean Nutrition",
-   "reasonable notice damages incentive plan",
-   "unambiguous exclusion clause bonus entitlement",
-   "wrongful dismissal LTIP payout",
-   "bonus during reasonable notice period",
-   "termination clause bringing to attention",
-   "damages in lieu of notice bonus entitlement"
+   "actively employed condition",
+   "forfeiture clause",
+   "bonus during notice period",
+   "long-term incentive plan",
+   "wrongful dismissal damages",
+   "bonus recoverable as part of damages",
+   "condition precedent",
+   "read down",
+   "incentive plan forfeiture",
+   "common law notice period",
+   "pay in lieu of notice",
+   "mitigation of damages",
+   "compensation package",
+   "implied term reasonable notice"
   ],
   "needs_clarification": [
-   "What province or jurisdiction governs the employment relationship (e.g., where the employee worked/was employed), and is the employer federally regulated?"
+   "Which province or territory governs the employment relationship? (The common law of wrongful dismissal and any applicable employment standards legislation are provincial.)"
   ],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 2157,
-   "output_tokens": 809,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.012572400000000001,
-   "duration_ms": 8301
+   "input_tokens": 620,
+   "output_tokens": 2034,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

@@ -1,54 +1,53 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "09196ee0fbac50ded1552299c6724e6132643c58",
  "fingerprint": {
-  "jurisdiction": "ontario",
+  "jurisdiction": "federal",
   "areas_of_law": [
-   "Criminal law",
-   "Constitutional law - Charter rights"
+   "criminal law",
+   "Charter rights"
   ],
   "issues": [
-   "Whether the delay between charge and trial in provincial court exceeds the presumptive ceiling for unreasonable delay under s. 11(b) of the Charter",
-   "Whether Crown-caused scheduling delay counts against the Crown or is subtracted as defence delay/exceptional circumstances",
-   "Whether a stay of proceedings is the appropriate remedy for a breach of the right to trial within a reasonable time",
-   "How defence-caused delay and discrete exceptional circumstances should be deducted from total delay in the Jordan framework",
-   "Whether the case qualifies as a 'transitional case' with different considerations if charges predate the Jordan decision"
+   "whether the total delay from charge to trial violates the right to be tried within a reasonable time under s. 11(b) of the Charter",
+   "the framework for assessing whether criminal trial delay is unreasonable (Jordan v Canada and pre-Jordan factors)",
+   "the significance of delay attributable to the Crown, including scheduling and case-management delays",
+   "whether the delay is excusable or attributable to the accused",
+   "the remedy of a stay of proceedings for unreasonable delay in a criminal prosecution",
+   "the distinction between pre-charge and post-charge delay in the reasonableness analysis"
   ],
   "key_facts": [
-   "Charge laid approximately three years ago",
-   "Matter is in provincial court",
-   "Trial has not yet concluded",
-   "Much of the delay is attributed to Crown scheduling issues"
+   "approximately three years elapsed from charge to trial",
+   "trial still ongoing in provincial court",
+   "much of the delay caused by Crown scheduling"
   ],
   "causes_of_action": [
-   "Charter s. 11(b) application for unreasonable delay",
-   "Application for stay of proceedings"
+   "unreasonable delay in criminal proceedings",
+   "violation of the right to a trial within a reasonable time"
   ],
   "candidate_statutes": [
    "Canadian Charter of Rights and Freedoms, s. 11(b)",
-   "Criminal Code of Canada"
+   "Criminal Code, s. 768 (stay of proceedings)"
   ],
   "search_terms": [
-   "s. 11(b) Charter unreasonable delay",
-   "Jordan framework presumptive ceiling",
-   "R v Jordan 18 months provincial court",
-   "stay of proceedings unreasonable trial delay",
-   "Crown delay vs defence delay",
-   "exceptional circumstances Jordan discrete events",
-   "R v Cody delay framework",
-   "transitional exceptional circumstance Morin"
+   "trial within a reasonable time",
+   "s. 11(b) Charter",
+   "Jordan framework",
+   "stay of proceedings",
+   "Crown delay",
+   "scheduling delay",
+   "unreasonable delay criminal",
+   "post-charge delay",
+   "pre-charge delay",
+   "excusable delay",
+   "provincial court delay"
   ],
-  "needs_clarification": [
-   "Which province is the charge proceeding in, since the applicable case law on delay applications may differ outside Ontario?"
-  ],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "needs_clarification": [],
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 2156,
-   "output_tokens": 761,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.012049399999999998,
-   "duration_ms": 6756
+   "input_tokens": 613,
+   "output_tokens": 877,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

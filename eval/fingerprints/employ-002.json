@@ -1,52 +1,50 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "4bdbac9100d089093d19b45ee16fcd86798be508",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Federal labour law",
-   "Unjust dismissal (Canada Labour Code)",
-   "Employment law"
+   "employment law",
+   "unjust dismissal"
   ],
   "issues": [
-   "Whether payment of severance alone satisfies a federally regulated employer's obligations under the unjust dismissal provisions of the Canada Labour Code",
-   "Whether an employer must demonstrate just cause for dismissal to defeat an unjust dismissal complaint under section 240 of the Canada Labour Code",
-   "What remedies are available to an adjudicator under the Canada Labour Code where a dismissal is found to be unjust despite payment of severance",
-   "Whether severance pay paid on termination without cause precludes or affects eligibility to file an unjust dismissal complaint",
-   "What factors distinguish a lawful non-cause dismissal with adequate compensation from an unjust dismissal under federal law"
+   "whether payment of a severance package can satisfy the 'just cause' requirement for dismissal under the Canada Labour Code unjust dismissal provisions",
+   "the standard for 'just cause' in an unjust dismissal complaint under the Canada Labour Code",
+   "whether a severance package constitutes a valid defence to an unjust dismissal complaint",
+   "available remedies for unjust dismissal (reinstatement versus damages) and the effect of a severance payment already made on the remedy",
+   "the limitation period for filing an unjust dismissal complaint under the Canada Labour Code"
   ],
   "key_facts": [
-   "Employee worked for a federally regulated telecom",
-   "Employee was dismissed without cause",
-   "Employer provided a severance package upon dismissal",
-   "Employee filed an unjust dismissal complaint"
+   "employee of a federally regulated telecommunications carrier",
+   "dismissed without cause",
+   "severance package provided",
+   "unjust dismissal complaint filed"
   ],
   "causes_of_action": [
-   "Unjust dismissal complaint under section 240 of the Canada Labour Code"
+   "unjust dismissal"
   ],
   "candidate_statutes": [
-   "Canada Labour Code, Part III (ss. 240-246)",
-   "Canada Labour Standards Regulations"
+   "Canada Labour Code, R.S.C. 1985, c. L-2, Part II, Division III (ss. 240–246)"
   ],
   "search_terms": [
-   "unjust dismissal Canada Labour Code",
-   "section 240 Canada Labour Code",
-   "just cause requirement federal unjust dismissal",
-   "severance pay without cause federal jurisdiction",
-   "adjudicator reinstatement unjust dismissal",
-   "non-culpable dismissal federal employer",
-   "business reasons dismissal unjust dismissal complaint",
-   "Wilson v Atomic Energy of Canada"
+   "unjust dismissal",
+   "just cause",
+   "severance package",
+   "reinstatement",
+   "damages in lieu of reinstatement",
+   "reasonable in the circumstances",
+   "Canada Labour Code s. 240",
+   "Canada Labour Code s. 246",
+   "severance as defence",
+   "federally regulated employer"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 2164,
-   "output_tokens": 763,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.0121424,
-   "duration_ms": 7778
+   "input_tokens": 614,
+   "output_tokens": 1075,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

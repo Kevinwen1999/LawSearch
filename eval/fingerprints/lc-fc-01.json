@@ -1,64 +1,67 @@
 {
- "prompt_version": "fingerprint-v3",
+ "prompt_version": "fingerprint-v4",
  "scenario_sha1": "209ef56cbe7def69fc6cde82a96b493dce283634",
  "fingerprint": {
   "jurisdiction": "federal",
   "areas_of_law": [
-   "Administrative law",
-   "Passport law / federal regulatory revocation",
-   "Procedural fairness",
-   "Judicial review"
+   "administrative law",
+   "procedural fairness",
+   "passport law"
   ],
   "issues": [
-   "Whether the passport program's duty of procedural fairness required disclosure of the full investigative record (facial recognition comparison results, police and investigator emails, internal investigation report, references to uncharged/other criminal allegations) before revoking the passport",
-   "Whether providing only a 'summary' of findings, rather than the underlying material relied upon, satisfies the duty to disclose the case to meet",
-   "Whether reliance on undisclosed facial recognition comparison evidence to find identity misrepresentation breaches procedural fairness",
-   "Whether referencing other criminal charges never put to the affected person in the fairness letters violates the right to know and respond to the case against him",
-   "What remedy follows a breach of procedural fairness in this context — whether the revocation decision and the refusal-of-services period must be quashed or remitted for redetermination",
-   "Whether the decision-maker's conclusion that the response 'did not neutralize the findings' was reasonable given the undisclosed material",
-   "What level/content of procedural fairness applies to passport revocation and denial-of-service decisions",
-   "Whether the Canadian Passport Order and related policy create a right to disclosure of the investigative file prior to decision"
+   "Whether the passport program had a duty to disclose all material adverse evidence — including facial recognition comparison results, police and provincial investigator emails, an incomplete internal investigation report, and references to criminal charges — to the applicant before making a revocation decision",
+   "Whether a passport revocation and multi-year refusal of services can stand where material adverse evidence was not disclosed to the applicant before the decision was made",
+   "The standard of review applicable to a passport director's decision to revoke a passport and refuse passport services",
+   "Whether the decision was procedurally fair, including the duty to give reasons, the duty to allow a meaningful opportunity to respond, and the duty to disclose material adverse evidence",
+   "Whether the decision was substantively reasonable — whether the evidence, including facial recognition results and criminal charges, supported the finding of false or misleading information",
+   "The legal basis and scope of the director's power to revoke a passport and refuse passport services under the Passport Act",
+   "Whether the multi-year refusal of passport services is a proportionate response to the alleged conduct"
   ],
   "key_facts": [
-   "Client held and had renewed a Canadian passport under a name used for years without prior issue",
-   "A provincial ID office flagged him, triggering a federal passport investigation",
-   "Passport Program sent fairness letters alleging false/misleading information and use of an assumed identity, and noting an indictable charge for breach of release condition",
-   "Client responded with a court order for delayed birth registration, resulting birth registration, and a sworn declaration in his current name",
-   "A second letter stated the response did not neutralize the findings",
-   "Director revoked the passport and imposed approximately a five-year refusal of passport services",
-   "On judicial review, the certified/produced record revealed material never disclosed to him: facial recognition comparison results (matching current-name photos but not earlier-name passports), police/provincial investigator emails, an incomplete internal investigation report, and references to other criminal charges never raised in the fairness letters"
+   "Client held a Canadian passport in the name he has used for years and renewed it without difficulty",
+   "Federal passport authority opened an investigation after a provincial ID office flagged him",
+   "Letters stated the authority believed he obtained the passport by giving false or misleading information under an assumed identity",
+   "Client also stood charged with an indictable offence for breaching a release condition",
+   "Letters set out a summary of findings and invited him to respond",
+   "He replied with a superior court order permitting delayed birth registration, the resulting birth registration, and a sworn declaration, all in the name he uses",
+   "A second letter told him his material did not neutralize the findings",
+   "The director revoked the passport and cut him off from passport services for about five years",
+   "The full record produced for the court challenge contained facial recognition comparison results that matched his photo to passports in his current name but not to earlier passports in the other name",
+   "The record also contained police and provincial investigator emails, an incomplete internal investigation report, and references to several other criminal charges that were never put to him in either letter"
   ],
   "causes_of_action": [
-   "Application for judicial review of administrative decision (passport revocation and refusal of services) on grounds of breach of procedural fairness",
-   "Alternatively, unreasonableness of the decision under Vavilov standard"
+   "Judicial review of passport revocation and refusal of services"
   ],
   "candidate_statutes": [
-   "Canadian Passport Order (SI/81-86)",
-   "Department of Foreign Affairs, Trade and Development Act",
-   "Federal Courts Act (judicial review provisions)",
-   "Canadian Charter of Rights and Freedoms (mobility rights, s.6; s.7 possibly engaged)"
+   "Passport Act (RSC 1985, c P-5)"
   ],
   "search_terms": [
-   "passport revocation procedural fairness",
-   "duty to disclose investigative file passport",
-   "fairness letter summary of findings sufficiency",
-   "Canadian Passport Order revocation refusal of services",
-   "facial recognition evidence undisclosed administrative decision",
-   "right to know the case to meet",
-   "Vavilov reasonableness passport decision",
-   "identity fraud passport revocation judicial review",
-   "disclosure of extrinsic evidence administrative tribunal",
-   "passport entitlement refusal of services five years"
+   "procedural fairness",
+   "duty to disclose",
+   "material adverse evidence",
+   "natural justice",
+   "passport revocation",
+   "Passport Act",
+   "standard of review",
+   "reasonableness",
+   "duty to give reasons",
+   "opportunity to respond",
+   "facial recognition",
+   "false or misleading information",
+   "proportionality",
+   "administrative law",
+   "duty to put to",
+   "Vavilov",
+   "Baker v Canada",
+   "Suresh v Canada"
   ],
   "needs_clarification": [],
-  "model": "claude-sonnet-5",
-  "backend": "claude-cli",
+  "model": "qwen/qwen3.8-27b",
+  "backend": "lmstudio",
   "usage": {
-   "input_tokens": 2497,
-   "output_tokens": 1266,
-   "served_by": "claude-sonnet-5",
-   "equivalent_cost_usd": 0.018728400000000003,
-   "duration_ms": 12680
+   "input_tokens": 856,
+   "output_tokens": 4586,
+   "served_by": "qwen/qwen3.8-27b"
   }
  }
 }

@@ -163,3 +163,22 @@ def test_laws_from_rows_year_alias_does_not_override_a_distinct_title():
 
 def test_named_codes_finds_laws_without_section_references(index):
     assert index.named_codes("Criminal Code; Income Tax Act (federal); Ontario Human Rights Code") == {"C-46", "I-3.3"}
+
+
+def test_rules_of_civil_procedure_are_cited_by_rule():
+    index = StatuteIndex({"Rules of Civil Procedure": ("R.R.O. 1990, Reg. 194", "regulation")})
+
+    refs = index.extract("summary judgment under rule 20.04(2)(a) of the Rules of Civil Procedure; see also r. 21.01")
+
+    assert [(r.code, r.section_no, r.pinpoint) for r in refs] == [("R.R.O. 1990, Reg. 194", "20.04", "(2)(a)")]
+    assert index.extract("In R. v. Smith, 2004 SCC 5, the Court held") == []
+
+
+def test_paragraph_after_a_section_is_part_of_it_not_another_section():
+    index = StatuteIndex({"O. Reg. 288/01": ("O. Reg. 288/01", "regulation"), "Income Tax Act": ("I-3.3", "act")})
+
+    assert [(r.code, r.section_no) for r in index.extract("under O. Reg. 288/01, s. 2(1), para. 3, an employee")] == [
+        ("O. Reg. 288/01", "2")]
+    assert [(r.section_no, r.pinpoint) for r in index.extract("paragraph 18(1)(a) of the Income Tax Act")] == [
+        ("18", "(1)(a)")]
+    assert [r.section_no for r in index.extract("ss. 5 and 7 of the Income Tax Act")] == ["5", "7"]

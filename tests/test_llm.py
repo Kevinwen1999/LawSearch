@@ -150,6 +150,16 @@ def test_lmstudio_backend_sends_json_schema_and_parses_content(monkeypatch):
         {"role": "system", "content": "sys"},
         {"role": "user", "content": "[1] text\n\nbrief it"},
     ]
+    assert captured["json"]["reasoning_effort"] == "high"
+
+
+def test_lmstudio_backend_maps_efforts_it_does_not_have(monkeypatch):
+    captured: dict = {}
+    monkeypatch.setattr(httpx, "post", lambda url, *, json, timeout: captured.update(json) or lmstudio_response())
+
+    LmStudioBackend().extract(system="s", instruction="i", document="d", schema=SCHEMA, model="m", effort="max")
+
+    assert captured["reasoning_effort"] == "high"
 
 
 def test_lmstudio_backend_raises_on_length_cutoff(monkeypatch):

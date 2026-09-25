@@ -177,14 +177,15 @@ class AnthropicApiBackend:
         }
 
 
+LMSTUDIO_EFFORT = {"low": "low", "medium": "medium", "high": "high", "xhigh": "high", "max": "high"}
+
+
 class LmStudioBackend:
     name = "lmstudio"
 
     def extract(
         self, *, system: str, instruction: str, document: str, schema: dict, model: str, effort: str
     ) -> StructuredResult:
-        # LM Studio has no notion of "effort"; local models take whatever compute they take.
-        del effort
         import httpx
 
         payload = {
@@ -199,6 +200,10 @@ class LmStudioBackend:
             },
             "temperature": 0,
             "max_tokens": settings.lmstudio_max_tokens,
+            # Without it Qwen reasons until the token budget runs out: on a short immigration
+            # scenario, 8,000 tokens (38k chars) of reasoning and no answer, vs ~1,500 tokens and
+            # 35 s at "low". LM Studio takes low/medium/high.
+            "reasoning_effort": LMSTUDIO_EFFORT[effort],
         }
         try:
             resp = httpx.post(
