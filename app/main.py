@@ -3,11 +3,15 @@ from datetime import date, datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi.responses import PlainTextResponse
 from psycopg.rows import dict_row
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
-from app import canlii, canlii_cited, canlii_detect, filac, fingerprint, intake, ontario_regs, retrieval
+from app import (
+    brief_format, canlii, canlii_cited, canlii_detect, case_lookup, filac, fingerprint, intake, ontario_regs,
+    retrieval,
+)
 from app.config import settings
 from app.db import get_pool
 from app.embeddings import embed
@@ -135,7 +139,8 @@ class SectionDetailOut(BaseModel):
 
 
 class FilacOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    """A case brief (the FILAC name is historical). `display` is the preliminary information as
+    shown: the database record for corpus cases, the case header for pasted or uploaded text."""
 
     case_id: UUID
     prompt_version: str
@@ -145,6 +150,12 @@ class FilacOut(BaseModel):
     verification: dict
     usage: dict
     created_at: datetime
+    case_meta: dict
+    display: dict
+
+
+def brief_out(record: filac.FilacRecord) -> FilacOut:
+    return FilacOut(**record.__dict__, display=brief_format.display(record))
 
 
 @app.get("/health")
@@ -261,25 +272,129 @@ def case_statutes(case_id: UUID) -> list[SectionOut]:
     return [SectionOut(**r) for r in rows]
 
 
-@app.get("/cases/{case_id}/filac", response_model=FilacOut)
-def get_filac(case_id: UUID) -> FilacOut:
+class LookupHitOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    case_id: UUID
+    citation: str | None
+    style_of_cause: str | None
+    court: str | None
+    decision_date: date | None
+    match: case_lookup.Match
+    has_brief: bool
+
+
+@app.get("/cases/lookup", response_model=list[LookupHitOut])
+def lookup_cases(
+    q: Annotated[str, Query(min_length=1, max_length=20000)],
+    limit: Annotated[int, Query(ge=1, le=30)] = 10,
+) -> list[LookupHitOut]:
+    """Find a corpus case by citation, name, or keywords (tried in that order), for the brief page."""
+    with get_pool().connection() as conn:
+        hits = case_lookup.lookup(conn, q, limit=limit)
+    return [LookupHitOut.model_validate(h) for h in hits]
+
+
+def _cached_brief(case_id: UUID) -> filac.FilacRecord:
     with get_pool().connection() as conn:
         record = filac.get_cached(conn, case_id)
     if record is None:
-        raise HTTPException(404, "No FILAC brief has been generated for this case yet")
-    return FilacOut.model_validate(record)
+        raise HTTPException(404, "No case brief has been generated for this case yet")
+    return record
+
+
+@app.get("/cases/{case_id}/filac", response_model=FilacOut)
+def get_filac(case_id: UUID) -> FilacOut:
+    return brief_out(_cached_brief(case_id))
+
+
+@app.get("/cases/{case_id}/filac/markdown", response_class=PlainTextResponse)
+def get_filac_markdown(case_id: UUID, anchors: bool = False, full_reading: bool = False) -> str:
+    """The brief as Markdown, in the layout of the case-brief model answer."""
+    return brief_format.to_markdown(_cached_brief(case_id), anchors=anchors, full_reading=full_reading)
 
 
 @app.post("/cases/{case_id}/filac", response_model=FilacOut)
 def create_filac(case_id: UUID, force: bool = False) -> FilacOut:
-    """Generate (or return the cached) FILAC brief. Can take minutes for long decisions."""
+    """Generate (or return the cached) case brief. Can take minutes for long decisions."""
+    return _generate_brief(case_id, force=force)
+
+
+def _generate_brief(case_id: UUID, *, force: bool) -> FilacOut:
     try:
         record = filac.generate(get_pool().connection, case_id, force=force)
     except LookupError:
         raise HTTPException(404, "Case not found") from None
     except LLMError as exc:
-        raise HTTPException(502, f"FILAC generation failed: {exc}") from exc
-    return FilacOut.model_validate(record)
+        raise HTTPException(502, f"Case brief generation failed: {exc}") from exc
+    return brief_out(record)
+
+
+@app.get("/cases/{case_id}/related", response_model=SearchResponse)
+def related_authorities(case_id: UUID, k: Annotated[int, Query(ge=1, le=50)] = 10) -> SearchResponse:
+    """Corpus authorities related to a briefed case, searched with the brief's own issues and
+    facts. Separate from generation so the brief page can show or hide them without regenerating."""
+    return _related(_cached_brief(case_id), k)
+
+
+def _related(record: filac.FilacRecord, k: int) -> SearchResponse:
+    query = filac.related_authority_query(record)
+    if not query:
+        return SearchResponse(query="", mode="hybrid", results=[], sections=[], timings_ms={})
+    with get_pool().connection() as conn:
+        result = retrieval.search(conn, query[:4000], k=k + 1)
+    # A corpus case is its own best match; leave it out.
+    cases = [c for c in result.cases if c.case_id != record.case_id][:k]
+    return SearchResponse(
+        query=query, mode="hybrid",
+        results=[CaseOut.model_validate(c) for c in cases],
+        sections=[SectionOut.model_validate(s) for s in result.sections],
+        timings_ms=result.timings_ms,
+    )
+
+
+class UserBriefResponse(BaseModel):
+    case_id: UUID
+    source: Literal["upload", "pasted"]
+    input_kind: filac.InputKind
+    upload_key: str | None
+    extracted_chars: int
+    brief: FilacOut
+
+
+async def _user_text(file: UploadFile | None, text: str | None) -> tuple[str, Literal["upload", "pasted"], str | None]:
+    """(text, source, upload key) from an uploaded file or pasted text; a file wins."""
+    if file is not None:
+        content = await file.read()
+        try:
+            extracted = intake.extract_text(file.filename or "", content)
+        except intake.ExtractionError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        return extracted, "upload", intake.store_upload(file.filename or "upload", content).key
+    if text and text.strip():
+        return text.strip(), "pasted", None
+    raise HTTPException(400, "provide either a file or text")
+
+
+@app.post("/briefs", response_model=UserBriefResponse)
+async def create_user_brief(
+    file: UploadFile | None = File(None),
+    text: Annotated[str | None, Form()] = None,
+    input_kind: Annotated[filac.InputKind | None, Form()] = None,
+    force: Annotated[bool, Form()] = False,
+) -> UserBriefResponse:
+    """Brief pasted text (a description of a case, of any length, or a full decision) or an
+    uploaded file (PDF/DOCX/TXT/MD). The input kind is detected unless given. The same text,
+    pasted or uploaded, maps to one stored case and one cached brief. The text is never chunked
+    or embedded, so it never enters the searchable corpus."""
+    content, source, upload_key = await _user_text(file, text)
+    with get_pool().connection() as conn:
+        user_case = filac.create_user_case(conn, full_text=content, source=source, input_kind=input_kind)
+    brief = _generate_brief(user_case.case_id, force=force or user_case.kind_changed)
+    return UserBriefResponse(
+        case_id=user_case.case_id, source=source, input_kind=user_case.input_kind,
+        upload_key=upload_key, extracted_chars=len(content), brief=brief,
+    )
 
 
 class FingerprintOut(BaseModel):
@@ -431,41 +546,21 @@ class UploadedDecisionResponse(BaseModel):
 async def create_uploaded_decision(
     file: UploadFile = File(...), k: Annotated[int, Form(ge=1, le=50)] = 10
 ) -> UploadedDecisionResponse:
-    """Phase 7's upload-driven FILAC bridge: for a decision outside the corpus (e.g. an ONSC
-    judgment; Phase 8's CanLII detection only links out to those) — upload it, get a full FILAC
-    brief and a related-authority search grounded in that brief's own issues and facts. The
-    document is chunked in-memory only for FILAC anchors; it's never embedded or added to
-    case_chunks, so it never affects anyone else's /search or /scenarios results.
+    """Phase 7's upload-driven brief: for a decision outside the corpus (e.g. an ONSC judgment;
+    Phase 8's CanLII detection only links out to those) — upload it, get a case brief and a
+    related-authority search grounded in that brief's own issues and facts. Same storage and
+    dedup as POST /briefs; the text never enters the searchable corpus.
     """
-    content = await file.read()
-    try:
-        text = intake.extract_text(file.filename or "", content)
-    except intake.ExtractionError as exc:
-        raise HTTPException(422, str(exc)) from exc
-    upload_key = intake.store_upload(file.filename or "upload", content).key
-
+    text, _, upload_key = await _user_text(file, None)
     with get_pool().connection() as conn:
-        case_id = filac.create_upload_case(conn, full_text=text)
-
-    try:
-        record = filac.generate_for_upload(get_pool().connection, case_id, text)
-    except LLMError as exc:
-        raise HTTPException(502, f"FILAC generation failed: {exc}") from exc
-
-    related = None
-    if query := filac.related_authority_query(record):
-        with get_pool().connection() as conn:
-            result = retrieval.search(conn, query, k=k)
-        related = SearchResponse(
-            query=query, mode="hybrid",
-            results=[CaseOut.model_validate(c) for c in result.cases],
-            sections=[SectionOut.model_validate(s) for s in result.sections],
-            timings_ms=result.timings_ms,
-        )
-
+        user_case = filac.create_user_case(conn, full_text=text, source="upload")
+    brief = _generate_brief(user_case.case_id, force=user_case.kind_changed)
+    with get_pool().connection() as conn:
+        record = filac.get_cached(conn, user_case.case_id)
+    related = _related(record, k) if filac.related_authority_query(record) else None
     return UploadedDecisionResponse(
-        case_id=case_id, upload_key=upload_key, extracted_chars=len(text),
-        filac=FilacOut.model_validate(record), related=related,
+        case_id=user_case.case_id, upload_key=upload_key, extracted_chars=len(text),
+        filac=brief, related=related,
     )
 
 

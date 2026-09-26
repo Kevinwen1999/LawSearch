@@ -1,0 +1,141 @@
+{
+  "kazemi": {
+    "model": "claude-opus-5",
+    "backend": "claude-cli",
+    "usage": {
+      "served_by": "claude-opus-5",
+      "duration_ms": 59053,
+      "input_tokens": 38408,
+      "output_tokens": 6530,
+      "equivalent_cost_usd": 0.2753115
+    },
+    "checks": [
+      {
+        "check": "preliminary: name and citation",
+        "passed": true,
+        "detail": "R v Kazemi, 2013 ONCA 585"
+      },
+      {
+        "check": "preliminary: date",
+        "passed": true,
+        "detail": "September 27, 2013"
+      },
+      {
+        "check": "preliminary: citation read from header",
+        "passed": true,
+        "detail": "2013 ONCA 585"
+      },
+      {
+        "check": "preliminary: parties",
+        "passed": true,
+        "detail": "Her Majesty the Queen \u2013 appellant; Khojasteh Kazemi \u2013 respondent"
+      },
+      {
+        "check": "issues: count",
+        "passed": true,
+        "detail": "1"
+      },
+      {
+        "check": "issues: main issue anchor",
+        "passed": true,
+        "detail": "[3]"
+      },
+      {
+        "check": "issues: begin with 'Whether'",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "issues: sub-issue mentions 'sustained'",
+        "passed": true,
+        "detail": "specifically, whether \"holding\" requires some sustained physical holding of the device, as the appeal judge held, or ext"
+      },
+      {
+        "check": "issues: no 'misapprehen' issue",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "issues: no 'costs' issue",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "undecided issues: listed",
+        "passed": true,
+        "detail": "[17]"
+      },
+      {
+        "check": "facts: required events",
+        "passed": true,
+        "detail": "events [1, 2, 3], missing []"
+      },
+      {
+        "check": "facts: no procedural history",
+        "passed": true,
+        "detail": "leaked []"
+      },
+      {
+        "check": "ratio: required paragraphs",
+        "passed": true,
+        "detail": "ratio [11, 12, 13, 14, 15], missing []"
+      },
+      {
+        "check": "ratio: starts with the rule",
+        "passed": true,
+        "detail": "(11, 'rule')"
+      },
+      {
+        "check": "ratio: no law/framework paragraphs",
+        "passed": true,
+        "detail": "wrong []"
+      },
+      {
+        "check": "decision: required paragraphs",
+        "passed": true,
+        "detail": "decision [16], missing []"
+      },
+      {
+        "check": "decision: no 'restored' (disposition)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "disposition: present",
+        "passed": true,
+        "detail": "[16, 18]"
+      },
+      {
+        "check": "law: Driedger",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: Legislation Act",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: Raham",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: Felderhof",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "verification: no problems",
+        "passed": true,
+        "detail": "0"
+      },
+      {
+        "check": "verification: no format warnings",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "brief_markdown": "# Case Brief of R v Kazemi\n\n## Preliminary Information\n- **Name and Citation of Case:** *R v Kazemi*, 2013 ONCA 585\n- **Date of Decision:** September 27, 2013\n- **Parties:**\n  - Her Majesty the Queen \u2013 appellant\n  - Khojasteh Kazemi \u2013 respondent\n\n## Legal Issue(s)\n- Whether the respondent was \"holding\" the cell phone for the purposes of s. 78.1(1) of the Highway Traffic Act. (\u00b63)\n  - Specifically, whether \"holding\" requires some sustained physical holding of the device, as the appeal judge held, or extends to momentary handling. (\u00b65)\n\n## Facts of the case\n- On April 26, 2010, the respondent was driving home from work alone and, while stopped at a stop light, a police officer observed her to have a cell phone in her hand; she said the phone had been on the seat, dropped to the floor of the car when she braked, and she picked it up when she got to the red light. (\u00b61)\n- The respondent was charged with driving while holding a hand-held wireless communication device pursuant to s. 78.1(1) of the Highway Traffic Act. (\u00b62)\n- The respondent does not contest that when she was observed by the officer she was driving, and that her cell phone was a hand-held wireless communication device. (\u00b63)\n\n## Ratio Decidendi\n- The ordinary meaning of \"holding\" a cell phone is having it in one's hand, and there is no suggestion that only if one has the cell phone in one's hand for a sustained period of time is one holding the cell phone. (\u00b611)\n- This interpretation of \"holding\" best ensures the attainment of the objective of the HTA, which is to protect those who use the roads of Ontario. (\u00b612)\n- This interpretation also best serves the legislature's purpose in enacting the provision in which \"holding\" appears, namely to make the roads safer by having drivers focus on one thing and one thing only: driving. (\u00b613)\n- Road safety is best ensured by a complete prohibition on having a cell phone in one's hand at all while driving; a complete prohibition also best focuses a driver's undivided attention on driving, eliminates any risk of the driver being distracted by the information on the cell phone, removes any temptation to use the cell phone while driving, and prevents any possibility of the cell phone physically interfering with the driver's ability to drive. (\u00b614)\n- An interpretation requiring sustained physical holding would exempt holding for a shorter period, with the accompanying risks to road safety and driver attention, does not accord with the ordinary meaning of the word, does not properly reflect the object of the HTA or best achieve the legislature's purpose, leaves the uncertainty of how long the physical holding must be sustained, and would create the enforcement challenge of requiring continued observation of the driver. (\u00b615)\n\n## Decision\n- The appeal judge erred in his interpretation of \"holding\" in s. 78.1(1) of the HTA, and on the correct interpretation the respondent's having the cell phone in her hand while driving amounted to holding it. (\u00b616)\n"
+  }
+}

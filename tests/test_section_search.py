@@ -1,8 +1,9 @@
 from datetime import date
 from uuid import uuid4
 
-from app.filac import SECTIONS, build_document, verify
+from app.filac import build_document, verify
 from app.section_search import RRF_K, SectionCandidates, SectionChunkRow, SectionConfig, rank_sections
+from tests.test_filac import empty_summary
 
 LEG_IRPA, LEG_ITA = uuid4(), uuid4()
 
@@ -58,9 +59,10 @@ def test_filac_verify_resolves_statutes_and_flags_later_wording():
     meta = {"case_id": uuid4(), "citation": "2010 FC 1", "style_of_cause": "A v B", "court": "FC",
             "decision_date": date(2010, 5, 1), "language": "en"}
     doc = build_document(meta, "[1] Facts.\n[2] Under IRPA s. 97(1)(b) the claim fails.\n[3] Dismissed.", [])
-    summary = {name: {"status": "not_stated_in_text", "items": []} for name in SECTIONS}
+    summary = empty_summary()
     summary["law"] = {"status": "stated", "items": [
-        {"authority": "IRPA, s. 97(1)(b)", "kind": "statute", "relied_on_by": "court", "anchor": 2},
+        {"authority": "IRPA, s. 97(1)(b)", "kind": "statute", "proposition": "risk to life",
+         "relied_on_by": "court", "treatment": "applied", "anchor": 2},
     ]}
 
     def resolve_statutes(authority):

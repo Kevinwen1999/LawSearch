@@ -1,6 +1,6 @@
 # LawSearch
 
-Scenario → relevant Canadian authorities (Ontario + federal) → FILAC summaries.
+Scenario → relevant Canadian authorities (Ontario + federal) → case briefs.
 See [implementation-plan.md](implementation-plan.md) for the design and
 [stack-and-setup.md](stack-and-setup.md) for stack decisions.
 
@@ -26,7 +26,7 @@ flowchart LR
 
     api --> emb & rr
     api -- "fingerprint<br/>(falls back to Claude)" --> local
-    api -- "FILAC briefs,<br/>fingerprint fallback" --> claude
+    api -- "case briefs,<br/>fingerprint fallback" --> claude
     api --> pg[("Postgres 17<br/>pgvector HNSW + pg_textsearch BM25")]
     api --> minio[("MinIO<br/>uploaded files")]
     api -- "citator + metadata<br/>(cited authorities: all scenarios;<br/>ONSC/tribunal detection: Ontario)" --> canlii["CanLII API<br/>metadata only, ≤2 req/s"]
@@ -61,13 +61,13 @@ flowchart TD
     merge --> results["Cases grouped by issue + relevant legislation"]
     results --> canliid["Ontario only: CanLII link-outs<br/>POST /canlii/candidates — ONSC and tribunal<br/>decisions citing the top cases (no text)"]
     results --> cited["Frequently cited by the top cases<br/>POST /canlii/cited — incl. authorities not in<br/>the corpus (e.g. Bardal); uncovered regulations"]
-    results --> brief["FILAC brief on demand<br/>POST /cases/{id}/filac → Claude<br/>every item anchored to a paragraph and verified"]
+    results --> brief["Case brief on demand<br/>POST /cases/{id}/filac → Claude<br/>every item anchored to a paragraph and verified"]
 ```
 
 Typed queries (`POST /search`) skip intake, fingerprinting and the per-issue merge: one
 `retrieval.search()` call over the whole corpus. A decision that isn't in the corpus (e.g. an
-Ontario Superior Court ruling) can be uploaded to `POST /uploads/decisions` for a FILAC brief
-plus related authorities; it is never added to the searchable corpus.
+Ontario Superior Court ruling), or only a description of one, can be briefed on the Case brief
+page (`POST /briefs`); it is never added to the searchable corpus.
 
 ### Data pipeline (offline)
 
@@ -274,13 +274,29 @@ scenarios are known-item style, so an equally relevant sibling decision counts a
 and there is no subsequent-treatment signal (A2AJ has no followed/overruled data), so a
 superseded authority like Dunsmuir can still outrank Vavilov.
 
-## FILAC briefs and UI (Phase 3)
+## Case briefs and UI
 
-Each case can get a FILAC brief (Facts, Issues, Law, Analysis, Conclusion) where every item
-cites the paragraph it comes from, or a passage number for decisions without paragraph
-numbers. Briefs are checked against the decision text (anchors exist, cited authorities
-actually appear; case citations are resolved against the corpus) and cached per case,
-prompt version and model, so each case is generated once.
+Each case can get a case brief in the standard format (*Reading Cases*, ch. 4): **Preliminary
+Information** (name and citation, date, parties and their status), **Legal Issue(s)** ("Whether
+…" questions with sub-issues), **Facts of the case** (no procedural history), **Ratio
+Decidendi** and **Decision**. A **Full case reading** adds purpose, law (each authority with the
+proposition it stands for), disposition with costs, obiter and dissents. The layout follows the
+model answer in `case_brief_example_ans.txt`; see [case-brief-plan.md](case-brief-plan.md).
+
+Every item cites the paragraph it comes from, or a passage number for text without paragraph
+numbers. Briefs are checked against the text: anchors exist, cited authorities and party names
+actually appear, case citations resolve against the corpus. Departures from the brief format
+(an issue not phrased "Whether …", an issue with no decision, wording far from its anchor) are
+listed as format checks. Briefs are cached per case, prompt version and model. (Code, table and
+settings keep the earlier name FILAC.)
+
+The UI has two pages:
+
+- **Scenario search** (`/`): scenario → cases and legislation; each case can show its brief.
+- **Case brief** (`/case-brief?case_id=…`): brief a case from a **description** (any length,
+  up to a full judgment), from the **database** (citation, name or keywords), or from an
+  **uploaded file** (PDF/DOCX/TXT/MD). Switches for paragraph references, the full case
+  reading and related authorities (off by default); Markdown download.
 
 ```powershell
 # terminal 1: API (loads the embedding model once)
@@ -288,8 +304,11 @@ prompt version and model, so each case is generated once.
 # terminal 2: UI at http://localhost:8501
 .venv\Scripts\python -m streamlit run ui/streamlit_app.py
 
-# or one brief from the CLI
-.venv\Scripts\python -m scripts.filac_cli "2008 SCC 27"
+# or one brief from the CLI (a corpus case, or a local file)
+.venv\Scripts\python -m scripts.filac_cli "2013 ONCA 585"
+.venv\Scripts\python -m scripts.filac_cli --text-file decision.txt
+# score briefs against the gold model answers in eval/briefs/
+.venv\Scripts\python -m scripts.eval_briefs
 ```
 
 Backends (`FILAC_BACKEND` in `.env`), same prompt, schema, verification and cache:
@@ -299,11 +318,17 @@ Backends (`FILAC_BACKEND` in `.env`), same prompt, schema, verification and cach
 | `claude-cli` (default) | `claude -p` on the Claude Code CLI's own login | Local testing on a subscription; ~7k tokens of CLI overhead per call and subject to plan usage limits |
 | `api` | Anthropic SDK with `ANTHROPIC_API_KEY`; server-side refusal fallback enabled | Anyone else using the app. Re-check brief quality after switching |
 
-Measured on `claude-cli` with Claude Opus 5: 19k-char decision 36 s, 86k-char unnumbered
-decision 67 s; 0 verification problems on the three briefs generated so far.
+Measured on `claude-cli` with Claude Opus 5: *R v Kazemi* (7k chars) 59 s and 25/25 checks
+against the model answer; a 7.7k-char unnumbered decision 156 s, 0 verification problems.
 
-API: `GET /cases/{case_id}/filac` returns a cached brief (404 if none),
-`POST /cases/{case_id}/filac?force=false` generates one; `GET /courts` lists courts.
+API:
+
+- `GET /cases/{case_id}/filac` returns a cached brief (404 if none); `POST …?force=false`
+  generates one; `GET /cases/{case_id}/filac/markdown?anchors=&full_reading=` exports it.
+- `GET /cases/lookup?q=` finds a corpus case by citation, name, or keywords.
+- `POST /briefs` briefs pasted `text` or an uploaded `file` (same text → same cached brief).
+- `GET /cases/{case_id}/related?k=` searches the corpus with a brief's issues and facts.
+- `GET /courts` lists courts.
 
 ## Federal legislation (Phase 5)
 
@@ -319,7 +344,7 @@ its in-force start date.
 .venv\Scripts\python -m scripts.ingest_legislation
 # extract case->statute references from every decision (~13 min); --sample N prints link context
 .venv\Scripts\python -m scripts.link_statutes --sample 20
-# re-run FILAC verification on cached briefs so Law items link to sections (no model calls)
+# re-run brief verification on cached briefs so Law items link to sections (no model calls)
 .venv\Scripts\python -m scripts.filac_cli --reverify-all
 ```
 
@@ -334,7 +359,7 @@ section, then fused with RRF. A third list adds sections cited by at least 2 of 
 ranked cases, so a query about an avoidance scheme surfaces ITA s. 245 because the GAAR cases
 cite it.
 
-**FILAC.** Statute items in a brief's Law section link to the resolved sections. A link is
+**Case briefs.** Statute items in a brief's Law section link to the resolved sections. A link is
 flagged when the section's current wording came into force after the decision, since the
 court applied an earlier version.
 
@@ -374,7 +399,7 @@ Limits:
 
 Ontario Superior Court and Ontario tribunal decisions aren't in the corpus. For Ontario
 scenarios, `POST /canlii/candidates` (called by the UI after the case list renders) finds
-likely-relevant ones on CanLII and returns them as link-outs: no text, no FILAC.
+likely-relevant ones on CanLII and returns them as link-outs: no text, no case brief.
 
 CanLII's API is metadata only, with no text search, so detection works through the citator:
 
@@ -435,7 +460,8 @@ aren't loaded, with an e-Laws link.
 ```
 app/          FastAPI app, settings, DB pool, embeddings, reranker, chunking, citations,
               statute parsing + reference extraction, section search,
-              retrieval (gather + rank), FILAC extraction + verification, LLM backends,
+              retrieval (gather + rank), case briefs (filac.py: extraction + verification;
+              brief_format.py: display + Markdown; case_lookup.py), LLM backends,
               CanLII client (canlii.py) + ONSC/tribunal detection (canlii_detect.py) +
               frequently cited authorities (canlii_cited.py), Ontario regulation citations
               (ontario_regs.py)
@@ -445,10 +471,11 @@ run.ps1       start database + API + UI
 rebuild.ps1   load or refresh all data, steps in dependency order
 scripts/      common.ps1 (shared by run/rebuild), migrate, smoke_test, ingest_a2aj,
               load_citations, search_cli, eval_retrieval, eval_scenarios, eval_intake,
-              draft_eval_scenarios, filac_cli, ingest_legislation, ingest_ontario_legislation,
+              draft_eval_scenarios, filac_cli, eval_briefs, ingest_legislation, ingest_ontario_legislation,
               ingest_ontario_regulations, link_statutes
-ui/           Streamlit MVP (talks to the API over HTTP)
+ui/           Streamlit UI (talks to the API over HTTP): streamlit_app.py (navigation),
+              app_pages/ (search, case_brief), brief_view.py, lawsearch_client.py
 tests/        pytest unit tests
 eval/         eval scenarios (citations resolved, relevance needs human review), cached
-              fingerprints/ and runs/
+              fingerprints/ and runs/; briefs/ gold case briefs
 ```

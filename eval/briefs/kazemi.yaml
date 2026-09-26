@@ -1,0 +1,43 @@
+# Gold: case_brief_example_ans.txt (the course's model answer for R v Kazemi), traced to the
+# paragraphs of 2013 ONCA 585 each line of the answer comes from. Scored by scripts/eval_briefs.py.
+# Kazemi is the eval case: never use it as a worked example in the brief prompt.
+citation: 2013 ONCA 585
+court: ONCA
+answer_file: case_brief_example_ans.txt
+
+preliminary:
+  name_and_citation: R v Kazemi, 2013 ONCA 585
+  decision_date: September 27, 2013
+  # As read by the model from the case header (before ¶1).
+  citation_read: 2013 ONCA 585
+  parties:
+    - Her Majesty the Queen – appellant
+    - Khojasteh Kazemi – respondent
+
+issues:
+  count: 1
+  anchors_any: [3, 8]              # "The central issue ... is whether the respondent was 'holding'" (¶3, restated ¶8)
+  sub_issue_terms: [sustained]      # the appeal judge's "sustained physical holding" test (¶5 / ¶15)
+  exclude_terms: [misapprehen, costs]
+
+undecided_issues:
+  anchors_any: [6, 17]              # misapprehension of the facts: "not necessary to deal with" (¶17)
+
+facts:
+  event_anchors: [1, 2, 3]          # the stop, the charge, the concession
+  not_event_anchors: [4, 5, 6, 7]   # trial, appeal to the OCJ, grounds of appeal: procedural history
+
+ratio:
+  anchors: [11, 12, 14]             # ordinary meaning; the HTA's object; complete prohibition
+  first_anchor: 11
+  not_anchors: [9, 10]              # Driedger and Legislation Act s. 64 are law, not ratio
+
+decision:
+  anchors: [16]                     # "the appeal judge erred in his interpretation of 'holding'"
+  exclude_terms: [restored]         # "conviction restored" is the disposition
+
+disposition:
+  anchors_any: [16, 18]
+
+law:
+  terms: [Driedger, Legislation Act, Raham, Felderhof]

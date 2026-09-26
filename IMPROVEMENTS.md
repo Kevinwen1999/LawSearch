@@ -9,6 +9,7 @@ Sources:
   2026-09-24); its scenario is `on-003`/`on-004` in `eval/scenarios.yaml`.
 - **P6/P8**: follow-ups deferred when Phase 6 / Phase 8 shipped.
 - **B-25**: found while working through this backlog, 2026-09-25.
+- **CB**: case-brief rework (`case-brief-plan.md` §0, 2026-09-25).
 
 Measurements below are from `scripts/eval_scenarios.py --ignore-gate` (36 scenarios, Qwen v4
 fingerprints; `eval/runs/scenarios-backlog.json`) unless stated.
@@ -33,6 +34,14 @@ fingerprints; `eval/runs/scenarios-backlog.json`) unless stated.
 - **Name-and-year ONCA citations with no court marker stay unresolved** (e.g. "(2004), 246 DLR
   (4th) 43. There, this court found..."), by design: without the marker, "R. v. Smith (2004)"
   could be any court. *Hobbs* has 4 of its 5 citing decisions resolved. (B-25)
+
+### Case briefs (CB)
+- **More gold briefs.** Only *R v Kazemi* is scripted (`eval/briefs/`, 25/25 on Opus); one case can
+  overfit the prompt. Add a tribunal, an SCC decision with a dissent, a French decision, and
+  *Joly v Pelletier* (needs its text and a `text_file:` option in `eval_briefs.py`).
+- **Browser check of the Case brief page**: only headless `AppTest` so far.
+- **Quality notes not yet checked** (2001 FCT 266): a decision repeating a ratio sentence, a
+  decision in the judge's first person, facts out of chronological order.
 
 ### Small
 - **Tag gold `issues` on future multi-issue scenarios**, so per-issue coverage is measured beyond

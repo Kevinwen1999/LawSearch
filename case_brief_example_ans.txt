@@ -1,0 +1,19 @@
+Case Brief of Kazemi Case
+Preliminary Information: 
+    • Name and Citation of Case: R v Kazemi, 2013 ONCA 585 
+    • Date of Decision: September 27, 2013
+    • Parties: Her Majesty the Queen – appellant        
+	     Khojasteh Kazemi – respondent
+Legal Issue(s):
+        ◦ Whether the respondent was “holding” the cell phone for the purposes of s.78.1 of the HTA
+            ▪ Specifically, whether there must be sustained holding of a cell phone in order to meet the “holding” requirement of s.78.1 of the HTA (or is momentary holding sufficient to establish to establish the offence). 
+Facts of the case:
+    •  The respondent was driving home from work alone.  While she was stopped at a stop light, a police officer observed her to have a cell phone in her hand.  She said that the cell phone had been on the seat but had dropped to the floor of the car when she braked.  She picked it up when she got to the red light.  That was when she was observed by the officer. 
+    •  The respondent was charged with driving while holding a hand-held wireless communication device pursuant to s. 78.1(1) of the Highway Traffic Act.
+    •  The respondent does not contest that when she was observed by the officer she was driving, and that her cell phone was a hand-held wireless communication device.
+Ratio Decidendi: 
+    • The ordinary meaning of "holding" a cell phone is having it in one's hand. The New Shorter Oxford Dictionary, 1993 defines "to hold" as "to have a grip on" or "to support in or with the hands". There is no suggestion that only if one has the cell phone in one's hand for a sustained period of time is one holding the cell phone.
+    • This interpretation of "holding" best ensures the attainment of the objective of the HTA, which is to protect those who use the roads of Ontario
+    • Road safety is best ensured by a complete prohibition on having a cell phone in one's hand at all while driving. 
+Decision:
+    • The appeal judge erred in his interpretation that “holding” under s.78.1(1) of the HTA required sustained holding. 
