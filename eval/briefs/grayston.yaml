@@ -1,0 +1,46 @@
+# Gold: the instructor's worked brief of R v Grayston in class (case_brief_transcript.txt), traced to
+# the paragraphs of 2016 ONCA 784 it names. Scored by scripts/eval_briefs.py.
+# Grayston is an eval case: never use it as a worked example in the brief prompt.
+citation: 2016 ONCA 784
+court: ONCA
+answer_file: case_brief_transcript.txt
+
+preliminary:
+  name_and_citation: R v Grayston, 2016 ONCA 784
+  decision_date: October 26, 2016   # the DATE line; heard October 3, 2016
+  citation_read: 2016 ONCA 784
+  parties:                          # in header order
+    - Her Majesty the Queen – respondent
+    - Frank Joseph Grayston – appellant
+  not_parties: [Norton, Speyer, MacPherson, Epstein, Lauwers]   # counsel, duty counsel, the panel
+
+issues:
+  count: 1
+  anchors_any: [2]                  # the ground of appeal: the verdict is unreasonable (s. 686(1)(a)(i))
+  not_anchors: [13]                 # Charemski's question, stated while reviewing the law
+  include_terms: [unreasonable]
+  max_sub_issues: 0                 # the test's two stages are ratio, and their answers are decisions
+
+facts:
+  event_anchors: [4, 5, 6]          # the theft and robbery; the balaclava found; the DNA match
+  outcome_below_only: [10]          # the trial result may appear only as the outcome below
+  not_brief_anchors: [8, 9, 11, 18] # the Crown's case, not testifying, the trial judge's reasoning, argument
+
+ratio:
+  anchors_any: [15, 16]             # the D.D.T. two-stage test, stated generally (¶15) or for this case (¶16)
+  not_anchors: [12, 13, 14, 17, 19, 20]   # other cases' tests (law); the test applied to the facts (decision)
+
+decision:
+  anchors: [17, 20]                 # stage 1 (¶17); stage 2 and the answer to the issue (¶20)
+  conclusion_anchor: 20             # "His conviction is therefore unreasonable"
+  include_terms: [unreasonable]
+  exclude_terms: [allowed, quashed, acquittal]   # disposition (¶21)
+
+disposition:
+  anchors_any: [21]
+
+law:
+  terms: [Biniaris, Charemski, Mars, D.D.T., "686"]
+
+brief:
+  max_words: 500

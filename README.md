@@ -278,16 +278,22 @@ superseded authority like Dunsmuir can still outrank Vavilov.
 
 Each case can get a case brief in the standard format (*Reading Cases*, ch. 4): **Preliminary
 Information** (name and citation, date, parties and their status), **Legal Issue(s)** ("Whether
-…" questions with sub-issues), **Facts of the case** (no procedural history), **Ratio
-Decidendi** and **Decision**. A **Full case reading** adds purpose, law (each authority with the
-proposition it stands for), disposition with costs, obiter and dissents. The layout follows the
-model answer in `case_brief_example_ans.txt`; see [case-brief-plan.md](case-brief-plan.md).
+…" questions with sub-issues), **Facts of the case** (the events and the outcome below, no
+procedural history), **Ratio Decidendi** (the test the court applies, not its application) and
+**Decision** (the answer to each issue, with the court's answer on each stage of a staged test).
+With several issues, ratio and decision are grouped by issue. A **Full case reading** adds
+purpose, law (each authority with the proposition it stands for), disposition with costs, obiter
+and dissents. The layout follows the model answer in `case_brief_example_ans.txt`, and the
+rules follow the instructor's worked *Grayston* brief in `case_brief_transcript.txt`; see
+[case-brief-plan.md](case-brief-plan.md) and [case-brief-refinement-plan.md](case-brief-refinement-plan.md).
+The brief aims to fit on one page (about 500 words).
 
 Every item cites the paragraph it comes from, or a passage number for text without paragraph
 numbers. Briefs are checked against the text: anchors exist, cited authorities and party names
 actually appear, case citations resolve against the corpus. Departures from the brief format
-(an issue not phrased "Whether …", an issue with no decision, wording far from its anchor) are
-listed as format checks. Briefs are cached per case, prompt version and model. (Code, table and
+(an issue not phrased "Whether …", an issue with no conclusion, wording far from its anchor, the
+rule's application listed as ratio, counsel or judges listed as parties, the hearing date given
+as the decision date, a brief longer than a page) are listed as format checks. Briefs are cached per case, prompt version and model. (Code, table and
 settings keep the earlier name FILAC.)
 
 The UI has two pages:
@@ -307,7 +313,7 @@ The UI has two pages:
 # or one brief from the CLI (a corpus case, or a local file)
 .venv\Scripts\python -m scripts.filac_cli "2013 ONCA 585"
 .venv\Scripts\python -m scripts.filac_cli --text-file decision.txt
-# score briefs against the gold model answers in eval/briefs/
+# score briefs against the gold briefs in eval/briefs/ (Kazemi, Grayston)
 .venv\Scripts\python -m scripts.eval_briefs
 ```
 
@@ -318,8 +324,10 @@ Backends (`FILAC_BACKEND` in `.env`), same prompt, schema, verification and cach
 | `claude-cli` (default) | `claude -p` on the Claude Code CLI's own login | Local testing on a subscription; ~7k tokens of CLI overhead per call and subject to plan usage limits |
 | `api` | Anthropic SDK with `ANTHROPIC_API_KEY`; server-side refusal fallback enabled | Anyone else using the app. Re-check brief quality after switching |
 
-Measured on `claude-cli` with Claude Opus 5: *R v Kazemi* (7k chars) 59 s and 25/25 checks
-against the model answer; a 7.7k-char unnumbered decision 156 s, 0 verification problems.
+Measured on `claude-cli` with Claude Opus 5 (prompt `brief-v2`): *R v Kazemi* (7k chars) 35–59 s
+and 28/28 checks against the model answer; *R v Grayston* (8k chars) 48–56 s and 31/31 against the
+instructor's worked brief; a 7.7k-char
+unnumbered decision 33 s, 0 verification problems.
 
 API:
 

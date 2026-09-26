@@ -65,6 +65,11 @@ Status: **steps 1–3 built and tested; step 4 partly done** (2026-09-25). Commi
 7. **The 7 deleted `filac-v1` briefs** regenerate on demand only. Nothing re-briefs them in bulk.
 8. **Test user text in the database:** one pasted/uploaded description case (the Kazemi
    description used to test dedup) is left as a demo. Delete it from `cases` if unwanted.
+9. **Refinement from the Grayston class transcript** (ratio vs application, stage answers in the
+   decision, three kinds of fact, a one-page budget, and Grayston as a second gold): see
+   `case-brief-refinement-plan.md`. **Built 2026-09-26 as `brief-v2`** (Grayston 31/31,
+   Kazemi 28/28 on Opus in the final run). It covers item 4 (the new warnings catch all three notes) and part of
+   item 5 (Grayston is a second gold; more shapes are still needed).
 
 ---
 

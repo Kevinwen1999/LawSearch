@@ -25,15 +25,18 @@ undecided_issues:
 
 facts:
   event_anchors: [1, 2, 3]          # the stop, the charge, the concession
-  not_event_anchors: [4, 5, 6, 7]   # trial, appeal to the OCJ, grounds of appeal: procedural history
+  outcome_below_only: [4, 5]        # trial and first appeal: allowed in the brief only as the outcome below
+  not_brief_anchors: [6, 7]         # grounds of appeal and the costs request: procedural history
 
 ratio:
   anchors: [11, 12, 14]             # ordinary meaning; the HTA's object; complete prohibition
   first_anchor: 11
-  not_anchors: [9, 10]              # Driedger and Legislation Act s. 64 are law, not ratio
+  not_anchors: [9, 10, 15]          # Driedger and Legislation Act s. 64 are law; ¶15 rejects the appeal
+                                    # judge's reading, which is application, and the answer leaves it out
 
 decision:
   anchors: [16]                     # "the appeal judge erred in his interpretation of 'holding'"
+  conclusion_anchor: 16
   exclude_terms: [restored]         # "conviction restored" is the disposition
 
 disposition:
@@ -41,3 +44,6 @@ disposition:
 
 law:
   terms: [Driedger, Legislation Act, Raham, Felderhof]
+
+brief:
+  max_words: 500

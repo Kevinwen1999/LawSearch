@@ -1,0 +1,325 @@
+{
+  "grayston": {
+    "model": "claude-opus-5",
+    "backend": "claude-cli",
+    "usage": {
+      "served_by": "claude-opus-5",
+      "duration_ms": 55656,
+      "input_tokens": 40988,
+      "output_tokens": 6351,
+      "equivalent_cost_usd": 0.28306299999999995
+    },
+    "checks": [
+      {
+        "check": "preliminary: name and citation",
+        "passed": true,
+        "detail": "R v Grayston, 2016 ONCA 784"
+      },
+      {
+        "check": "preliminary: date",
+        "passed": true,
+        "detail": "October 26, 2016"
+      },
+      {
+        "check": "preliminary: citation read from header",
+        "passed": true,
+        "detail": "2016 ONCA 784"
+      },
+      {
+        "check": "preliminary: parties",
+        "passed": true,
+        "detail": "Her Majesty the Queen \u2013 respondent; Frank Joseph Grayston \u2013 appellant"
+      },
+      {
+        "check": "preliminary: no counsel or judges as parties",
+        "passed": true,
+        "detail": "[]"
+      },
+      {
+        "check": "issues: count",
+        "passed": true,
+        "detail": "1"
+      },
+      {
+        "check": "issues: main issue anchor",
+        "passed": true,
+        "detail": "[2]"
+      },
+      {
+        "check": "issues: not from the review of the law",
+        "passed": true,
+        "detail": "wrong []"
+      },
+      {
+        "check": "issues: begin with 'Whether'",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "issues: mentions 'unreasonable'",
+        "passed": true,
+        "detail": "whether the verdict is unreasonable or cannot be supported by the evidence within the meaning of s. 686(1)(a)(i) of the "
+      },
+      {
+        "check": "issues: at most 0 sub-issues",
+        "passed": true,
+        "detail": "0"
+      },
+      {
+        "check": "facts: required events",
+        "passed": true,
+        "detail": "events [4, 5, 6, 7], missing []"
+      },
+      {
+        "check": "facts: outcome below not given as events",
+        "passed": true,
+        "detail": "leaked []"
+      },
+      {
+        "check": "facts: no arguments or procedure in the brief",
+        "passed": true,
+        "detail": "leaked []"
+      },
+      {
+        "check": "ratio: the test the court applies",
+        "passed": true,
+        "detail": "[16]"
+      },
+      {
+        "check": "ratio: no law or application paragraphs",
+        "passed": true,
+        "detail": "wrong []"
+      },
+      {
+        "check": "decision: required paragraphs",
+        "passed": true,
+        "detail": "decision [17, 20, 20], missing []"
+      },
+      {
+        "check": "decision: conclusion answers the issue",
+        "passed": true,
+        "detail": "[20]"
+      },
+      {
+        "check": "decision: mentions 'unreasonable'",
+        "passed": true,
+        "detail": "the court is not satisfied that the inference that the appellant was in contact with the balaclava in the course of the "
+      },
+      {
+        "check": "decision: no 'allowed' (disposition)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "decision: no 'quashed' (disposition)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "decision: no 'acquittal' (disposition)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "disposition: present",
+        "passed": true,
+        "detail": "[21]"
+      },
+      {
+        "check": "law: Biniaris",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: Charemski",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: Mars",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: D.D.T.",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: 686",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "brief: at most 500 words",
+        "passed": true,
+        "detail": "394"
+      },
+      {
+        "check": "verification: no problems",
+        "passed": true,
+        "detail": "0"
+      },
+      {
+        "check": "verification: no format warnings",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "brief_markdown": "# Case Brief of R v Grayston\n\n## Preliminary Information\n- **Name and Citation of Case:** *R v Grayston*, 2016 ONCA 784\n- **Date of Decision:** October 26, 2016\n- **Parties:**\n  - Her Majesty the Queen \u2013 respondent\n  - Frank Joseph Grayston \u2013 appellant\n\n## Legal Issue(s)\n- Whether the verdict is unreasonable or cannot be supported by the evidence within the meaning of s. 686(1)(a)(i) of the Criminal Code. (\u00b62)\n\n## Facts of the case\n- Between midnight and 5:00 a.m. on February 18, 2015, a 1988 Pontiac Sunbird was taken from the premises of the Barton Truck company; around the same time and in the same vicinity an attempted break and enter of a jewellery store and a robbery of a large quantity of drugs from a pharmacy took place. (\u00b64)\n- On February 20, 2015 the Sunbird was found abandoned in a parking lot with a black skeletal balaclava inside, and investigation led police to the appellant's apartment where they discovered drugs. (\u00b65)\n- DNA from inside the balaclava around the mouth area showed a mixture from at least three individuals; the one profile determined for comparison matched the appellant's DNA to a degree of statistical certainty. (\u00b66)\n- The appellant was charged with various offences arising out of the theft of the Sunbird, the robbery of the pharmacy and the attempted break and enter of the jewellery store, and identity was the sole issue at trial. (\u00b67)\n- The trial judge convicted the appellant of the two counts relating to the theft of the Sunbird and acquitted him of all other counts on the basis of insufficient evidence connecting him to those offences. (\u00b610)\n\n## Ratio Decidendi\n- In this case, the Crown must have demonstrated first that, based on the evidence, the inference that the appellant was wearing or had the balaclava with him in connection with the theft of the Sunbird is a more likely inference than the inference that he was in contact with the balaclava on an unrelated occasion; second, the appellant's guilt must have been the only rational conclusion available on the totality of the evidence. (\u00b616)\n\n## Decision\n- First stage: The court is not satisfied that the inference that the appellant was in contact with the balaclava in the course of the theft of the car was a reasonable one, as evidence of his DNA on the balaclava only demonstrates that he likely wore the garment at some point in time and falls short of connecting him to the theft of the car. (\u00b617)\n- Second stage: There was an insufficient evidentiary footing for the trial judge to conclude that the appellant's guilt was the only reasonable conclusion available on the totality of the evidence. (\u00b620)\n- The conviction is unreasonable within the meaning of s. 686(1)(a)(i), the evidence not supporting the verdict. (\u00b620)\n"
+  },
+  "kazemi": {
+    "model": "claude-opus-5",
+    "backend": "claude-cli",
+    "usage": {
+      "served_by": "claude-opus-5",
+      "duration_ms": 58864,
+      "input_tokens": 40790,
+      "output_tokens": 6492,
+      "equivalent_cost_usd": 0.25746500000000005
+    },
+    "checks": [
+      {
+        "check": "preliminary: name and citation",
+        "passed": true,
+        "detail": "R v Kazemi, 2013 ONCA 585"
+      },
+      {
+        "check": "preliminary: date",
+        "passed": true,
+        "detail": "September 27, 2013"
+      },
+      {
+        "check": "preliminary: citation read from header",
+        "passed": true,
+        "detail": "2013 ONCA 585"
+      },
+      {
+        "check": "preliminary: parties",
+        "passed": true,
+        "detail": "Her Majesty the Queen \u2013 appellant; Khojasteh Kazemi \u2013 respondent"
+      },
+      {
+        "check": "issues: count",
+        "passed": true,
+        "detail": "1"
+      },
+      {
+        "check": "issues: main issue anchor",
+        "passed": true,
+        "detail": "[3]"
+      },
+      {
+        "check": "issues: begin with 'Whether'",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "issues: sub-issue mentions 'sustained'",
+        "passed": true,
+        "detail": "specifically, whether \"holding\" requires some sustained physical holding of the device, as the appeal judge held."
+      },
+      {
+        "check": "issues: no 'misapprehen' issue",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "issues: no 'costs' issue",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "undecided issues: listed",
+        "passed": true,
+        "detail": "[17]"
+      },
+      {
+        "check": "facts: required events",
+        "passed": true,
+        "detail": "events [1, 2, 3], missing []"
+      },
+      {
+        "check": "facts: outcome below not given as events",
+        "passed": true,
+        "detail": "leaked []"
+      },
+      {
+        "check": "facts: no arguments or procedure in the brief",
+        "passed": true,
+        "detail": "leaked []"
+      },
+      {
+        "check": "ratio: required paragraphs",
+        "passed": true,
+        "detail": "ratio [11, 12, 13, 14], missing []"
+      },
+      {
+        "check": "ratio: starts with the rule",
+        "passed": true,
+        "detail": "(11, 'rule')"
+      },
+      {
+        "check": "ratio: no law or application paragraphs",
+        "passed": true,
+        "detail": "wrong []"
+      },
+      {
+        "check": "decision: required paragraphs",
+        "passed": true,
+        "detail": "decision [16], missing []"
+      },
+      {
+        "check": "decision: conclusion answers the issue",
+        "passed": true,
+        "detail": "[16]"
+      },
+      {
+        "check": "decision: no 'restored' (disposition)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "disposition: present",
+        "passed": true,
+        "detail": "[16, 18]"
+      },
+      {
+        "check": "law: Driedger",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: Legislation Act",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: Raham",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "law: Felderhof",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "brief: at most 500 words",
+        "passed": true,
+        "detail": "376"
+      },
+      {
+        "check": "verification: no problems",
+        "passed": true,
+        "detail": "0"
+      },
+      {
+        "check": "verification: no format warnings",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "brief_markdown": "# Case Brief of R v Kazemi\n\n## Preliminary Information\n- **Name and Citation of Case:** *R v Kazemi*, 2013 ONCA 585\n- **Date of Decision:** September 27, 2013\n- **Parties:**\n  - Her Majesty the Queen \u2013 appellant\n  - Khojasteh Kazemi \u2013 respondent\n\n## Legal Issue(s)\n- Whether the respondent was \"holding\" the cell phone for the purposes of s. 78.1(1) of the Highway Traffic Act. (\u00b63)\n  - Specifically, whether \"holding\" requires some sustained physical holding of the device, as the appeal judge held. (\u00b65)\n\n## Facts of the case\n- On April 26, 2010, the respondent was driving home from work alone and, while stopped at a stop light, a police officer observed her to have a cell phone in her hand; she said the phone had been on the seat, dropped to the floor when she braked, and she picked it up at the red light. (\u00b61)\n- The respondent was charged with driving while holding a hand-held wireless communication device pursuant to s. 78.1(1) of the Highway Traffic Act. (\u00b62)\n- The respondent does not contest that when she was observed she was driving and that her cell phone was a hand-held wireless communication device. (\u00b63)\n- The trial court held that the respondent's admission that she had the cell phone in her hand established that she was holding it for the purposes of the section; she was convicted and fined $200. (\u00b64)\n- On appeal to the Ontario Court of Justice, the appeal judge allowed the appeal and dismissed the charge, determining that there must be some sustained physical holding of the device and that the momentary handling here was insufficient. (\u00b65)\n\n## Ratio Decidendi\n- The ordinary meaning of \"holding\" a cell phone is having it in one's hand, and there is no suggestion that only if one has the cell phone in one's hand for a sustained period of time is one holding the cell phone. (\u00b611)\n- This interpretation of \"holding\" best ensures the attainment of the objective of the HTA, which is to protect those who use the roads of Ontario. (\u00b612)\n- This interpretation also best serves the legislature's purpose in enacting the provision, described by the Minister of Transportation as \"eyes-on-the-road, hands-on-the-wheel\" legislation aimed at making roads safer. (\u00b613)\n- Road safety is best ensured by a complete prohibition on having a cell phone in one's hand at all while driving, which also best focuses a driver's undivided attention on driving, eliminates any risk of distraction, removes any temptation to use the cell phone, and prevents any possibility of physical interference with the ability to drive. (\u00b614)\n\n## Decision\n- The appeal judge erred in his interpretation of \"holding\" in s. 78.1(1) of the HTA. (\u00b616)\n"
+  }
+}

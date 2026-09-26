@@ -44,6 +44,9 @@ def score(gold: dict, record: filac.FilacRecord) -> list[tuple[str, bool, str]]:
         check("preliminary: citation read from header", prelim["citation_read"] in read, read)
     if "parties" in prelim:
         check("preliminary: parties", shown["parties"] == prelim["parties"], "; ".join(shown["parties"]))
+    if "not_parties" in prelim:
+        wrong = [n for n in prelim["not_parties"] if any(n.lower() in p.lower() for p in shown["parties"])]
+        check("preliminary: no counsel or judges as parties", not wrong, str(wrong))
 
     issues = summary["issues"]["items"]
     g = gold.get("issues", {})
@@ -52,13 +55,21 @@ def score(gold: dict, record: filac.FilacRecord) -> list[tuple[str, bool, str]]:
     if "anchors_any" in g:
         got = anchors("issues")
         check("issues: main issue anchor", bool(got) and got[0] in g["anchors_any"], str(got))
+    if "not_anchors" in g:
+        wrong = sorted(set(g["not_anchors"]) & set(anchors("issues")))
+        check("issues: not from the review of the law", not wrong, f"wrong {wrong}")
     questions = " ".join(i["question"] for i in issues).lower()
     check("issues: begin with 'Whether'", all(i["question"].lower().startswith("whether") for i in issues))
     for term in g.get("sub_issue_terms", []):
         subs = " ".join(s["question"] for i in issues for s in i["sub_issues"]).lower()
         check(f"issues: sub-issue mentions {term!r}", term in subs, subs[:120])
+    for term in g.get("include_terms", []):
+        check(f"issues: mentions {term!r}", term in questions, questions[:120])
     for term in g.get("exclude_terms", []):
         check(f"issues: no {term!r} issue", term not in questions)
+    if "max_sub_issues" in g:
+        subs = sum(len(i["sub_issues"]) for i in issues)
+        check(f"issues: at most {g['max_sub_issues']} sub-issues", subs <= g["max_sub_issues"], str(subs))
 
     if "anchors_any" in (u := gold.get("undecided_issues", {})):
         got = anchors("undecided_issues")
@@ -69,29 +80,44 @@ def score(gold: dict, record: filac.FilacRecord) -> list[tuple[str, bool, str]]:
     if "event_anchors" in f:
         missing = sorted(set(f["event_anchors"]) - set(events))
         check("facts: required events", not missing, f"events {events}, missing {missing}")
-    if "not_event_anchors" in f:
-        leaked = sorted(set(f["not_event_anchors"]) & set(events))
-        check("facts: no procedural history", not leaked, f"leaked {leaked}")
+    in_brief = anchors("facts", lambda i: i["kind"] in filac.BRIEF_FACT_KINDS)
+    if "outcome_below_only" in f:
+        leaked = sorted(set(f["outcome_below_only"]) & set(events))
+        check("facts: outcome below not given as events", not leaked, f"leaked {leaked}")
+    if "not_brief_anchors" in f:
+        leaked = sorted(set(f["not_brief_anchors"]) & set(in_brief))
+        check("facts: no arguments or procedure in the brief", not leaked, f"leaked {leaked}")
 
     r = gold.get("ratio", {})
-    got = anchors("ratio")
+    # Only the ratio shown in the brief: the application (brief-v2) is kept for the full reading.
+    in_brief_ratio = [i for i in summary["ratio"]["items"] if i["role"] in filac.BRIEF_RATIO_ROLES]
+    got = [i["anchor"] for i in in_brief_ratio]
     if "anchors" in r:
         missing = sorted(set(r["anchors"]) - set(got))
         check("ratio: required paragraphs", not missing, f"ratio {got}, missing {missing}")
+    if "anchors_any" in r:
+        check("ratio: the test the court applies", any(a in r["anchors_any"] for a in got), str(got))
     if "first_anchor" in r:
-        first = summary["ratio"]["items"][0] if got else None
+        first = in_brief_ratio[0] if got else None
         check("ratio: starts with the rule", bool(first) and first["anchor"] == r["first_anchor"]
               and first["role"] == "rule", str(first and (first["anchor"], first["role"])))
     if "not_anchors" in r:
         wrong = sorted(set(r["not_anchors"]) & set(got))
-        check("ratio: no law/framework paragraphs", not wrong, f"wrong {wrong}")
+        check("ratio: no law or application paragraphs", not wrong, f"wrong {wrong}")
 
     d = gold.get("decision", {})
     got = anchors("decision")
     if "anchors" in d:
         missing = sorted(set(d["anchors"]) - set(got))
         check("decision: required paragraphs", not missing, f"decision {got}, missing {missing}")
+    if "conclusion_anchor" in d:
+        # brief-v1 decisions have no kind: each is a conclusion.
+        conclusions = anchors("decision", lambda i: i.get("kind", "conclusion") == "conclusion")
+        check("decision: conclusion answers the issue", conclusions[-1:] == [d["conclusion_anchor"]],
+              str(conclusions))
     answers = " ".join(i["answer"] for i in summary["decision"]["items"]).lower()
+    for term in d.get("include_terms", []):
+        check(f"decision: mentions {term!r}", term in answers, answers[:120])
     for term in d.get("exclude_terms", []):
         check(f"decision: no {term!r} (disposition)", term not in answers)
 
@@ -102,6 +128,10 @@ def score(gold: dict, record: filac.FilacRecord) -> list[tuple[str, bool, str]]:
     law = " ".join(i["authority"] for i in summary["law"]["items"]).lower()
     for term in gold.get("law", {}).get("terms", []):
         check(f"law: {term}", term.lower() in law)
+
+    if "max_words" in (b := gold.get("brief", {})):
+        words = filac.brief_word_count(summary)
+        check(f"brief: at most {b['max_words']} words", words <= b["max_words"], str(words))
 
     verification = record.verification
     check("verification: no problems", verification["problems"] == 0, str(verification["problems"]))

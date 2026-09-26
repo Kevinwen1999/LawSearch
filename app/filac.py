@@ -30,13 +30,20 @@ from app.llm import extract_with_fallback
 from app.statute_refs import pick_chunk, statute_index
 
 # Bump whenever SYSTEM_PROMPT, INSTRUCTION, BRIEF_SCHEMA or document rendering changes.
-PROMPT_VERSION = "brief-v1"
+PROMPT_VERSION = "brief-v2"
 
 # Sections whose items carry an anchor, in schema order.
 SECTIONS = (
     "purpose", "issues", "undecided_issues", "facts", "law", "ratio", "decision",
     "disposition", "obiter", "separate_opinions",
 )
+# Facts and ratio items shown in the five-part brief; procedural history and the ratio's
+# application to the facts appear only in the full reading.
+BRIEF_FACT_KINDS = ("event", "outcome_below")
+BRIEF_RATIO_ROLES = ("rule", "reasoning")
+# The five-part brief fits on one page (Times New Roman 11, single-spaced); counted over issues,
+# facts, ratio and decision, the parts the model writes.
+BRIEF_MAX_WORDS = 500
 ANCHOR_TEXT_CHARS = 1500
 USER_SOURCES = ("upload", "pasted")
 InputKind = Literal["decision", "description"]
@@ -55,34 +62,45 @@ Grounding
 Preliminary information
 - Take it from the case header: the style of cause, the citation and date lines, and the "BETWEEN ... Appellant ... Respondent" block. The header is a proper source for these fields. A reporter's headnote or summary placed before the reasons is not a source for anything.
 - Give each party's full name as written and its status in this proceeding (appellant, respondent, plaintiff, defendant, applicant, moving party, ...). Use an empty string for any field the text does not state.
+- The parties are the litigants only. Counsel ("for the respondent"), duty counsel and the judges ("J.", "J.A.", "JJ.A.") are never parties, even when the header names them. A party acting in person is still a party.
+- The date of decision is the date the decision was released (the "DATE" or "Released" line), never the date it was heard.
 
 Purpose
 - Why the case is before this court or tribunal, procedurally: an action for damages, a motion to strike, an appeal from a named court's decision, an application for judicial review, and so on.
 
 Legal issue(s)
-- The legal questions this court must answer to decide the case, framed as the substantive question the court resolves (for example whether conduct meets a statutory requirement, or whether a pleading discloses a cause of action), not as whether the court below erred. Where the court states "the issue is whether ...", follow its words.
+- The legal questions this court must answer to decide the case. On an appeal or judicial review that is a question about the decision below, never the question the court below had to answer (such as identity, or whether the accused committed the offence):
+  - where the ground is a question of law the court decides for itself, such as the meaning of a provision or whether a pleading discloses a cause of action, state that question directly rather than as whether the court below erred;
+  - where the ground is itself a standard of review (an unreasonable verdict, a palpable and overriding error, the reasonableness of an administrative decision), state it as that question.
+- Take the issue from where the court identifies this case's question: the ground of appeal or review it decides, or "the issue is whether ...", following the court's words. A question the court states while reviewing another case's test, typically followed by that case's citation, is law, not this case's issue.
 - List only the issues the court decides. A ground the court declines to decide, or finds unnecessary to decide, goes only in undecided_issues, with the reason, and never also in issues.
 - Costs are never an issue, a ratio item or a decision, even when a party asks for them and the court rules on the request: they belong only in the disposition, as kind "costs".
-- Phrase each issue as one concise question beginning with "Whether". Where the dispute turns on a narrower question, such as which of two competing interpretations is right (including the one the court below adopted), add it as a sub-issue phrased "Specifically, whether ...".
+- Phrase each issue as one concise question beginning with "Whether". Where the dispute turns on a narrower question the parties contest, such as which of two competing interpretations is right (including the one the court below adopted), add it as a sub-issue phrased "Specifically, whether ...". Most issues have no sub-issue. A sub-issue is never taken from the court's review of other cases, and the stages or elements of the test the court applies are not sub-issues: the test is ratio, and the court's answer on each stage is a decision.
 - Number the issues from 1 in the id field; facts, ratio and decision refer to those ids.
 
 Facts
 - Only the facts essential to the issues, each tied to the ids of the issues it bears on. Leave out facts that bear on no issue.
 - kind "event": what happened. The charge laid or the claim made is an event, even though it starts the proceeding, and so is what the parties admit or do not contest.
-- kind "procedural_history": only the decisions of lower courts or tribunals in this matter and the grounds of appeal or review.
-- One item may be a whole paragraph's narrative of related facts.
+- kind "outcome_below": the result of each decision under appeal or review, one sentence each (for example that the motion judge struck the claim, or that the tribunal dismissed the complaint). The result only, not its reasoning.
+- kind "procedural_history": how the case was run: the reasoning of the court below, the parties' arguments and the evidence they relied on, who testified or did not, the grounds of appeal or review, hearing dates. A party's argument is never an event.
+- Keep the details the court's analysis turns on (when, where, what was found), and drop incidental ones (brand names, street addresses, exact amounts) unless an issue turns on them.
+- An item may combine one paragraph's related facts, trimmed. Events in chronological order, then the outcome below.
 
 Law
-- Only authorities the text cites, including the interpretive principles and statutes the court applies (for example a statement of the modern approach to statutory interpretation, or an interpretation Act). For each: the authority as cited, name first and then the section or citation (e.g. "Highway Traffic Act, R.S.O. 1990, c. H.8, s. 78.1(1)"); the proposition it stands for as the court uses it; who relied on it; and how the court treated it. Texts, dictionaries and legislative debates are kind "secondary".
+- Only authorities the text cites, including the interpretive principles and statutes the court applies (for example a statement of the modern approach to statutory interpretation, or an interpretation Act). For each: the authority as cited, name first and then the section or citation (e.g. "Highway Traffic Act, R.S.O. 1990, c. H.8, s. 78.1(1)"); the proposition it stands for as the court uses it; who relied on it; and how the court treated it. Treatment "applied" is only for an authority whose test or rule the court applies to the facts to reach its decision; an authority the court accepts as a correct statement of the law without applying it is "followed", and background is "referred". Texts, dictionaries and legislative debates are kind "secondary".
 
 Ratio decidendi
 - The principle of law the case stands for, and the reasoning the court relied on to reach its decision: the binding part of the judgment.
-- Items in the court's order: first the rule (the legal principle, at the level of generality at which the court decided it, not restated as this case's facts), then the reasoning items that support it (the words of the provision, its purpose, policy). Anchor each item to the paragraph where the court says it.
-- Take the rule, like every ratio item, in the court's own words from the paragraph where the court states it, rather than rephrasing it.
+- The rule is the test or principle this court chooses and applies to the facts to reach its decision. When the court reviews what other cases held, those holdings are law, not ratio; the one the court then applies ("In this case ...", "Here ...") is the ratio. Take the rule in the court's own words, as the court states it generally or as the court restates it for this case, without blending the two or rephrasing it.
+- Where the court reviews several tests or statements of law from other cases and then applies one, only the one it applies is the rule. The others are law, and are not reasoning items either.
+- Items in the court's order: first the rule, then any reasoning items. Reasoning items say why the rule is the right rule (the words of the provision, its purpose, policy), stated in general terms. Anchor each item to the paragraph where the court says it.
+- Role "application": how the court applies the rule to this case's facts, and the court's explanation of why the interpretation or finding below was wrong, even when phrased in general terms. These are not ratio: they are kept for the full reading, and the conclusions they reach are the decision.
 - Only this court's own reasoning (the majority's, where there is one). A party's argument, a lower court's view, obiter dicta, a concurrence or a dissent is never ratio. The interpretive framework and the authorities the court applies belong in law, not ratio.
 
 Decision
-- For each decided issue, the result of applying the ratio to it, in the court's terms (for example that the judge below erred in a stated interpretation, or that the pleading discloses no cause of action).
+- For each decided issue, exactly one item of kind "conclusion": the court's own statement that resolves the issue (for example that the judge below erred in a stated interpretation, or that the pleading discloses no cause of action). Use the court's words from that statement, and add nothing to it, not even the rule or reasons from elsewhere in the judgment: those are the ratio.
+- Where the rule is a test with stages or elements, also give the court's answer on each one as an item of kind "step", in order, before the conclusion. Its step label is a few words ("Stage 1", "First element"), not a restatement of the stage.
+- Take the concluding sentence, not the paragraph around it, and leave out framing such as "In our view" or "I would therefore conclude that". State it as the court's holding in the third person, not in the judge's first person.
 - Not the procedural order: "the appeal is allowed", "the conviction is restored", "the action is dismissed" belong in the disposition, even when the court says them in the same sentence.
 
 Disposition
@@ -97,7 +115,7 @@ Descriptions
 
 Style
 - Write in English, including for decisions in French.
-- Precise sentences a lawyer can skim. Most decisions need 1-3 issues, 3-8 facts and 2-6 ratio items; long decisions may need more and short ones fewer."""
+- Precise sentences a lawyer can skim. The five-part brief must fit on one page: about 450 words or fewer across issues, facts, ratio and decision. Most decisions need 1-2 issues, 2-5 facts and 1-3 ratio items; long decisions with several issues may need more."""
 
 INSTRUCTION = "Write the case brief for the text provided."
 
@@ -160,7 +178,8 @@ BRIEF_SCHEMA = _item(
     )),
     undecided_issues=_section(_item(question=_text(), reason=_text(), anchor=_ANCHOR)),
     facts=_section(_item(
-        text=_text(), kind=_enum("event", "procedural_history"), issue_ids=_ISSUE_IDS, anchor=_ANCHOR,
+        text=_text(), kind=_enum("event", "outcome_below", "procedural_history"), issue_ids=_ISSUE_IDS,
+        anchor=_ANCHOR,
     )),
     law=_section(_item(
         authority=_text("As cited in the text, with section or citation."),
@@ -170,8 +189,16 @@ BRIEF_SCHEMA = _item(
         treatment=_enum("followed", "applied", "distinguished", "not_followed", "referred"),
         anchor=_ANCHOR,
     )),
-    ratio=_section(_item(text=_text(), role=_enum("rule", "reasoning"), issue_ids=_ISSUE_IDS, anchor=_ANCHOR)),
-    decision=_section(_item(issue_id={"type": "integer"}, answer=_text(), anchor=_ANCHOR)),
+    ratio=_section(_item(
+        text=_text(), role=_enum(*BRIEF_RATIO_ROLES, "application"), issue_ids=_ISSUE_IDS, anchor=_ANCHOR,
+    )),
+    decision=_section(_item(
+        issue_id={"type": "integer"},
+        kind=_enum("step", "conclusion"),
+        step=_text('For a step, a label of a few words such as "Stage 1"; empty for the conclusion.'),
+        answer=_text(),
+        anchor=_ANCHOR,
+    )),
     disposition=_section(_item(text=_text(), kind=_enum("outcome", "order", "costs"), anchor=_ANCHOR)),
     obiter=_section(_item(text=_text(), anchor=_ANCHOR)),
     separate_opinions=_section(_item(
@@ -321,6 +348,21 @@ def _item_text(section: str, item: dict) -> str:
     return item["answer"] if section == "decision" else item.get("text", "")
 
 
+def brief_texts(summary: dict) -> list[str]:
+    """The texts of the five-part brief the model writes: issues, facts, ratio and decision."""
+    texts = []
+    for issue in summary["issues"]["items"]:
+        texts += [issue["question"], *(s["question"] for s in issue["sub_issues"])]
+    texts += [f["text"] for f in summary["facts"]["items"] if f["kind"] in BRIEF_FACT_KINDS]
+    texts += [r["text"] for r in summary["ratio"]["items"] if r["role"] in BRIEF_RATIO_ROLES]
+    texts += [d["answer"] for d in summary["decision"]["items"]]
+    return texts
+
+
+def brief_word_count(summary: dict) -> int:
+    return sum(len(text.split()) for text in brief_texts(summary))
+
+
 def _is_undecided(issue: dict, summary: dict) -> bool:
     words = _content_words(issue["question"])
     for undecided in summary["undecided_issues"]["items"]:
@@ -330,10 +372,19 @@ def _is_undecided(issue: dict, summary: dict) -> bool:
     return False
 
 
+_COSTS = re.compile(r"\bcosts?\b", re.IGNORECASE)
+
+
+def _is_costs(issue: dict, summary: dict) -> bool:
+    """A costs request beside the merits; in an appeal about costs alone, costs are the issue."""
+    return bool(_COSTS.search(issue["question"])) and len(summary["issues"]["items"]) > 1
+
+
 def enforce_decided_issues(summary: dict) -> list[str]:
-    """A brief lists only the issues the court decides. Drop an issue the model also listed as
-    undecided, with its decision and the references to it, and return the dropped questions."""
-    dropped = [i for i in summary["issues"]["items"] if _is_undecided(i, summary)]
+    """A brief lists only the issues the court decides, and costs belong to the disposition. Drop
+    an issue the model also listed as undecided, or a costs request listed beside the merits, with
+    its decision and the references to it, and return the dropped questions."""
+    dropped = [i for i in summary["issues"]["items"] if _is_undecided(i, summary) or _is_costs(i, summary)]
     if not dropped:
         return []
     ids = {i["id"] for i in dropped}
@@ -350,6 +401,53 @@ def enforce_decided_issues(summary: dict) -> list[str]:
 
 StatuteResolver = Callable[[str], list[dict]]
 
+# Header lines that name counsel or the judges, never the parties.
+_COUNSEL_LINE = re.compile(r"\bfor the\b|\bduty counsel\b|\bacting in person\b|\bself-represented\b|\bagent for\b", re.I)
+_JUDGES_LINE = re.compile(r"\b(C\.)?J{1,2}\.(A\.)?\s*:?\s*$")
+_HEARD_LINE = re.compile(r"^\s*heard\s*(?:on\b)?\s*:?\s*(.+?)\s*$", re.IGNORECASE | re.MULTILINE)
+# A ratio reasoning item that talks about this case's parties or courts is applying the rule, not
+# stating it.
+_CASE_ROLE = re.compile(
+    r"\bthe (appellant|respondent|plaintiff|defendant|applicant|trial judge|appeal judge|motion judge|"
+    r"application judge|trial court|court below|lower court)s?\b",
+    re.IGNORECASE,
+)
+_COURT_BELOW = re.compile(
+    r"\bthe (trial|appeal|motion|application|hearing) judge\b|\bthe (court below|lower court|trial court)\b",
+    re.IGNORECASE,
+)
+# A rule stated as a test with stages, whose stages each need an answer in the decision.
+_STAGED_TEST = re.compile(
+    r"\bfirst\b.*\bsecond\b|\b(two|three|four)[- ](stage|step|part|prong)|\(1\).*\(2\)|\(a\).*\(b\)|\bstages?\b",
+    re.IGNORECASE | re.DOTALL,
+)
+SUB_ISSUE_RESTATES_RATIO = 0.6
+
+
+def _header(doc: CaseDocument) -> str:
+    """The case header: the text before the first numbered paragraph, or the start of the first
+    passage when the text has no paragraph numbers."""
+    if doc.anchor_type == "paragraph" and doc.anchors:
+        start = doc.body.find(doc.anchors[min(doc.anchors)])
+        return doc.body[:start] if start > 0 else ""
+    return doc.anchors.get(1, "")[:3000]
+
+
+def _heard_date(header: str) -> date | None:
+    if not (match := _HEARD_LINE.search(header)):
+        return None
+    value = match.group(1).rstrip(".")
+    for fmt in ("%B %d, %Y", "%B %d %Y", "%d %B %Y", "%Y-%m-%d", "%Y%m%d"):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+def _question_words(question: str) -> set[str]:
+    return _content_words(re.sub(r"^\s*(specifically,?\s*)?whether\s+", "", question, flags=re.IGNORECASE))
+
 
 def verify(
     summary: dict,
@@ -361,9 +459,10 @@ def verify(
 
     `problems` counts things that may be invented: anchors that don't exist, authorities and party
     names not found anywhere in the text. `rule_warnings` lists departures from the case-brief
-    format (issues not phrased as "Whether" questions, an issue with no decision, facts tied to no
-    issue, wording far from the anchor). Law items that name statute sections are resolved to
-    stored sections, flagging wording that came into force after the decision.
+    format (issues not phrased as "Whether" questions, an issue with no conclusion, facts tied to no
+    issue, wording far from the anchor, the rule's application listed as ratio, a brief longer than
+    a page). Law items that name statute sections are resolved to stored sections, flagging
+    wording that came into force after the decision.
     """
     document_text = _normalize(doc.body)
     citations = sorted({c for item in summary["law"]["items"] for c in case_citations(item["authority"])})
@@ -385,12 +484,18 @@ def verify(
         return False
 
     preliminary = summary["preliminary"]
+    header_lines = [line for line in _header(doc).splitlines() if line.strip()]
     party_checks = []
-    for party in preliminary["parties"]:
-        found = bool(party["name"].strip()) and _normalize(party["name"]) in document_text
+    for index, party in enumerate(preliminary["parties"]):
+        name = _normalize(party["name"])
+        found = bool(name) and name in document_text
         if not found:
             problems += 1
         party_checks.append({"found_in_document": found})
+        lines = [line for line in header_lines if name and name in _normalize(line)]
+        if lines and all(_COUNSEL_LINE.search(line) or _JUDGES_LINE.search(line) for line in lines):
+            warn("preliminary", index, f"{party['name']} is named in the header only as counsel or a judge, not a party")
+    heard = _heard_date(_header(doc))
     if doc.citation and (given := case_citations(preliminary["citation"])):
         if canonical(given[0]) != doc.citation:
             warn("preliminary", None, f"citation {preliminary['citation']!r} differs from the record's {doc.citation}")
@@ -401,11 +506,16 @@ def verify(
             given_date = None
         if given_date and given_date != doc.decision_date:
             warn("preliminary", None, f"date {given_date} differs from the record's {doc.decision_date}")
+    if heard and preliminary["decision_date"] == heard.isoformat():
+        warn("preliminary", None, f"date {heard} is the hearing date, not the date of decision")
 
     issue_ids = [issue["id"] for issue in summary["issues"]["items"]]
     if len(set(issue_ids)) != len(issue_ids):
         warn("issues", None, "issue ids repeat")
     known_ids = set(issue_ids)
+    ratio_items = [r for r in summary["ratio"]["items"] if r["role"] in BRIEF_RATIO_ROLES]
+    decisions = summary["decision"]["items"]
+    party_names = [n for p in preliminary["parties"] if len(n := _normalize(p["name"])) >= 4]
 
     sections = {}
     for name in SECTIONS:
@@ -422,6 +532,16 @@ def verify(
                     check["sub_issues"].append({"anchor_ok": check_anchor(sub["anchor"])})
                     if "whether" not in sub["question"].lower():
                         warn(name, index, 'sub-issue is not a "whether" question')
+                    if sub["anchor"] in doc.anchors and case_citations(doc.anchors[sub["anchor"]][-250:]):
+                        warn(name, index, "sub-issue anchored to a paragraph that reviews another case (it ends in a citation)")
+                    words = _question_words(sub["question"])
+                    if words and any(
+                        len(words & _content_words(r["text"])) / len(words) >= SUB_ISSUE_RESTATES_RATIO
+                        for r in ratio_items
+                    ):
+                        warn(name, index, "sub-issue restates the ratio's test: its stages belong in the ratio and the decision")
+                if check["anchor_ok"] and case_citations(doc.anchors[anchor][-250:]):
+                    warn(name, index, "anchored to a paragraph that reviews another case (it ends in a citation)")
 
             if name in ("facts", "ratio"):
                 ids = item["issue_ids"]
@@ -429,6 +549,24 @@ def verify(
                     warn(name, index, "not tied to any issue")
                 elif unknown := sorted(set(ids) - known_ids):
                     warn(name, index, f"refers to unknown issue id(s) {unknown}")
+
+            if name == "ratio" and item["role"] == "reasoning":
+                text = _normalize(item["text"])
+                if _CASE_ROLE.search(item["text"]) or any(n in text for n in party_names):
+                    warn(name, index, "applies the rule to this case's parties: that belongs in the decision")
+                elif check["anchor_ok"] and _COURT_BELOW.search(doc.anchors[anchor]):
+                    warn(name, index, "comes from a paragraph about the court below: why it erred belongs in the decision")
+
+            if name == "decision":
+                for r in ratio_items:
+                    if overlap(item["answer"], r["text"]) >= 0.9 and overlap(r["text"], item["answer"]) >= 0.9:
+                        warn(name, index, "repeats a ratio item")
+                        break
+                question = next((i["question"] for i in summary["issues"]["items"] if i["id"] == item["issue_id"]), "")
+                if item["kind"] == "conclusion" and question and not (
+                    _question_words(question) & _content_words(item["answer"])
+                ):
+                    warn(name, index, "does not read as an answer to its issue")
 
             if name in OVERLAP_SECTIONS and check["anchor_ok"]:
                 check["overlap"] = round(overlap(_item_text(name, item), doc.anchors[anchor]), 2)
@@ -461,19 +599,28 @@ def verify(
             checks.append(check)
         sections[name] = checks
 
-    decided = [d["issue_id"] for d in summary["decision"]["items"]]
     for issue_id in issue_ids:
-        if issue_id not in decided:
+        answers = [d for d in decisions if d["issue_id"] == issue_id]
+        conclusions = sum(d["kind"] == "conclusion" for d in answers)
+        if not answers:
             warn("decision", None, f"issue {issue_id} has no decision")
-    for index, issue_id in enumerate(decided):
-        if issue_id not in known_ids:
-            warn("decision", index, f"decision refers to unknown issue {issue_id}")
+        elif conclusions != 1:
+            warn("decision", None, f"issue {issue_id} has {conclusions} conclusions, not one")
+    for index, decision in enumerate(decisions):
+        if decision["issue_id"] not in known_ids:
+            warn("decision", index, f"decision refers to unknown issue {decision['issue_id']}")
+    staged = {i for r in ratio_items if r["role"] == "rule" and _STAGED_TEST.search(r["text"]) for i in r["issue_ids"]}
+    for issue_id in sorted(staged & known_ids):
+        if not any(d["issue_id"] == issue_id and d["kind"] == "step" for d in decisions):
+            warn("decision", None, f"issue {issue_id}: the rule is a staged test, but no stage has its own answer")
     for index, issue in enumerate(summary["issues"]["items"]):
         if _is_undecided(issue, summary):
             warn("issues", index, "also listed as an undecided issue")
-    ratio_items = summary["ratio"]["items"]
     if ratio_items and ratio_items[0]["role"] != "rule":
         warn("ratio", 0, "ratio does not start with the rule")
+    word_count = brief_word_count(summary)
+    if word_count > BRIEF_MAX_WORDS:
+        warn("brief", None, f"{word_count} words: longer than one page (about {BRIEF_MAX_WORDS})")
 
     return {
         "anchor_type": doc.anchor_type,
@@ -481,6 +628,7 @@ def verify(
         "input_kind": doc.input_kind,
         "problems": problems,
         "rule_warnings": warnings,
+        "word_count": word_count,
         "preliminary": {"parties": party_checks},
         "sections": sections,
         "anchor_text": {str(a): doc.anchors[a][:ANCHOR_TEXT_CHARS] for a in sorted(cited)},

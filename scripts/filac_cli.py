@@ -104,6 +104,7 @@ def print_checks(record: filac.FilacRecord) -> None:
     for w in verification["rule_warnings"]:
         where = f"{w['section']}[{w['index']}]" if w["index"] is not None else w["section"]
         print(f"warning {where}: {w['message']}")
+    print(f"brief: {verification['word_count']} words (one page is about {filac.BRIEF_MAX_WORDS})")
     print(f"verification problems: {verification['problems']} "
           f"(of {verification['anchor_count']} {verification['anchor_type']}s), "
           f"{len(verification['rule_warnings'])} format warnings")
