@@ -9,7 +9,7 @@ from uuid import UUID
 import httpx
 import streamlit as st
 
-from brief_view import render_brief
+from brief_view import regenerated_note, render_brief
 from lawsearch_client import brief_user_text, fetch_cached_brief, generate_brief, get_json
 
 READ_AS = {"Detect automatically": None, "Description": "description", "Full decision": "decision"}
@@ -49,7 +49,8 @@ def render_hits(hits: list[dict], key: str) -> None:
         known_cases[hit["case_id"]] = hit
         with st.container(border=True, horizontal=True, vertical_alignment="center"):
             st.markdown(f"{case_label(hit)}  \n:gray[matched by {MATCH_LABELS[hit['match']]}]")
-            if hit["has_brief"]:
+            # Search results are cached; a brief generated since then counts too.
+            if hit["has_brief"] or briefs.get(hit["case_id"]):
                 st.badge("Brief ready", icon=":material/check:", color="green")
             if st.button("Open", key=f"{key}-{hit['case_id']}", icon=":material/arrow_forward:"):
                 show_case(hit["case_id"])
@@ -131,13 +132,17 @@ with st.container(horizontal=True):
     show_full = st.toggle("Show full case reading", value=True, key="brief_show_full", persist_state="session")
     show_related = st.toggle("Show related authorities", value=False, key="brief_show_related", persist_state="session")
 
-if case_id not in briefs or briefs[case_id] is None:
-    try:
-        briefs[case_id] = fetch_cached_brief(case_id)
-    except httpx.HTTPError as exc:
-        st.error(f"Cannot load the brief ({type(exc).__name__}).")
-        st.stop()
+# Always the stored brief, not a session copy: it may have been regenerated in another tab or
+# from the CLI. A local read, so cheap on every rerun.
+try:
+    briefs[case_id] = fetch_cached_brief(case_id)
+except httpx.HTTPError as exc:
+    st.error(f"Cannot load the brief ({type(exc).__name__}).")
+    st.stop()
 brief = briefs[case_id]
+
+if note := st.session_state.pop("brief_regenerated_note", None):
+    st.success(note, icon=":material/refresh:")
 
 if brief is None:
     known = known_cases.get(case_id)
@@ -157,10 +162,11 @@ with st.container(border=True):
     if st.button("Regenerate", key="brief_regenerate", icon=":material/refresh:", type="tertiary",
                  help="Write the brief again with the current model and prompt."):
         with st.spinner("Rewriting the brief..."):
-            brief, error = generate_brief(case_id, force=True)
-        if brief:
-            show_case(case_id, brief)
-            st.cache_data.clear()
+            new_brief, error = generate_brief(case_id, force=True)
+        if new_brief:
+            # The Markdown export is cached by the brief's created_at, so the new brief gets its own.
+            st.session_state.brief_regenerated_note = regenerated_note(brief, new_brief)
+            show_case(case_id, new_brief)
             st.rerun()
         st.error(error)
 
